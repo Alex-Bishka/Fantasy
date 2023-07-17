@@ -5,7 +5,10 @@ from datetime import date
 def generateADPFromAPI():
     """
     Obtains ADP rankings from an API
-    We are currently using Fantasy Football Calculator's free api
+    We are currently using Fantasy Football Calculator's free api - note this is missing key players
+
+    For more info:
+    https://help.fantasyfootballcalculator.com/article/42-adp-rest-api
     """
     NUM_TEAMS = 12
     LEAGUE_TYPE = "standard"
@@ -67,7 +70,7 @@ def createCSV(position_list):
     Takes in a position list with the players' info and creates a csv file 
     """
     position = position_list[0][4]
-    filename = f'./CSVRankings/{position}_Ranking'
+    filename = f'./CSVRankings/{position}_Ranking.csv'
     header = ["Round", "ADP", "Name", "Team", "Pos", "Highest Draft Pos", "Lowest Draft Pos"]
     with open(filename, 'w', encoding='UTF8', newline='') as f:
         writer = csv.writer(f)
