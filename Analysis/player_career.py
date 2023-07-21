@@ -5,7 +5,7 @@ class Player_Career:
         self.seasons = seasons
         self.best_season = None
         self.career_stats = None
-        self.career_average = None
+        self.season_average = None
         self.game_average = None
 
     def add_season(self, season):
@@ -61,30 +61,30 @@ class Player_Career:
 
     def get_average_season_stats(self):
         """"""
-        self.career_average = self.career_stats
+        self.season_average = self.career_stats
         num_seasons = len(self.seasons)
 
-        self.career_average.games /= num_seasons
-        self.career_average.games_started /= num_seasons
-        self.career_average.passing_completions /= num_seasons
-        self.career_average.passing_attempts /= num_seasons
-        self.career_average.passing_yards /= num_seasons
-        self.career_average.passing_touchdowns /= num_seasons
-        self.career_average.passing_interceptions /= num_seasons
-        self.career_average.rushing_attempts /= num_seasons
-        self.career_average.rushing_yards /= num_seasons
-        self.career_average.rushing_touchdowns /= num_seasons
-        self.career_average.receiving_targets /= num_seasons
-        self.career_average.receiving_receptions /= num_seasons
-        self.career_average.receiving_yards /= num_seasons
-        self.career_average.receiving_td /= num_seasons
-        self.career_average.fumbles /= num_seasons
-        self.career_average.fumbles_lost /= num_seasons
-        self.career_average.fantasy_points /= num_seasons
-        self.career_average.fantasy_ppr /= num_seasons
-        self.career_average.fantasy_vbd /= num_seasons
+        self.season_average.games /= num_seasons
+        self.season_average.games_started /= num_seasons
+        self.season_average.passing_completions /= num_seasons
+        self.season_average.passing_attempts /= num_seasons
+        self.season_average.passing_yards /= num_seasons
+        self.season_average.passing_touchdowns /= num_seasons
+        self.season_average.passing_interceptions /= num_seasons
+        self.season_average.rushing_attempts /= num_seasons
+        self.season_average.rushing_yards /= num_seasons
+        self.season_average.rushing_touchdowns /= num_seasons
+        self.season_average.receiving_targets /= num_seasons
+        self.season_average.receiving_receptions /= num_seasons
+        self.season_average.receiving_yards /= num_seasons
+        self.season_average.receiving_td /= num_seasons
+        self.season_average.fumbles /= num_seasons
+        self.season_average.fumbles_lost /= num_seasons
+        self.season_average.fantasy_points /= num_seasons
+        self.season_average.fantasy_ppr /= num_seasons
+        self.season_average.fantasy_vbd /= num_seasons
 
-        return self.career_average
+        return self.season_average
 
 
     def get_average_per_game_stats(self):
