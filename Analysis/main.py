@@ -50,9 +50,25 @@ def get_by_player_example():
     player_career = construct_career("Patrick Mahomes", seasons)
     
     # finds the best season (by fantasy pts) of a player's career
-    best_season = player_career.get_best_season(player_career.seasons)
+    best_season = player_career.get_best_season()
     print()
     print(best_season)
+    print()
+
+    career_stats = player_career.get_career_stats()
+    print()
+    print(career_stats)
+    print()
+
+    # TODO: test the following:
+    season_averages = player_career.get_average_season_stats()
+    print()
+    print(season_averages)
+    print()
+    
+    game_averages = player_career.get_average_per_game_stats()
+    print()
+    print(game_averages)
     print()
 
 
