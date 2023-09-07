@@ -49,3 +49,9 @@ class Player_Season:
                f"Fantasy VBD: {self.fantasy_vbd}\n" \
                f"Fantasy Position Rank: {self.fantasy_position_rank}\n" \
                f"Fantasy Overall Rank: {self.fantasy_overall_rank}\n"
+
+
+    # TODO: double check this is valid
+    def __lt__(self, other) -> bool:
+        """"""
+        return self.fantasy_points < other.fantasy_points

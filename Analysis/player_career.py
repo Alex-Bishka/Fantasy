@@ -62,6 +62,7 @@ class Player_Career:
     def get_average_season_stats(self):
         """"""
         self.season_average = self.career_stats
+        self.season_average.year = "Season Average"
         num_seasons = len(self.seasons)
 
         self.season_average.games /= num_seasons
@@ -90,6 +91,7 @@ class Player_Career:
     def get_average_per_game_stats(self):
         """"""
         self.game_average = self.career_stats
+        self.game_average.year = "Game Average"
         num_games = self.career_stats.games
 
         self.game_average.games /= num_games

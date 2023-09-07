@@ -1,5 +1,23 @@
 from utils import grab_data, construct_career
 
+def top_players_by_position(position: str = "QB", top_n: int = 12) -> None:
+    """
+    Grabbing the top_n players from a position
+    """
+    seasons = grab_data(by_position=True, by_player=False)
+    season_2022 = seasons[-1]
+
+    year = season_2022[0]
+    season_data = season_2022[1]
+    players = season_data[position]
+    
+    return players[:top_n]
+
+if True:
+    top_qbs_22 = top_players_by_position(position="QB", top_n=12)
+    print(top_qbs_22)
+
+
 def get_by_position_example():
     """
     An example of how to grab data from each season by player position.
@@ -60,7 +78,7 @@ def get_by_player_example():
     print(career_stats)
     print()
 
-    # TODO: test the following:
+    # TODO: test the following - and adjust weird stats
     season_averages = player_career.get_average_season_stats()
     print()
     print(season_averages)
@@ -72,5 +90,5 @@ def get_by_player_example():
     print()
 
 
-if True:
+if False:
     get_by_player_example()
