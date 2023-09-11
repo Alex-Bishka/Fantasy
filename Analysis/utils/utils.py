@@ -1,6 +1,6 @@
 import csv, re
-from player_season import Player_Season
-from player_career import Player_Career
+from models.player_season import Player_Season
+from models.player_career import Player_Career
 
 def generate_season_from_csv(csv_file_path, by_position=False, by_player=False):
     """"""
