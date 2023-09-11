@@ -37,9 +37,9 @@ def grab_top_n_players(position_group: List[Player_Season], show_tier_2: bool = 
 
 
 def graph_stat(position_group: List[Player_Season], stat_to_show: str, break_one: int = None,
-               break_two: int = None, break_three: int = None, top_n: int = 0,
-               show_tier_1: bool = False, show_tier_2: bool = False,
-               show_tier_3: bool = False) -> None:
+            break_two: int = None, break_three: int = None, top_n: int = 0,
+            show_tier_1: bool = False, show_tier_2: bool = False, show_tier_3: bool = False,
+            save_fig: bool = True, save_suffix: str = "") -> None:
     """
     """
     position = position_group[0].position
@@ -125,9 +125,23 @@ def graph_stat(position_group: List[Player_Season], stat_to_show: str, break_one
                 
             plt.plot(i, s, 'o-', color=color, markersize=12, label=label)
 
+    # label axes and title
     plt.xlabel(X_AXIS_LABEL, fontsize=20) 
     plt.ylabel(y_axis_label, fontsize=20)
     plt.title(f"{year} Top {len(data)} {position}s by {stat_to_show}", fontsize=24)
 
+    # adjust the layout to fit everything
     plt.tight_layout()
+
+    # save the image
+    if save_fig:
+        save_path = f"./images/{position}/{stat_to_show}"
+
+        if save_suffix:
+            save_path += f"-{save_suffix}"
+
+        save_path += ".png"
+        plt.savefig(save_path, format="png", bbox_inches="tight")
+
+    # display the image
     plt.show()
