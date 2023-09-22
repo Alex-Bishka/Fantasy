@@ -1,0 +1,140 @@
+/* general css */
+body {
+    margin: auto;
+}
+
+h1 {
+    font-size: 34px;
+}
+
+h2 {
+    margin-bottom: auto;
+    margin-top: 15px;
+    font-size: 28px;
+}
+
+p {
+    font-size: 22px;
+}
+
+/* home/header specific styling */
+.title-container {
+    padding-top: 45px;
+    background-color: grey;
+}
+
+.content-container {
+    display: flex;
+    flex-direction: column;
+    padding-right: 20px;
+    padding-left: 20px;
+    margin-right: 10vw;
+    margin-left: 10vw;
+}
+
+.home-title {
+    padding-right: 25px;
+    padding-left: 20px;
+    padding-bottom: 5px;
+    margin-top: auto;
+    margin-right: 10vw;
+    margin-left: 10vw;
+}
+
+/* Button to open the menu */
+.menu-button {
+    font-size: 38px;
+    right: 0;
+    top: 0;
+    margin-top: 40px;
+    margin-right: 10vw;
+    cursor: pointer;
+    z-index: 2;
+    position: fixed;
+    background-color: grey;
+    border: 0;
+}
+
+/* side menu styling */
+.side-menu {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    top: 0;
+    right: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+    z-index: 1;
+}
+
+.side-menu a {
+    padding: 10px 15px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+}
+
+.side-menu a:hover {
+    color: #f1f1f1;
+}
+
+.side-menu .close-button {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+
+
+/* blog list styling */
+.scroll-div {
+    max-height: 80vh;
+    overflow-y: auto;
+    padding-right: 15px;
+}
+
+.blog-item {
+    padding: 16px;
+    border: 1px solid #ccc;
+    margin: 8px;
+    cursor: pointer;
+    /* Change cursor to pointer to indicate clickability */
+}
+
+/* Add hover effect */
+.blog-item:hover {
+    background-color: #f2f2f2;
+}
+
+.blog-p-tag {
+    margin-top: auto;
+}
+
+.caption {
+    margin-top: auto;
+    font-size: 18px;
+    text-align: center;
+}
+
+.blog-img-container {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.multi-img {
+    display: inline-block;
+    margin-right: 10px;
+    width: 530px;  /* or any value you prefer */
+    height: auto;  /* maintain aspect ratio */
+  }
+
+.bullet-list {
+    margin-top: auto;
+    font-size: 20px;
+}
+
