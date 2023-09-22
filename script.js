@@ -1,10 +1,3 @@
-// Check if the page is served from GitHub Pages
-if (window.location.hostname.includes('github.io')) {
-    document.write('<base href="/Fantasy/" />');
-} else {
-    document.write('<base href="/" />');
-}
-
 // removing existing event handlers on the menuBtn
 $(document).off('click', '#menuBtn').on('click', '#menuBtn', function () {
 });
@@ -29,14 +22,14 @@ $(document).on('click', '#closeBtn', function () {
 // rediction function for specifc blog
 function redirectToBlog(blogName) {
     // Redirect to the specific blog page
-    window.location.href = "/Blogs/" + blogName;
+    window.location.href = "/Fantasy/Blogs/" + blogName;
 }
 
 // Intercept anchor tag clicks to handle /Blogs specially
 document.addEventListener('click', function (event) {
     if (event.target.tagName === 'A') {
         const href = event.target.getAttribute('href');
-        if (href === '/Blogs') {
+        if (href === '/Fantasy/Blogs') {
             event.preventDefault(); // Prevent the default action
             redirectToBlogs(); // Call your custom function
         }
@@ -46,5 +39,5 @@ document.addEventListener('click', function (event) {
 // Custom function to handle /Blogs
 function redirectToBlogs() {
     // Your custom logic here, for example:
-    window.location.href = "/blogs.html"; // Navigate to blog.html
+    window.location.href = "/Fantasy/Blogs.html"; // Navigate to blog.html
 }
