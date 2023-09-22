@@ -1,0 +1,575 @@
+<link rel="stylesheet" href="../styles.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="../script.js" defer></script>
+
+<body>
+  <div id="common-header"></div>
+  <div class="content-container">
+    <div class="scroll-div">
+
+      <h1>QBs in 2022</h1>
+
+      <h2>TL;DR</h2>
+      <p class="blog-p-tag">
+        <ul class="bullet-list">
+          <li>Fields scares me: a dominant rusher, but his passing is a huge outlier</li>
+          <li>Same for Jones, but to a lesser degree</li>
+          <li>Jackson and Murray present interesting buy options to me, the latter more so in dynasty</li>
+          <li>Hurts is my QB1 overall for this year</li>
+          <li>Herbert and TLaw are ones to keep an eye on, like Jackson and Murray</li>
+          <li>No obvious candidate to break up the big three or four</li>
+          <li>Mahomes is nuts nuts</li>
+        </ul>
+      </p>
+      <p class="blog-p-tag">
+        Read on to see more in depth analysis on quarterback stats from last year, and what I think would yield a QB1
+        season going forward.
+      </p>
+
+      <h2>Overview</h2>
+      <p class="blog-p-tag">
+        The goal of this blog is going to be to try and recognize what makes a quarterback a QB1. The first set of blogs
+        will likely be focusing on this recognition component.
+        What makes a player likely to be in the top tier of their position group? To start, we'll be using data from
+        2022.
+      </p>
+
+      <p class="blog-p-tag">
+        After this set of blogs I'll probably transition into more predictive blogs that focus on using ML models
+        to determine whether or not a player can be in a certain tier of their position group.
+      </p>
+
+      <p class="blog-p-tag">
+        Also a couple of points to consider for the data I will be analyzing:
+        <ul class="bullet-list">
+          <li>I don't take into account anything related to two points conversions, partly due to
+            the randomness and small sample size but mostly because it was difficult to incorporate into the data I
+            fetched</li>
+          <li>The top 30 QBs I analyze are by the top 30 fantasy point totals, this is done for
+            simplicity and reusability of graphing code</li>
+        </ul>
+      </p>
+
+      <h2>Fantasy Points</h2>
+      <p class="blog-p-tag">
+        We want to find the tiers of quarterbacks and what value those tiers have.
+        So, let us start by looking at how quarterbacks scored by fantasy points last year.
+      </p>
+      <div class="blog-img-container">
+        <img src="../Analysis/images/QB/Total Fantasy Points.png">
+      </div>
+
+      <p class="blog-p-tag">
+        From this graph, we see a few things. First, there's a pretty big gap between Mahomes, Allen, Hurts, Burrow
+        and the rest. Within this big four Burrow is a bit lower, and we see a tier one emerge with Mahomes, Allen,
+        and Hurts.
+
+        <br /><br />
+
+        Additionally, there doesn't seem to be much of a difference between Geno Smith and Tom Brady. From Brady onward
+        it gets a little murky, but there are a few sub tiers. Let's go ahead and highlight some of these details on
+        the graph to make it easier to see some insights.
+      </p>
+      <div class="blog-img-container">
+        <img src="../Analysis/images/QB/Total Fantasy Points-v2.png">
+      </div>
+
+      <p class="blog-p-tag">
+        This clears things up a little more. We can see the gap between the top 4 and the rest of the QB1 tier is
+        pretty big, bigger than the difference between Burrow and Hurts. Taking away these four QBs, we can also
+        see that the difference between the rest of the best of the QBs isn't that big.
+
+        <br /><br />
+
+        One thing this graph shows pretty well is the variability in the QB2 pool, and how a high-end QB2 is still
+        a pretty big downgrade to a low-end QB1, but let's touch on this even more with out next graph.
+      </p>
+      <div class="blog-img-container">
+        <img src="../Analysis/images/QB/Total Fantasy Points-v3.png">
+      </div>
+
+
+      <p class="blog-p-tag">
+        <i>
+          Note that in the graph, our proxies for these average values are Daniel Jones (who had 289 points)
+          and Kyler Murray (who had 201 total points).
+        </i>
+
+        <br /><br />
+
+        The average total fantasy points of the best of the rest is 288.875 and the average total fantasy points
+        of the QB2 pool is 203.5. That's a difference of 85.375 points between a middling QB1 and an average QB2!
+        In other words, you're sacrificing about 5 points per game starting an average QB2 or the average of the
+        lower end of the QB1 spectrum.
+
+        <br /><br />
+
+        Now, while the difference from Burrow to the average middling QB1 is smaller at 62 points
+        (~3.64 points per game), the difference from the average middling QB1 to someone in the elite
+        tier of QBs (Mahomes, Allen, Hurst) is actually larger. Hurts had 378 total points last year,
+        which gives us a difference of 89.125 points (or 5.24 points per game).
+
+        <br /><br />
+
+        The elite tier offers such a crazy positional advantage, and it is a pattern that repeats
+        across other positions. So we can see that having quarterbacks in the elite tier is worth
+        paying extra, and having a quaterback in the first tier is a must, especially in super-flex.
+
+        <br /><br />
+
+        Let us continue our exploration of the numbers and see what happens when we take into account
+        injuries, i.e. let us see if anything changes when looking at points per game.
+      </p>
+      <div class="blog-img-container">
+        <img src="../Analysis/images/QB/Fantasy Points Per Game.png">
+      </div>
+
+      <p class="blog-p-tag">
+        Suddenly the picture starts to get a bit more murky as to who provides value. The elite tier
+        still is extremely valuable, but this tier itself gets much more interesting. Hurts jumps
+        to the top of the tier with an incredible 25.2 points per game, whereas Mahomes and Allen
+        have 24.47 and 24.75 points per game, respectively.
+
+        <br /><br />
+
+        Additionally, guys like Lamar Jackson and Kyler Murray appear to have much more value
+        than on first glance. The two sit at QB5 and QB6 with 19.66 and 18.27 points per game,
+        respectively.
+
+        <br /><br />
+
+        Moreover, the picture gets even more muddled with more quarterbacks in tier two of total points
+        - Tua and Dak - leapfrogging quarterbacks in tier one - Brady and Herbert.
+
+        <br /><br />
+
+        Looking back at the elites, our bridge between this elite tier and the best of the rest,
+        Burrow, sits at 21.93 points per game, whereas Fields - who is top of the best of the
+        rest - sits at 19.73 points per game.
+
+        <br /><br />
+
+        I would take away a couple of things from this. The first is that positional advantage
+        really does make a difference. Having a guy in the elite tier is a huge advantage in
+        fantasy, especially if they can be acquired for at or below "market value", which feeds
+        into my strategy of trying to get value by going best player available.
+
+        <br /><br />
+
+        As a slight tangent, what do I mean by "market value". Well, let's say that Hurts is being
+        drafted as the QB3 in 2023 (which was frequently the case). Based on his points per game
+        numbers and his situation remaining largely unchanged (a good thing in this case), I would
+        expect him to perform similarly to his 2022 numbers. This means you could obtain the QB1
+        in fantasy for the price of QB3, and situations like this that present arbitrage are where
+        championships are won (and lost).
+
+        <br /><br />
+
+        The second takeaway is that injuries offer a great opportunity to grab players at
+        discounts. Dak, Tua, and Kyler all fit this bill (Kyler more so in dynasty). These
+        are all quarterbacks who can perform at or close to the QB 1 tier and can probably be
+        acquired for less than an average QB 1.
+
+        <br /><br />
+
+        Returning to the analysis, here's another representation of what we've seen so far:
+      </p>
+      <div class="blog-img-container">
+        <img src="../Analysis/images/QB/Total Fantasy Points-by-Fantasy Points Per Game.png">
+      </div>
+      <p class="blog-p-tag">
+        This kind of confirms to us those quarterbacks that might be sneaking under their radar for their value,
+        specifically players like
+        Hurts, Jackson, Murray, Tagovailoa, and Prescott - all them potentially undervalued as their total points from
+        2022 misrepresents
+        their capabilities.
+
+        <br /><br />
+
+        Before diving more into the stats of the top 30 quarterbacks from 2022, I do want to acknowledge that both
+        Herbert and Lawrence have
+        fallen under the radar in this analysis. These are two names that haven't really been mentioned so far, as they
+        don't stand out in
+        the graphs we've seen so far. However, I do feel both are great quarterbacks moving forward in fantasy, as they
+        should both
+        continue to improve.
+
+        <br /><br />
+
+        Lawrence should get even better with Ridley joining his wide receiver core this upcoming season and another
+        year of Doug Pederson's tutelage are things to consider.
+
+        <br /><br />
+
+        Herbert will be heading into this season fully healthy and with a fully healthy wide receiver core that added QJ
+        from the draft.
+        As a result, his situation should improve as well.
+
+        <br /><br />
+
+        Numbers are important, but context does matter!
+      </p>
+
+      <h2>Passing Yards</h2>
+      <p class="blog-p-tag">
+        Finally let's dive into our first stat that isn't just fantasy points. Let us start by examining passing yards
+        for these quarterbacks.
+      </p>
+      <div class="blog-img-container">
+        <img class="multi-img" src="../Analysis/images/QB/Total Passing Yards.png">
+        <img class="multi-img" src="../Analysis/images/QB/Total Fantasy Points-by-Total Passing Yards.png">
+      </div>
+      <p class="blog-p-tag">
+        <i>
+          Note, the yellow for that tier two of quarterbacks has been replaced by orange, as the yellow is really hard
+          to see on the graph
+          type of the right.
+        </i>
+
+        <br /><br />
+
+        A few interesting things pop out from these graphs.
+
+        <br /><br />
+
+        First, Fields' passing production is really bad. Sitting at 2242 yards, he is far
+        away from the rest of the QB1 pack, which bottoms out at 3701 yards, assuming we remove the two outliers from
+        the pack (Daniel Jones
+        being the other).
+
+        <br /><br />
+
+        This scared me in my dynasty league personally, and so I moved off of him and upgraded (I hope) to Trevor
+        Lawrence. I'm not sure that his numbers are sustainable - he reminds me of a lesser and more inbalanced version
+        of Lamar Jackson's
+        MVP season. We haven't seen Lamar recreate those numbers, granted he and the Ravens have had plenty of injuries
+        to deal with since then,
+        but Lamar has shown that he is a far better passer than Fields. Additionally, Fields has never had the talent
+        Lamar has had around
+        him, which makes it tough to be a believer, even as a Bears fan.
+
+        <br /><br />
+
+        I do have some hindsight now, given two weeks into the season, but it is starting to feel like this take on fearing Fields has been justified:
+      </p>
+      <div class="blog-img-container">
+        <iframe class="multi-img" style="height: 315;"
+          src="https://www.youtube.com/embed/FiiK21VzI_o?start=3436&end=3498" frameborder="0" allowfullscreen></iframe>
+        <iframe class="multi-img" style="height: 315;"
+          src="https://www.youtube.com/embed/EDSwzJwiXj8?start=5353&end=5412.5" frameborder="0"
+          allowfullscreen></iframe>
+      </div>
+      <p class="blog-p-tag">
+        Big shoutout to the <a href="https://www.youtube.com/@TheQBSchool/featured">QB School</a>, which is a great
+        YouTube channel by
+        JT O'Sullivan breaking down QB film.
+
+        <br /><br />
+
+        Now in addition to Fields, four other quarterbacks pop out to me as being a little too rushing dependent: Allen,
+        Hurts, Jones and
+        Jackson. Of these four, I'm not really worried about Hurts or Allen as they are still passing for great numbers,
+        with Hurts at 3701 yards and Allen at 4283 yards.
+
+        <br /><br />
+
+        However, I am worried about Daniel Jones. He did have 3205 yards, but I'm not sure the Giants offense can
+        support his growth.
+        Daboll is a great play caller, but it doesn't seem like they did enough to help him out in the passing game.
+        Waller is a big
+        question mark, and Saquon's health is one I would question -
+        <a href="https://www.nfl.com/news/giants-rb-saquon-barkley-considered-week-to-week-with-ankle-sprain">especially
+          now</a>
+        (again hindsight). Outside of that, there is some young talent, but it is largely unproven, which I believe
+        makes it tough to
+        be a Jones believer. I would avoid Jones, or sell high on him (if you can with his start) as I don't see him
+        improving much
+        as a passer, and I don't know if his rushing numbers are sustainable. All that being said, I am not nearly as
+        afraid of him
+        as I am of Fields, and I think you could justify him progressing under Daboll or being lucky with some injuries
+        around him.
+
+        <br /><br />
+
+        If we dive deeper into the data our concerns for Fields grow tremendously. Additionally, there are more concerns
+        for Jones and Jackson:
+      </p>
+
+      <div class="blog-img-container">
+        <img class="multi-img" src="../Analysis/images/QB/Passing Yards Per Game.png">
+        <img class="multi-img" src="../Analysis/images/QB/Fantasy Points Per Game-by-Passing Yards Per Game.png">
+      </div>
+      <p class="blog-p-tag">
+        While Jackson did break into the top ten quarterbacks by points per game, his passing yards per game last season
+        leave something
+        to be desired, with only 186.83 yards per game. Now, the encouraging thing is that this season he has the best
+        wide receiver core
+        he has ever had (I really love Zay Flowers!), and the offense is supposedly changing to suit his strengths.
+        We'll see how things
+        go, but I am more optimistic about him than Jones and Fields.
+
+        <br /><br />
+
+        I think these two graphs really do showcase the concerns about Fields' passing. Even with DJ Moore, a full
+        season of Claypool,
+        and line upgrades, can he really improve to 200 yards a game passing? I'm skeptical... This makes it really
+        tough to believe in
+        him long term. I think it is far more believable that both Jones and Jackson improve their passing numbers and
+        thus become more
+        sustainable quarterbacks, long term, compared to Fields.
+
+        <br /><br />
+
+        On the flip side, I think these charts show how insane Mahomes is. His passing numbers are off the charts, and
+        that is
+        what you love to see for sustainable, long term, quarterback play.
+
+        <br /><br />
+
+        Additionally, I think this showcases that
+        Herbert
+        is a strong candidate to return the the top five quarterbacks in fantasy. Even with the injuries to him and the
+        rest of
+        his offense he was still putting up close to 280 yards a game (278.76 yards per game to be precise).
+        This is only bested by Burrow (279.68) and Mahomes (308.82).
+      </p>
+
+      <h2>Rushing Yards</h2>
+      <p class="blog-p-tag">
+        Yes, we just complained about some quarterbacks being waaaayy too dependent on their rushing abilities, but that
+        doesn't mean that
+        rushing isn't an important part of the modern quarterback's arsenal. Rushing still is an important part of a
+        quarterback's game and it
+        is worth analyzing, it just shouldn't be the main way a quarterback gets their points as it isn't sustainable
+        (see shelf life of
+        running backs, injuries to rushing dominant quarterbacks, and the numbers behind the previous elite
+        quarterbacks).
+      </p>
+      <div class="blog-img-container">
+        <img class="multi-img" src="../Analysis/images/QB/Total Rushing Yards.png">
+        <img class="multi-img" src="../Analysis/images/QB/Total Fantasy Points-by-Total Rushing Yards.png">
+      </div>
+      <div class="blog-img-container">
+        <img class="multi-img" src="../Analysis/images/QB/Rushing Yards Per Game.png">
+        <img class="multi-img" src="../Analysis/images/QB/Fantasy Points Per Game-by-Rushing Yards Per Game.png">
+      </div>
+      <p class="blog-p-tag">
+        I'm throwing a lot at you here, but my main takeway from this is how impressive of a rusher Fields is.
+        He is absolutely <b>ELITE</b>, with Jackson being the only real one 'close' to him last year. For those
+        who are high on Fields, this is what excites you! His rushing capabilites give him a very high ceiling,
+        but the big question remains: can he improve as a passer to jump into the top caliber of fantasy quarterbacks
+        and develop a more sustainable game? Again, I'm very skeptical about that happening.
+      </p>
+      <p class="blog-p-tag">
+        This probably offers a lot more optimism for Jackson, as from these charts Lamar's rushing numbers are also very
+        impressive
+        - just not quite Fields insanity levels - and he has shown he can be a very good passer.
+      </p>
+      <p class="blog-p-tag">
+        Outside of those two, this kinda confirms what we saw when comparing fantasy points versus passing yards, where
+        we have these five
+        quarterbacks who are all really good at rushing, but only two had a great passing base: Hurts and Allen. That
+        being said,
+        Jackson has shown to have a higher passing base than both Jones and Fields, so I would be most optimistic about
+        him out of the these
+        three, to the point where I think he could be had for really good value; however, it should be noted his value
+        is hard to gauge as he was going as high as QB4 in drafts
+        and as low as around QB8.
+      </p>
+      <p class="blog-p-tag">
+        Outside of these five rushing heavy quarterbacks, Murray stands out to me as a brigde between the more
+        traditional pocket passers and these rushing monsters. He has had big rushing seasons in the past, but Murray
+        has been pretty balanced as a quarterback (he's always had above 3700 passing yards bar his 2022 season). The
+        obvious
+        concern about him is how he will recover from his injury and if the Cards will move on from him or address the
+        talent
+        deficit around him. Either way, I'd be buying in dynasty as he's valued around QB18 on KTC as of 9/22/23 and I
+        think he has at least
+        a few more QB1 seasons in him.
+      </p>
+      <p class="blog-p-tag">
+        One last thing to note, if you can get yourself a quarterback who can rush for 600 plus yards a season, they don't
+        have
+        to be an elite passer to be a QB1. If they are an elite passer, then you have a gem. The NFL is moving
+        towards
+        mobile quarterbacks, finding those guys who can rush for big numbers but still have great arms and processing
+        power will
+        win you championships.
+      </p>
+
+      <h2>Total Yards</h2>
+      <p class="blog-p-tag">
+        For the sake of being comprehensive, let us take a look at the total yards picture:
+      </p>
+      <div class="blog-img-container">
+        <img class="multi-img" src="../Analysis/images/QB/Total Fantasy Points-by-Total Yards (QB).png">
+        <img class="multi-img" src="../Analysis/images/QB/Fantasy Points Per Game-by-Total Yards Per Game (QB).png">
+      </div>
+      <p class="blog-p-tag">
+        From this we see four quarterbacks really standout: Mahomes, Allen, Hurts, and Burrow. Hurts and Burrow are
+        barely
+        under the 300 yards per game marker (297.4 and 295.75, respectively), while Mahomes and Allen obliterate the
+        marker
+        (329.88 and 315.31, respectively). This, to me, once again shows how dominant Mahomes is, but it also highlights
+        the gap
+        between these four - with Burrow really being a bridge between the big three and the other quarterbacks - and
+        the rest
+        of the quarterbacks.
+      </p>
+      <p class="blog-p-tag">
+        Outside of the incredible numbers from those guys, both Herbert and Tua impress me here, as they seem to
+        separate from
+        the rest of the pack (of active quarterbacks). Herbert had 287.41 total yards per game. Tua had 278.30 total
+        yards per game.
+      </p>
+      <p class="blog-p-tag">
+        From the negatives to point out, Murray falls a bit back down to earth for me on these graphs, as he sits pretty
+        firmly in the
+        middle of that large pack of potential QB1 caliber players, on a per game basis. He doesn't solidify his
+        candidacy of being
+        the quarterback from the best of the rest to jump into the elite tier, or at least bridge the gap.
+      </p>
+      <p class="blog-p-tag">
+        I think Fields still sticks out like a sore thumb with his 225.66
+        total yards per game. I get that rushing yards are more valuable than passing yards, but the concerns I've
+        iterated throughout
+        this analysis remain for me.
+      </p>
+      <p class="blog-p-tag">
+        In contrast, Jackson and Jones are much closer than Fields is to that pack of potential QB1 talent, which is why
+        I'm
+        less concerned about them: they can put up the total yardage you want to see, even if they rely more on their
+        legs compared to
+        other quarterbacks.
+      </p>
+
+      <h2>Other Passing Stats</h2>
+      <p class="blog-p-tag">
+        Let us move on to examining some other relevant passing statistics, such as completion percentage, completions and
+        passing attempts.
+      </p>
+      <div class="blog-img-container">
+        <img class="multi-img" src="../Analysis/images/QB/Completion Percentage.png">
+        <img class="multi-img" src="../Analysis/images/QB/Total Passing Completions-by-Total Passing Attempts.png">
+      </div>
+      <p class="blog-p-tag">
+        The top three quarterbacks for completion percentage separate themselves from the rest of the pack, and form the
+        only really obvious tier for me.
+        For those who believe in Herbert, this is pretty good to see, as the kid has 68.2 completion percentage. Burrow
+        is at 68.31% and, surprisingly Geno
+        is number one at 69.75%.
+      </p>
+      <p class="blog-p-tag">
+        Outside of those three, it seems having a completion percentage of around 65% or higher is a good indicator of
+        being a QB1. Additionally, if you pass more
+        than 500 times in a season you will also likely be a QB1. This seems to be a common lesson amongst position
+        groups: volume good, efficiency good, both excellent!
+      </p>
+      <p class="blog-p-tag">
+        Before moving on, I do want to mention that I was surprised that Josh Allen had such a low completion
+        percentage: 63.3%. I guess his high volume and legs make up
+        for his lack of accuracy.
+      </p>
+      <p class="blog-p-tag">
+        Lastly, and I feel like a broken record here, Fields sticks out like a sore thumb again, and not for the best
+        reasons. His completion percentage is almost dead last
+        at 60.37%. <b>Yikes!</b>
+      </p>
+
+      <div class="blog-img-container">
+        <img src="../Analysis/images/QB/Passing Attempts Per Game.png">
+      </div>
+      <p class="blog-p-tag">
+        Looking more into attempts per game seems to hammer home the point that volume helps. 29.5 attempts per game
+        pretty much guarantees you to be a QB1 or QB2. Fields worries me again,
+        with only 21.2 attempts per game.
+      </p>
+
+      <div class="blog-img-container">
+        <img src="../Analysis/images/QB/Passing Completions Per Game.png">
+      </div>
+      <p class="blog-p-tag">
+        19.81 completions per game is the threshold for being in those QB1 and QB2 tier. This somewhat adds up with out
+        attempts per game and completion percentage findings as 19.81 completions
+        on 29.5 attempts yields a completion percentage of 67.15%, which would put you in decent company, but not
+        necessarily guarantee QB1 or QB2 status.
+      </p>
+
+      <div class="blog-img-container" style="margin-bottom: auto;">
+        <img src="../Analysis/images/QB/Completion Percentage-v2.png">
+      </div>
+      <p class="caption">
+        <i>The thershold of a 67% completion percentage. It's a mixed bag for what tier you are.</i>
+      </p>
+
+      <h2>Touchdowns</h2>
+      <p class="blog-p-tag">
+        Before concluding our analysis, let us go ahead and take a look at touchdowns.
+      </p>
+      <div class="blog-img-container">
+        <img class="multi-img" src="../Analysis/images/QB/Total Touchdowns (Qb)-by-Total Passing Touchdowns.png">
+        <img class="multi-img" src="../Analysis/images/QB/Total Touchdowns (Qb)-by-Total Rushing Touchdowns.png">
+      </div>
+      <p class="blog-p-tag">
+        It seems that a QB1 does need to have about 25 total touchdowns, of which most tend to be of the passing variety
+        (unless you
+        are a one Mr. Fields).
+      </p>
+      <p class="blog-p-tag">
+        Outside of that, it seems that the truly elite get 35+ total touchdowns a year, really 40+ (if we ignore Hurts).
+      </p>
+
+      <p class="blog-p-tag">
+        Hurts'
+        rushing touchdowns are impressive at 13. I'm not sure whether he could increase that number or not this year,
+        given how
+        deadly that Eagles offense is, and the fact that he is probably their most dangerous goaline threat (via the
+        pass or run).
+      </p>
+
+      <h2>Summary</h2>
+      <p class="blog-p-tag">
+        If you somehow made it this far, here are my final thoughts:
+      <ul class="bullet-list">
+        <li>Fields scares me a lot this year and in the future - he is an elite rusher, but his passing game really
+          scares me</li>
+        <li>This applies somewhat to Danny Dimes as well, but to a lesser degree as his passing floor seems to be much
+          higher</li>
+        <li>Jackson and Murray are both intriguing candidates to jump into that elite tier of quarterbacks, with the
+          caveat of dynasty format for Murray</li>
+        <li>Hurts is my QB1 overall for this year, as I expect him to play more (more competitive games) and take
+          another step</li>
+        <li>Herbert and TLaw are also strong candidates in my eyes to take a jump and either enter the elite tier or be
+          a bridge (like Burrow)</li>
+        <li>All that being said I am not sure there is a sure fire quarterback who breaks up the trio of
+          Mahomes/Allen/Hurts or even surpasses Burrow, especially from a dynasty view</li>
+        <li>Mahomes is nuts nuts</li>
+      </ul>
+      </p>
+
+      <p class="blog-p-tag">
+        And the standards to be a QB1 are something like:
+      <ul class="bullet-list">
+        <li>4000 total yards (of that about 3500 passing)</li>
+        <li>About 25 passing touchdowns, but 25 total touchdowns also works</li>
+        <li>Completion percentage doesn't seem to matter as much as a success indicator, but higher than 66% is good
+        </li>
+        <li>Want your guy to complete at least 22 passes a game</li>
+        <li>Want your guy to attempt at least 30 passes a game, but 35 passes a game is *chef's kiss*</li>
+      </ul>
+      </p>
+
+      <p class="blog-p-tag">
+        That brings this first analysis to a wrap! I hope y'all enjoyed it and I look forward to joining you on the next
+        one!
+      </p>
+
+      <p class="blog-p-tag">
+        Cheers, <br />
+        Alex
+      </p>
+    </div>
+</body>
+<script>
+  $("#common-header").load("../header.html");
+</script>
