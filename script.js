@@ -1,27 +1,3 @@
-// Check if the page is served from GitHub Pages
-// let base = document.createElement('base');
-// if (window.location.hostname.includes('github.io')) {
-//     base.setAttribute('href', '/Fantasy/');
-// } else {
-//     base.setAttribute('href', '/');
-// }
-// document.head.appendChild(base);
-
-document.addEventListener("DOMContentLoaded", function() {
-    // Check if the website is hosted on GitHub Pages
-    if (window.location.hostname.includes("github.io")) {
-        // Get all the anchor tags within the side menu
-        var menuLinks = document.querySelectorAll("#sideMenu a[data-href]");
-        
-        menuLinks.forEach(function(link) {
-            var path = link.getAttribute("data-href");
-            link.href = "/Fantasy" + path;
-        });
-    }
-});
-
-
-
 // removing existing event handlers on the menuBtn
 $(document).off('click', '#menuBtn').on('click', '#menuBtn', function () {
 });
@@ -46,14 +22,14 @@ $(document).on('click', '#closeBtn', function () {
 // rediction function for specifc blog
 function redirectToBlog(blogName) {
     // Redirect to the specific blog page
-    window.location.href = "/Blogs/" + blogName;
+    window.location.href = "/Fantasy/Blogs/" + blogName;
 }
 
 // Intercept anchor tag clicks to handle /Blogs specially
 document.addEventListener('click', function (event) {
     if (event.target.tagName === 'A') {
         const href = event.target.getAttribute('href');
-        if (href === '/Blogs') {
+        if (href === '/Fantasy/Blogs') {
             event.preventDefault(); // Prevent the default action
             redirectToBlogs(); // Call your custom function
         }
@@ -63,5 +39,5 @@ document.addEventListener('click', function (event) {
 // Custom function to handle /Blogs
 function redirectToBlogs() {
     // Your custom logic here, for example:
-    window.location.href = "/Blogs.html"; // Navigate to blog.html
+    window.location.href = "/Fantasy/Blogs.html"; // Navigate to blog.html
 }
