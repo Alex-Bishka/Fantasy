@@ -46,5 +46,5 @@ document.addEventListener('click', function (event) {
 // Custom function to handle /Blogs
 function redirectToBlogs() {
     // Your custom logic here, for example:
-    window.location.href = "/blogs.html"; // Navigate to blog.html
+    window.location.href = "/Blogs.html"; // Navigate to blog.html
 }
