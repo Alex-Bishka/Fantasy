@@ -1,11 +1,25 @@
 // Check if the page is served from GitHub Pages
-let base = document.createElement('base');
-if (window.location.hostname.includes('github.io')) {
-    base.setAttribute('href', '/Fantasy/');
-} else {
-    base.setAttribute('href', '/');
-}
-document.head.appendChild(base);
+// let base = document.createElement('base');
+// if (window.location.hostname.includes('github.io')) {
+//     base.setAttribute('href', '/Fantasy/');
+// } else {
+//     base.setAttribute('href', '/');
+// }
+// document.head.appendChild(base);
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Check if the website is hosted on GitHub Pages
+    if (window.location.hostname.includes("github.io")) {
+        // Get all the anchor tags within the side menu
+        var menuLinks = document.querySelectorAll("#sideMenu a[data-href]");
+        
+        menuLinks.forEach(function(link) {
+            var path = link.getAttribute("data-href");
+            link.href = "/Fantasy" + path;
+        });
+    }
+});
+
 
 
 // removing existing event handlers on the menuBtn
