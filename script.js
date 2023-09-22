@@ -1,9 +1,12 @@
 // Check if the page is served from GitHub Pages
+let base = document.createElement('base');
 if (window.location.hostname.includes('github.io')) {
-    document.write('<base href="/Fantasy/" />');
+    base.setAttribute('href', '/Fantasy/');
 } else {
-    document.write('<base href="/" />');
+    base.setAttribute('href', '/');
 }
+document.head.appendChild(base);
+
 
 // removing existing event handlers on the menuBtn
 $(document).off('click', '#menuBtn').on('click', '#menuBtn', function () {
