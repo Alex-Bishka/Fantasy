@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 from typing import List, Tuple, Union
 from models.player_season import Player_Season
+from adjustText import adjust_text
+
 
 # constants for text positioning on vertical and horizontal lines
 FACTOR_ABOVE_HORIZONTAL = 0.008173076923076924
@@ -10,7 +12,6 @@ FACTOR_LEFT_VERTICAL = 0.015625
 FIGSIZE = (12, 8)
 ROTATION = 45
 MARKERSIZE = 12
-SCATTER_MARKERSIZE = 24
 
 # title constants
 X_AXIS_LABEL = "Players"
@@ -28,11 +29,11 @@ def grab_top_n_players(position_group: List[Player_Season], show_tier_2: bool = 
     names = [p.player_name for p in position_group]
 
     # setting each name per tier
-    highlight_names_tier_1 = names[-12:]
+    highlight_names_tier_1 = names[:12]
     if show_tier_2:
-        highlight_names_tier_2 = names[-24:-12]
+        highlight_names_tier_2 = names[12:24]
     if show_tier_3:
-        highlight_names_tier_3 = names[-36:-12]
+        highlight_names_tier_3 = names[24:36]
 
     return highlight_names_tier_1, highlight_names_tier_2, highlight_names_tier_3
 
@@ -90,6 +91,14 @@ def set_data(position_group: List[Player_Season], stat_to_show: str) -> List[Tup
         data = [(p.games_started) for p in position_group]
     elif stat_to_show == "Fantasy Points Per Game":
         data = [(p.fantasy_points / p.games, p.player_name) for p in position_group]
+    elif stat_to_show == "Total Yards (QB)":
+        data = [(p.passing_yards + p.rushing_yards, p.player_name) for p in position_group]
+    elif stat_to_show == "Total Yards Per Game (QB)":
+        data = [((p.passing_yards + p.rushing_yards) / p.games, p.player_name) for p in position_group]
+    elif stat_to_show == "Total Touchdowns (QB)":
+        data = [(p.passing_touchdowns + p.rushing_touchdowns, p.player_name) for p in position_group]
+    elif stat_to_show == "Total Touchdowns Per Game (QB)":
+        data = [((p.passing_touchdowns + p.rushing_touchdowns) / p.games + p.rushing_touchdowns, p.player_name) for p in position_group]
     elif stat_to_show == "Total Passing Yards":
         data = [(p.passing_yards, p.player_name) for p in position_group]
     elif stat_to_show == "Passing Yards Per Game":
@@ -102,6 +111,8 @@ def set_data(position_group: List[Player_Season], stat_to_show: str) -> List[Tup
         data = [(p.passing_attempts, p.player_name) for p in position_group]
     elif stat_to_show == "Passing Attempts Per Game":
         data = [(p.passing_attempts / p.games, p.player_name) for p in position_group]
+    elif stat_to_show == "Completion Percentage":
+        data = [(p.passing_completions / p.passing_attempts, p.player_name) for p in position_group]
     elif stat_to_show == "Total Passing Touchdowns":
         data = [(p.passing_touchdowns, p.player_name) for p in position_group]
     elif stat_to_show == "Passing Touchdowns Per Game":
@@ -120,6 +131,10 @@ def set_data(position_group: List[Player_Season], stat_to_show: str) -> List[Tup
         data = [(p.rushing_y_per_attempt, p.player_name) for p in position_group]
     elif stat_to_show == "Total Rushing Touchdowns":
         data = [(p.rushing_touchdowns, p.player_name) for p in position_group]
+    elif stat_to_show == "Total Touchdowns (Qb)":
+        data = [(p.rushing_touchdowns + p.passing_touchdowns, p.player_name) for p in position_group]
+    elif stat_to_show == "Touchdowns Per Game (Qb)":
+        data = [((p.rushing_touchdowns + p.passing_touchdowns) / p.games, p.player_name) for p in position_group]
     elif stat_to_show == "Total Receiving Targets":
         data = [(p.receiving_targets, p.player_name) for p in position_group]
     elif stat_to_show == "Targets Per Game":
@@ -157,15 +172,18 @@ def set_data(position_group: List[Player_Season], stat_to_show: str) -> List[Tup
 
 
 def graph_stat_by_stat(position_group: List[Player_Season], primary_stat: str, secondary_stat: str, 
-        names: List[str] = [], vertical_name_pos: int = 0, horizontal_name_pos: int = -0.5,
-        break_one: int = None, break_two: int = None, break_three: int = None, top_n: int = 0,
-        show_tier_1: bool = False, show_tier_2: bool = False, show_tier_3: bool = False,
-        save_fig: bool = True, save_suffix: str = ""
+        show_tier_1: bool = False, show_tier_2: bool = False, show_tier_3: bool = False, abbrev: bool = False,
+        save_fig: bool = True, save_suffix: str = "", time_lim: float = 0.5, dist_threshold: float = 0.1,
+        top_n: int = 0, fontsize: int = 12, markersize: float = 18
     ) -> None:
     """
     TODO: incorporate top n value
     TODO: lines need differnt philosophy on this
     """
+    # top x postion players by fantasy points to graph
+    if top_n != 0:
+        position_group = position_group[:top_n]
+
     position = position_group[0].position
     year = position_group[0].year
     
@@ -196,15 +214,16 @@ def graph_stat_by_stat(position_group: List[Player_Season], primary_stat: str, s
     if show_tier_1:
         tier_1_list, tier_2_list, tier_3_list = grab_top_n_players(position_group=position_group,
                                                     show_tier_2=show_tier_2, show_tier_3=show_tier_3)
-    print(tier_1_list)
 
+    texts = []
+    original_positions = {}
     for (name, x, y) in zip(labels, x_axis_data, y_axis_data):
         if show_tier_1:
             if name in tier_1_list:
                 color = 'green'
                 label = f'{position} 1' if f'{position} 1' not in plt.gca().get_legend_handles_labels()[1] else ""
             elif name in tier_2_list:
-                color = 'yellow'
+                color = 'orange'
                 label = f'{position} 2' if f'{position} 2' not in plt.gca().get_legend_handles_labels()[1] else ""
             elif name in tier_3_list:
                 color = 'red'
@@ -214,14 +233,32 @@ def graph_stat_by_stat(position_group: List[Player_Season], primary_stat: str, s
                 label = 'Others' if 'Others' not in plt.gca().get_legend_handles_labels()[1] else ""
                 
             # Plot the point with the determined color
-            plt.scatter(x, y, color=color, s=SCATTER_MARKERSIZE, label=label)
+            plt.scatter(x, y, color=color, s=markersize, label=label)
         else:
             # Plot the point without any special coloring
-            plt.scatter(x, y, color='blue', s=SCATTER_MARKERSIZE)
+            plt.scatter(x, y, color='blue', s=markersize)
         
-        # add annotation
-        plt.annotate(name, (x, y), textcoords="offset points", xytext=(0, 10), ha='center')
-        
+        # to abbreviate if graph is crowded
+        if abbrev:
+            name = " ".join(name.split(" ")[1:])
+
+        # Add annotation as text object and store in list
+        text = plt.text(x, y, name, ha='right', va='bottom', fontsize=fontsize)
+        texts.append(text)
+        original_positions[text] = (x, y)
+    
+    # Automatically adjust text labels to minimize overlaps
+    adjust_text(texts, time_lim=time_lim)
+
+    # add arrows to those that have been moved quite a bit
+    for text in texts:
+        old_x, old_y = original_positions[text]
+        new_x, new_y = text.get_position()
+        distance_moved = ((new_x - old_x)**2 + (new_y - old_y)**2)**(0.5)
+    
+        if distance_moved > dist_threshold:  # Replace with your own threshold
+            plt.annotate('', xy=(old_x, old_y), xytext=(new_x, new_y),
+                        arrowprops=dict(arrowstyle='->', color='red'))
 
     # label axes and title
     plt.xlabel(x_axis_label, fontsize=20) 
@@ -234,6 +271,9 @@ def graph_stat_by_stat(position_group: List[Player_Season], primary_stat: str, s
     # save the image
     if save_fig:
         save_path = f"./images/{position}/{primary_stat}-by-{secondary_stat}"
+
+        if top_n != 0:
+            save_path += f"-top-{top_n}"
 
         if save_suffix:
             save_path += f"-{save_suffix}"
@@ -317,7 +357,7 @@ def graph_stat_by_name(position_group: List[Player_Season], stat_to_show: str, b
                 color = 'green'
                 label = f'{position} 1' if f'{position} 1' not in plt.gca().get_legend_handles_labels()[1] else ""
             elif name in tier_2_list:
-                color = 'yellow'
+                color = 'orange'
                 label = f'{position} 2' if f'{position} 2' not in plt.gca().get_legend_handles_labels()[1] else ""
             elif name in tier_3_list:
                 color = 'red'
@@ -344,6 +384,7 @@ def graph_stat_by_name(position_group: List[Player_Season], stat_to_show: str, b
             save_path += f"-{save_suffix}"
 
         save_path += ".png"
+        print(f"\nsave path: '{save_path}'")
         plt.savefig(save_path, format="png", bbox_inches="tight")
 
     # display the image
