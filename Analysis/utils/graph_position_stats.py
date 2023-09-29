@@ -131,6 +131,8 @@ def set_data(position_group: List[Player_Season], stat_to_show: str) -> List[Tup
         data = [(p.rushing_y_per_attempt, p.player_name) for p in position_group]
     elif stat_to_show == "Total Rushing Touchdowns":
         data = [(p.rushing_touchdowns, p.player_name) for p in position_group]
+    elif stat_to_show == "Rushing Touchdowns Per Game":
+        data = [(p.rushing_touchdowns / p.games, p.player_name) for p in position_group]
     elif stat_to_show == "Total Touchdowns (Qb)":
         data = [(p.rushing_touchdowns + p.passing_touchdowns, p.player_name) for p in position_group]
     elif stat_to_show == "Touchdowns Per Game (Qb)":
@@ -151,12 +153,24 @@ def set_data(position_group: List[Player_Season], stat_to_show: str) -> List[Tup
         data = [(p.receiving_y_per_reception, p.player_name) for p in position_group]
     elif stat_to_show == "Total Receiving Touchdowns":
         data = [(p.receiving_td, p.player_name) for p in position_group]
+    elif stat_to_show == "Receiving Touchdowns Per Game":
+        data = [(p.receiving_td / p.games, p.player_name) for p in position_group]
+    elif stat_to_show == "Total Yards":
+        data = [(p.receiving_yards + p.rushing_yards, p.player_name) for p in position_group]
+    elif stat_to_show == "Total Yards Per Game":
+        data = [((p.receiving_yards + p.rushing_yards) / p.games, p.player_name) for p in position_group]
+    elif stat_to_show == "Total Touchdowns":
+        data = [(p.receiving_td + p.rushing_touchdowns, p.player_name) for p in position_group]
+    elif stat_to_show == "Total Touchdowns Per Game":
+        data = [((p.receiving_td + p.rushing_touchdowns) / p.games, p.player_name) for p in position_group]
     elif stat_to_show == "Fumbles":
         data = [(p.fumbles, p.player_name) for p in position_group]
     elif stat_to_show == "Fumbles Lost":
         data = [(p.fumbles_lost, p.player_name) for p in position_group]
-    elif stat_to_show == "Fantasy PPR":
+    elif stat_to_show == "Total Fantasy Points PPR":
         data = [(p.fantasy_ppr, p.player_name) for p in position_group]
+    elif stat_to_show == "Fantasy Points Per Game PPR":
+        data = [(p.fantasy_ppr / p.games, p.player_name) for p in position_group]
     elif stat_to_show == "Fantasy VBD":
         data = [(p.fantasy_vbd, p.player_name) for p in position_group]
     elif stat_to_show == "Fantasy Position Rank":
@@ -174,7 +188,7 @@ def set_data(position_group: List[Player_Season], stat_to_show: str) -> List[Tup
 def graph_stat_by_stat(position_group: List[Player_Season], primary_stat: str, secondary_stat: str, 
         show_tier_1: bool = False, show_tier_2: bool = False, show_tier_3: bool = False, abbrev: bool = False,
         save_fig: bool = True, save_suffix: str = "", time_lim: float = 0.5, dist_threshold: float = 0.1,
-        top_n: int = 0, fontsize: int = 12, markersize: float = 18
+        top_n: int = 0, fontsize: int = 12, markersize: float = 18, show_diagonal_line: bool = False
     ) -> None:
     """
     TODO: incorporate top n value
@@ -264,6 +278,10 @@ def graph_stat_by_stat(position_group: List[Player_Season], primary_stat: str, s
     plt.xlabel(x_axis_label, fontsize=20) 
     plt.ylabel(y_axis_label, fontsize=20)
     plt.title(f"{year} {position}s {primary_stat} by {secondary_stat}", fontsize=24)
+
+    # optional diagonal line
+    if show_diagonal_line:
+        plt.plot([min(x_axis_data), max(x_axis_data)], [min(y_axis_data), max(y_axis_data)], "k-", label='Diagonal Line')
 
     # adjust the layout to fit everything
     plt.tight_layout()
