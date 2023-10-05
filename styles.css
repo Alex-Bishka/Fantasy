@@ -1,4 +1,9 @@
 /* general css */
+html {
+    margin-bottom: 0px;
+    overflow-y: hidden;
+}
+
 body {
     margin: auto;
 }
@@ -93,7 +98,7 @@ p {
 
 /* blog list styling */
 .scroll-div {
-    max-height: 80vh;
+    max-height: 85vh;
     overflow-y: auto;
     padding-right: 15px;
 }
