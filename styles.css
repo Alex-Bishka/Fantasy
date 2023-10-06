@@ -9,13 +9,20 @@ body {
 }
 
 h1 {
-    font-size: 34px;
+    font-size: 38px;
+    margin-bottom: auto;
 }
 
 h2 {
     margin-bottom: auto;
     margin-top: 15px;
-    font-size: 28px;
+    font-size: 32px;
+}
+
+li {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    font-size: 22px;
 }
 
 p {
@@ -42,6 +49,7 @@ p {
     padding-left: 20px;
     padding-bottom: 5px;
     margin-top: auto;
+    margin-bottom: 0px;
     margin-right: 10vw;
     margin-left: 10vw;
 }
@@ -98,7 +106,7 @@ p {
 
 /* blog list styling */
 .scroll-div {
-    max-height: 85vh;
+    max-height: 88vh;
     overflow-y: auto;
     padding-right: 15px;
 }
