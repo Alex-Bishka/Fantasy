@@ -11,6 +11,7 @@ def get_stats_array(player: Player_Season, stats):
     """"""
     player_data = list()
     for stat in stats:
+        # receiving stats
         if stat == "Receiving Yards":
             player_data.append(float(player.receiving_yards))
         elif stat == "Receiving Yards Per Game":
@@ -27,6 +28,48 @@ def get_stats_array(player: Player_Season, stats):
             player_data.append(float(player.receiving_targets))
         elif stat == "Targets Per Game":
             player_data.append(float(player.receiving_targets / player.games))
+        
+        # rushing stats
+        elif stat == "Rushing Yards":
+            player_data.append(float(player.rushing_yards))
+        elif stat == "Rushing Yards Per Game":
+            player_data.append(float(player.rushing_yards / player.games))
+        elif stat == "Carries":
+            player_data.append(float(player.rushing_attempts))
+        elif stat == "Carries Per Game":
+            player_data.append(float(player.rushing_attempts / player.games))
+        elif stat == "Yards Per Carry":
+            player_data.append(float(player.rushing_y_per_attempt))
+        elif stat == "Rushing Touchdowns":
+            player_data.append(float(player.rushing_touchdowns))
+        elif stat == "Rushing Touchdowns Per Game":
+            player_data.append(float(player.rushing_touchdowns / player.games))
+        elif stat == "Fumbles":
+            player_data.append(float(player.fumbles))
+        elif stat == "Fumbles Per Game":
+            player_data.append(float(player.fumbles / player.games))
+
+        # passing stats
+        elif stat == "Passing Interceptions":
+            player_data.append(float(player.passing_interceptions))
+        elif stat == "Passing Inteceptions Per Game":
+            player_data.append(float(player.passing_interceptions / player.games))
+        elif stat == "Passing Touchdowns":
+            player_data.append(float(player.passing_touchdowns))
+        elif stat == "Passing Touchdowns Per Game":
+            player_data.append(float(player.passing_touchdowns / player.games))
+        elif stat == "Passing Yards":
+            player_data.append(float(player.passing_yards))
+        elif stat == "Passing Yards Per Game":
+            player_data.append(float(player.passing_yards / player.games))
+        elif stat == "Attempts":
+            player_data.append(float(player.passing_attempts))
+        elif stat == "Attempts Per Game":
+            player_data.append(float(player.passing_attempts / player.games))
+        elif stat == "Completions":
+            player_data.append(float(player.passing_completions))
+        elif stat == "Completions Per Game":
+            player_data.append(float(player.passing_completions / player.games))
 
     return player_data
 
