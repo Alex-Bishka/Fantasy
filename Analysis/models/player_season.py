@@ -54,5 +54,8 @@ class Player_Season:
     # TODO: double check this is valid
     def __lt__(self, other) -> bool:
         """"""
+        # for standard scoring:
         # return self.fantasy_points < other.fantasy_points
+        
+        # for ppr scoring:
         return self.fantasy_ppr < other.fantasy_ppr
