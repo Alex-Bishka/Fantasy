@@ -19,6 +19,24 @@ h2 {
     font-size: 32px;
 }
 
+.h2-blog {
+    margin-bottom: 10px;
+    margin-top: 64px;
+    font-size: 32px;
+}
+
+h3 {
+    margin-bottom: auto;
+    margin-top: 8px;
+    font-size: 26px;
+}
+
+.h3-blog {
+    margin-bottom: 10px;
+    margin-top: 32px;
+    font-size: 26px;
+}
+
 li {
     margin-top: 0px;
     margin-bottom: 0px;
@@ -136,7 +154,8 @@ p {
 
 .blog-img-container {
     text-align: center;
-    margin-bottom: 30px;
+    margin-top: 45px;
+    margin-bottom: 45px;
 }
 
 .multi-img {
