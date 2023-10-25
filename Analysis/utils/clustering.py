@@ -94,7 +94,7 @@ def get_candidate_cluster_n_values(X_scaled):
     # Elbow method
     inertia = []
     for i in range(2, 11):  # consider clusters from 1 to 10
-        kmeans = KMeans(n_clusters=i, algorithm='elkan').fit(X_scaled)
+        kmeans = KMeans(n_clusters=i, algorithm='elkan', n_init=10).fit(X_scaled)
         inertia.append(kmeans.inertia_)
 
     plt.plot(range(2, 11), inertia)
@@ -108,14 +108,14 @@ def get_candidate_cluster_n_values(X_scaled):
 
 def create_clusters(cluster_num, X_scaled, players):
     """"""
-    kmeans = KMeans(n_clusters=cluster_num, random_state=0).fit(X_scaled)
+    kmeans = KMeans(n_clusters=cluster_num, random_state=0, n_init=10).fit(X_scaled)
     kmeans.labels_
 
     cluster_ranking = dict()
     for player, cluster_num in zip(players, kmeans.labels_):
         cluster_ranking[player.player_name] = cluster_num
 
-    return kmeans.labels_, cluster_ranking
+    return [str(label) for label in kmeans.labels_], cluster_ranking
 
 
 def create_cluster_df(labels, X, stats):
@@ -142,3 +142,61 @@ def graph_pair_plot(df, stats, position, palette="bright", save_fig=True, save_s
         plt.savefig(save_path, format="png")
 
     plt.show()
+
+
+import plotly.express as px
+def graph_pair_plot_plotly(df, cluster_rankings, stats,
+        position, save_fig=True, save_suffix="",
+        font_size=12, marker_size=4
+    ):
+    """
+    Create a pair plot using Plotly
+    """
+    # Convert dictionary keys to a list
+    name_list = list(cluster_rankings.keys())
+
+    # Add the list as a new column to the dataframe
+    df['Names'] = name_list
+
+    df.set_index('Names', inplace=True)
+
+    fig = px.scatter_matrix(
+        df,
+        dimensions=stats,
+        color="Cluster",
+        hover_name=df.index,  # Assuming the player's name is the index
+        labels={col: col for col in stats}  # Optional if you want to customize axis labels
+    )
+    
+    # Customize the appearance (optional)
+    fig.update_traces(diagonal_visible=False)
+
+    # improving UI
+    fig.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)',   # Transparent background outside the plot
+        plot_bgcolor='rgba(245, 245, 245, 1)',  # Light gray plot background
+        showlegend=True,
+        font=dict(
+            family="Courier New, monospace",  # Choose a font family
+            size=font_size,  # Adjust the font size
+            color="black"  # Font color
+        )
+    )
+    fig.update_xaxes(showgrid=True, gridwidth=0.5, gridcolor='rgba(200, 200, 200, 0.5)')
+    fig.update_yaxes(showgrid=True, gridwidth=0.5, gridcolor='rgba(200, 200, 200, 0.5)')
+
+    fig.update_layout(width=700, height=700)  # Adjust as necessary
+    fig.update_traces(marker=dict(size=marker_size))  # Adjust marker size as needed
+
+    # Save the plot as HTML
+    if save_fig:
+        save_path = f"./interactive/{position}/clustering-{len(df['Cluster'].unique())}"
+
+        if save_suffix:
+            save_path += f"-{save_suffix}"
+
+        save_path += ".html"
+        fig.write_html(save_path)
+
+    fig.show()
+
