@@ -9,6 +9,17 @@ body {
     margin: auto;
 }
 
+iframe {
+    width: 725px;
+    height: 725px;
+    border: 0;
+    display: inline-block;
+}
+
+.iframe-container {
+    text-align: center;
+}
+
 h1 {
     font-size: 38px;
     margin-bottom: auto;
