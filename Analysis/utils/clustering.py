@@ -11,6 +11,16 @@ def get_stats_array(player: Player_Season, stats):
     """"""
     player_data = list()
     for stat in stats:
+        # total stats (non-qb)
+        if stat == "Total Yards":
+            player_data.append(float(player.receiving_yards + player.rushing_yards))
+        if stat == "Yards Per Game":
+            player_data.append(float((player.receiving_yards + player.rushing_yards) / player.games))
+        if stat == "Total TDs":
+            player_data.append(float(player.receiving_td + player.rushing_touchdowns))
+        if stat == "TDs Per Game":
+            player_data.append(float((player.receiving_td + player.rushing_touchdowns) / player.games))
+
         # receiving stats
         if stat == "Receiving Yards":
             player_data.append(float(player.receiving_yards))
@@ -147,7 +157,8 @@ def graph_pair_plot(df, stats, position, palette="bright", save_fig=True, save_s
 import plotly.express as px
 def graph_pair_plot_plotly(df, cluster_rankings, stats,
         position, save_fig=True, save_suffix="",
-        font_size=12, marker_size=4
+        font_size=12, marker_size=4, diagonal_is_visible=False,
+        width=700, height=700
     ):
     """
     Create a pair plot using Plotly
@@ -169,7 +180,7 @@ def graph_pair_plot_plotly(df, cluster_rankings, stats,
     )
     
     # Customize the appearance (optional)
-    fig.update_traces(diagonal_visible=False)
+    fig.update_traces(diagonal_visible=diagonal_is_visible)
 
     # improving UI
     fig.update_layout(
@@ -185,7 +196,7 @@ def graph_pair_plot_plotly(df, cluster_rankings, stats,
     fig.update_xaxes(showgrid=True, gridwidth=0.5, gridcolor='rgba(200, 200, 200, 0.5)')
     fig.update_yaxes(showgrid=True, gridwidth=0.5, gridcolor='rgba(200, 200, 200, 0.5)')
 
-    fig.update_layout(width=700, height=700)  # Adjust as necessary
+    fig.update_layout(width=width, height=height)  # Adjust as necessary
     fig.update_traces(marker=dict(size=marker_size))  # Adjust marker size as needed
 
     # Save the plot as HTML
