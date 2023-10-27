@@ -1,7 +1,7 @@
 /* general css */
 html {
     margin-bottom: 0px;
-    overflow-y: hidden;
+    /* overflow-y: hidden; */
     font-family: 'Open Sans', sans-serif;
 }
 
@@ -27,13 +27,13 @@ h1 {
 
 h2 {
     margin-bottom: auto;
-    margin-top: 15px;
+    margin-top: 16px;
     font-size: 32px;
 }
 
 .h2-blog {
-    margin-bottom: 10px;
-    margin-top: 64px;
+    margin-bottom: 16px;
+    margin-top: 80px;
     font-size: 32px;
 }
 
@@ -44,7 +44,7 @@ h3 {
 }
 
 .h3-blog {
-    margin-bottom: 10px;
+    margin-bottom: 16px;
     margin-top: 32px;
     font-size: 26px;
 }
@@ -62,39 +62,33 @@ p {
 /* home/header specific styling */
 .title-container {
     padding-top: 45px;
-    background-color: grey;
+    background-color: #20267b;
+    display: flex;
+    padding-right: 11vw;
+    padding-left: 11vw;
 }
 
 .content-container {
     display: flex;
     flex-direction: column;
-    padding-right: 20px;
-    padding-left: 20px;
-    margin-right: 10vw;
-    margin-left: 10vw;
+    padding-right: 11vw;
+    padding-left: 11vw;
 }
 
 .home-title {
-    padding-right: 25px;
-    padding-left: 20px;
     padding-bottom: 5px;
     margin-top: auto;
     margin-bottom: 0px;
-    margin-right: 10vw;
-    margin-left: 10vw;
 }
 
 /* Button to open the menu */
 .menu-button {
     font-size: 38px;
-    right: 0;
-    top: 0;
-    margin-top: 40px;
-    margin-right: 10vw;
+    padding-bottom: 5px;
     cursor: pointer;
     z-index: 2;
-    position: fixed;
-    background-color: grey;
+    background-color: #20267b;
+    color: white;
     border: 0;
 }
 
@@ -105,7 +99,7 @@ p {
     position: fixed;
     top: 0;
     right: 0;
-    background-color: #111;
+    background-color: rgba(32, 38, 123, 0.98);
     overflow-x: hidden;
     transition: 0.5s;
     padding-top: 60px;
@@ -116,7 +110,7 @@ p {
     padding: 10px 15px;
     text-decoration: none;
     font-size: 25px;
-    color: #818181;
+    color: white;
     display: block;
     transition: 0.3s;
 }
@@ -136,9 +130,6 @@ p {
 
 /* blog list styling */
 .scroll-div {
-    max-height: 88vh;
-    overflow-y: auto;
-    padding-right: 15px;
 }
 
 .blog-item {
