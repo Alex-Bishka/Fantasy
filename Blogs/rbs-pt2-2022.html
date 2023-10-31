@@ -1,0 +1,2338 @@
+<head>
+    <title>RBs in 2022 Part 2</title>
+    <link rel="stylesheet" href="/Fantasy/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/Fantasy/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div class="scroll-div">
+
+            <h1>RBs in 2022 Part 2</h1>
+
+
+            <h2>TL;DR</h2>
+            <p class="blog-p-tag">
+            <ul class="bullet-list">
+                <li>Quality backs can be effective in different ways. Backs that put up god awful rushing numbers can still be in the RB1 and RB2 tier.</li>
+                <li>ETN flashed signs last year - for those that paid attention and pounced during the offseason, congrats on getting him! For those that didn't, he's still worth paying up for.</li>
+                <li>Swift is worth buying, even if his price has gone up. He has a soft playoff schedule and I think he will only get better given his efficiency and how good the situation is in Philly.</li>
+                <li>Monty is similar to Swift from a value perspective, but I would pay less for him. He isn't as talented as Swift and Monty is a little older. He's the Jamaal Williams Deluxe of this season.</li>
+                <li>Conner still has some juice in him - very much worth the risk, especially with an IR discount.</li>
+                <li>Pierce feels like a decent buy low with the expectation of getting some decent numbers for this year, if only on volume. I don't think he is a future proof back by any means.</li>
+                <li>Raschaad White is putrid. Sell where you can, if you can. The outlook on White for me is a worse Pierce... but wait until he strings together a few PPR performances.</li>
+                <li>Taylor is a good future investment, his down year still led to great numbers. Now that his contract is sorted and AR looks the part, he has a high ceiling for upcoming seasons.</li>
+            </ul>
+            </p>
+
+            <h2 class="h2-blog">Overview</h2>
+            <p class="blog-p-tag">
+                This week I go ahead and continue my analysis on running back performance in 2022,
+                by using my clustering tooling to examine tiers of running backs.
+            </p>
+            <p class="blog-p-tag">
+                I would like to point out that I've updated my clustering to be interactive as well, so you
+                can hover over players in the graph to see their numbers and figure out what cluster they are in.
+            </p>
+            <p class="blog-p-tag">
+                For those that want to go ahead and check out part one of my running back analysis, 
+                check out this <a href="https://alex-bishka.github.io/Fantasy/Blogs/rbs2022">page</a>.
+            </p>
+            <p class="blog-p-tag">
+                Other analysis pieces can be found <a href="https://alex-bishka.github.io/Fantasy/Blogs.html">here</a>.
+            </p>
+
+            <p class="blog-p-tag">
+                My data disclaimer, as always:
+            <ul class="bullet-list">
+                <li>I don't take into account anything related to two point conversions, partly due to
+                    the randomness and small sample size but mostly because it was difficult to incorporate into the
+                    data I
+                    fetched</li>
+                <li>The top 40 RBs I analyze are by the top 40 fantasy point totals, this is done for
+                    simplicity and reusability of graphing code</li>
+            </ul>
+            </p>
+
+
+            <h2 class="h2-blog">Tiers (Rushing Totals)</h2>
+            <p class="blog-p-tag">
+                We'll start by examining pair plots with rushing statistics, specifically the following:
+                "Rushing Yards", "Carries", "Yards Per Carry", "Rushing Touchdowns", and "Fumbles".
+            </p>
+            <p class="blog-p-tag">
+                Our clustering tooling will split up the backs into tiers based on the similarity of their
+                stats and number of clusters specified.
+            </p>
+
+            <h3 class="h3-blog">RBs as Three Tiers</h3>
+            <p class="blog-p-tag">
+                This first graph represents running backs split into three tiers:
+            </p>
+            <div class="iframe-container">
+                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-3.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                In addition to being able to interact with the graph below, here are the
+                tiers below for ease of use:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Leonard Fournette</li>
+                        <li>Jerick McKinnon</li>
+                        <li>Antonio Gibson</li>
+                        <li>Samaje Perine</li>
+                        <li>Rachaad White</li>
+                        <li>Kareem Hunt</li>
+                        <li>Michael Carter</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Christian McCaffrey</li>
+                        <li>Rhamondre Stevenson</li>
+                        <li>Tony Pollard</li>
+                        <li>Aaron Jones</li>
+                        <li>Joe Mixon</li>
+                        <li>Alvin Kamara</li>
+                        <li>Travis Etienne</li>
+                        <li>Kenneth Walker III</li>
+                        <li>James Conner</li>
+                        <li>D'Andre Swift</li>
+                        <li>Devin Singletary</li>
+                        <li>David Montgomery</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <b>Cluster 1 <i>(Continued)</i></b>
+                    <ul class='bullet-list'>
+                        <li>Raheem Mostert</li>
+                        <li>AJ Dillon</li>
+                        <li>Dameon Pierce</li>
+                        <li>Tyler Allgeier</li>
+                        <li>Jeff Wilson</li>
+                        <li>Cordarrelle Patterson</li>
+                        <li>Latavius Murray</li>
+                        <li>Jonathan Taylor</li>
+                        <li>Cam Akers</li>
+                        <li>Isiah Pacheco</li>
+                        <li>D'Onta Foreman</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Austin Ekeler</li>
+                        <li>Josh Jacobs</li>
+                        <li>Derrick Henry</li>
+                        <li>Saquon Barkley</li>
+                        <li>Nick Chubb</li>
+                        <li>Dalvin Cook</li>
+                        <li>Jamaal Williams</li>
+                        <li>Najee Harris</li>
+                        <li>Miles Sanders</li>
+                        <li>Ezekiel Elliott</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                After taking a gander at the graph, I would classify the clusters as the following: Cluster 0 as "The Anemic Rushers",
+                Cluster 1 is more of the "Eh, it's a day job" type, and Cluster 2 gives off "Hulk SMASH!" vibes.
+            </p>
+            <p class="blog-p-tag">
+                These observations pretty much throwout fumbles and yards per carry, as each of the clusters are all over the
+                place for those stats. With that being taken into account, Cluster 0 is towards the bottom in rushing yards, carries,
+                and rushing touchdowns, while Cluster 2 is killing it in that regard, and Cluster 1 fits snuggly inbetween.
+            </p>
+            <p class="blog-p-tag">
+                I'm surprised that both Leonard Fournette and Jerick McKinnon were able to put up the seasons (RB12 and RB20, respectively in PPR)
+                they did while being so bad at putting such bad rushing related stats.
+            </p>
+            <p class="blog-p-tag">
+                I guess you can find yourself a viable fantasy back that doesn't have a large impact in the running game.
+                Something to keep an eye out for during any season, as a solid contributor could be had on the cheap.
+            </p>
+            <p class="blog-p-tag">
+                On that note, Raschaad White concerns me here, especially since the per game numbers (we will get there) don't reflect well for him either.
+                I'm a little surprised he's kept his job this year, I am very high on Sean Tucker, but I might have been wrong on my Tucker take.
+                I'd probably try and move of White is possible, he is a back to me that is very replaceable, from an NFL roster perspective.
+                since the 
+            </p>
+            <p class="blog-p-tag">
+                Moving onto Cluster 1, I am surprised a few backs are in this group instead of the rushers that grab the most stats.
+            </p>
+            <p class="blog-p-tag">
+                CMC and ETN are the two that were the most shocking for me, as they had excellent rushing yard and carry stats.
+                CMC had 1139 rushing yards on 244 carries and ETN had 1125 rushing yards on 220 carries.
+                Their rushing touchdown numbers, 8 for CMC and 5 for ETN, keep them out of the elite rushing stat padders.
+            </p>
+            <p class="blog-p-tag">
+                If you were also surprised by Mixon, Jones, Pollard, and Rhamondre, I was too at first, but their rushing and carry stats
+                were definitely lower than both CMC and ETN. Touchdowns were spread out amongst this group. I will say this makes sense with
+                what we are seeing from ETN this year, and even with that being said he might still be a good buy with his youth and the talent on that
+                Jags offense.
+            </p>
+            <p class="blog-p-tag">
+                Finally, our last tier to analyze: the monsters! These backs put up great rushing numbers last year, but some players in this list
+                surprised me.
+            </p>
+            <p class="blog-p-tag">
+                Ekeler was shocking to me, as I didn't think of him as a dominant rusher, and when checking the stats that seems to be true:
+                915 rushing yards and 204 carries... but 13 rushing touchdowns catapults him into this tier.
+            </p>
+            <p class="blog-p-tag">
+                Outside of that, the name that stunned me here was Elliot.
+            </p>
+                
+            <p class="blog-p-tag">
+                Yes, Najee and Jamaal aren't sexy backs, but they get enough volume and touchdowns
+                to sneak into that tier. Elliot gets himself into this category, despite putting up less than 900 rushing yards. His 12 rushing touchdowns and
+                231 carries seem to just barely get him into this tier.
+            </p>
+
+            <h3 class="h3-blog">RBs as Four Tiers</h3>
+            <p class="blog-p-tag">
+                With all that being said, let's see if we can get more nuance with four tiers:
+            </p>
+            <div class="iframe-container">
+                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-4.html" width="100%" height="100%" frameborder="0"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                Here are the corresponding tiers:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Austin Ekeler</li>
+                        <li>Josh Jacobs</li>
+                        <li>Derrick Henry</li>
+                        <li>Saquon Barkley</li>
+                        <li>Nick Chubb</li>
+                        <li>Dalvin Cook</li>
+                        <li>Jamaal Williams</li>
+                        <li>Najee Harris</li>
+                        <li>Miles Sanders</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Christian McCaffrey</li>
+                        <li>Tony Pollard</li>
+                        <li>Joe Mixon</li>
+                        <li>Kenneth Walker III</li>
+                        <li>James Conner</li>
+                        <li>D'Andre Swift</li>
+                        <li>Ezekiel Elliott</li>
+                        <li>David Montgomery</li>
+                        <li>Raheem Mostert</li>
+                        <li>AJ Dillon</li>
+                        <li>Tyler Allgeier</li>
+                        <li>Cordarrelle Patterson</li>
+                        <li>Latavius Murray</li>
+                        <li>Cam Akers</li>
+                        <li>D'Onta Foreman</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Rhamondre Stevenson</li>
+                        <li>Aaron Jones</li>
+                        <li>Alvin Kamara</li>
+                        <li>Travis Etienne</li>
+                        <li>Devin Singletary</li>
+                        <li>Dameon Pierce</li>
+                        <li>Jeff Wilson</li>
+                        <li>Jonathan Taylor</li>
+                        <li>Isiah Pacheco</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Leonard Fournette</li>
+                        <li>Jerick McKinnon</li>
+                        <li>Antonio Gibson</li>
+                        <li>Samaje Perine</li>
+                        <li>Rachaad White</li>
+                        <li>Kareem Hunt</li>
+                        <li>Michael Carter</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                Now that we have added another layer of distinction between backs, we see our top tier is relatively unchanged, 
+                the middle tier gets splits into two parts, and the bottom tier is the same.
+            </p>
+            <p class="blog-p-tag">
+                The middle tier is now split into Cluster 1 (Red) and Cluster 2 (Green), and this seems to be caused by fumbles.
+                The backs in the former group all have three or less fumbles, whereas those in the latter tier all have three or
+                more fumbles.
+            </p>
+            <p class="blog-p-tag">
+                I don't see this insight as super valuable, unless you fear one of the backs in green may lose his job over fumble
+                problems, but that seems like a non-cocern for the backs in green that still have starting jobs after offseason moves.
+            </p>
+            <p class="blog-p-tag">
+                One last thing to point out, Elliot drops out of the elite tier and into Cluster 1, the good, non-fumbling rushing backs.
+            </p>
+
+            <h3 class="h3-blog">RBs as Five Tiers</h3>
+            <p class="blog-p-tag">
+                Let's add another layer of complexity to this by creating another tier:
+            </p>
+            <div class="iframe-container">
+                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-5.html" width="100%" height="100%" frameborder="0"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                Here are the five tiers:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Josh Jacobs</li>
+                        <li>Saquon Barkley</li>
+                        <li>Nick Chubb</li>
+                        <li>Miles Sanders</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Christian McCaffrey</li>
+                        <li>Tony Pollard</li>
+                        <li>Joe Mixon</li>
+                        <li>Kenneth Walker III</li>
+                        <li>James Conner</li>
+                        <li>D'Andre Swift</li>
+                        <li>Ezekiel Elliott</li>
+                        <li>David Montgomery</li>
+                        <li>Raheem Mostert</li>
+                        <li>AJ Dillon</li>
+                        <li>Tyler Allgeier</li>
+                        <li>Cordarrelle Patterson</li>
+                        <li>Latavius Murray</li>
+                        <li>Cam Akers</li>
+                        <li>D'Onta Foreman</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Rhamondre Stevenson</li>
+                        <li>Aaron Jones</li>
+                        <li>Alvin Kamara</li>
+                        <li>Travis Etienne</li>
+                        <li>Devin Singletary</li>
+                        <li>Dameon Pierce</li>
+                        <li>Jeff Wilson</li>
+                        <li>Jonathan Taylor</li>
+                        <li>Isiah Pacheco</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Austin Ekeler</li>
+                        <li>Derrick Henry</li>
+                        <li>Dalvin Cook</li>
+                        <li>Jamaal Williams</li>
+                        <li>Najee Harris</li>
+                    </ul>
+
+                    <b>Cluster 4 (Orange)</b>
+                    <ul class='bullet-list'>
+                        <li>Leonard Fournette</li>
+                        <li>Jerick McKinnon</li>
+                        <li>Antonio Gibson</li>
+                        <li>Samaje Perine</li>
+                        <li>Rachaad White</li>
+                        <li>Kareem Hunt</li>
+                        <li>Michael Carter</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                Interesting, the previous top tier gets split into two tiers: Cluster 0 (Green) and Cluster 3 (Blue). No other changes occur.
+            </p>
+            <p class="blog-p-tag">
+                My observation here is that Cluster 0 fumbles less, has better rushing yard totals, and yards per carry. These backs have
+                at most 3 fumbles, at least 1269 rushing yards, and average at least 4.45 yards per carry.
+            </p>
+            <p class="blog-p-tag">
+                Meanwhile, the backs in Cluster 3 have at least 3 fumbles, only one player above 1200 rushing yards and no back above 4.5 yards a carry.
+            </p>
+            <p class="blog-p-tag">
+                The carry and rushing touchdown stats are a little blurry between these two groups of backs.
+            </p>
+            <p class="blog-p-tag">
+                It is also worth noting Henry is not in Cluster 0, which I would call the better rushers, but it seems his fumbles, touchdowns and yards per carry
+                make him a closer fit with Cluster 3.
+            </p>
+
+            <h3 class="h3-blog">RBs as Six Tiers</h3>
+            <p class="blog-p-tag">
+                How does the picture change when we increase to six tiers?
+            </p>
+            <div class="iframe-container">
+                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-6.html" width="100%" height="100%" frameborder="0"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                The six tiers:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Orange)</b>
+                    <ul class='bullet-list'>
+                        <li>Joe Mixon</li>
+                        <li>Najee Harris</li>
+                        <li>Kenneth Walker III</li>
+                        <li>James Conner</li>
+                        <li>Ezekiel Elliott</li>
+                        <li>David Montgomery</li>
+                        <li>AJ Dillon</li>
+                        <li>Latavius Murray</li>
+                        <li>Cam Akers</li>
+                        <li>D'Onta Foreman</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Austin Ekeler</li>
+                        <li>Derrick Henry</li>
+                        <li>Jamaal Williams</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Rhamondre Stevenson</li>
+                        <li>Aaron Jones</li>
+                        <li>Dalvin Cook</li>
+                        <li>Alvin Kamara</li>
+                        <li>Travis Etienne</li>
+                        <li>Devin Singletary</li>
+                        <li>Dameon Pierce</li>
+                        <li>Jeff Wilson</li>
+                        <li>Jonathan Taylor</li>
+                        <li>Isiah Pacheco</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Christian McCaffrey</li>
+                        <li>Josh Jacobs</li>
+                        <li>Saquon Barkley</li>
+                        <li>Nick Chubb</li>
+                        <li>Miles Sanders</li>
+                    </ul>
+
+                    <b>Cluster 4 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Tony Pollard</li>
+                        <li>D'Andre Swift</li>
+                        <li>Raheem Mostert</li>
+                        <li>Tyler Allgeier</li>
+                        <li>Cordarrelle Patterson</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 5 (Teal)</b>
+                    <ul class='bullet-list'>
+                        <li>Leonard Fournette</li>
+                        <li>Jerick McKinnon</li>
+                        <li>Antonio Gibson</li>
+                        <li>Samaje Perine</li>
+                        <li>Rachaad White</li>
+                        <li>Kareem Hunt</li>
+                        <li>Michael Carter</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                Things shake up quite a bit when we get to six tiers.
+            </p>
+            <p class="blog-p-tag">
+                We have our touchdown hogs - with a bit of a fumbling problem - in Cluster 1.
+                All of these guys have at least 13 touchdowns on the ground and at least 3 fumbles.
+            </p>
+            <p class="blog-p-tag">
+                The best tier of backs here, for these rushing stats, is Cluster 3.
+                They all have at least 1139 rushing yards and 244 carries.
+                Additionally, they are all decently efficient, with the yards per carry varying from 4.45 to 5.05.
+                Their nose for the endzone isn't bad as the group varies from 8-12 touchdowns, and all of them have less than 3 fumbles.
+                Word of caution - I would avoid Sanders in Carolina, as I think these numbers were largely a product of that Eagles oline
+                and offense.
+            </p>
+            <p class="blog-p-tag">
+                Cluster 5 remains unchanged, putrid rushers unite!
+            </p>
+            <p class="blog-p-tag">
+                Cluster 0 and Cluster 2 both contain more middling backs. Not great at anything, but also not bad at anything.
+                Cluster 2 is slightly better from an efficiency perspective and slightly worse with fumbles.
+                Cluster 0 is better at getting into the endzone.
+            </p>
+            <p class="blog-p-tag">
+                Cluster 4 contians our hyper-efficient backs, who don't really fumble. These backs don't get a ton of carries and have
+                pretty meh rushing yardage totals. Their touchdowns are also on the middle to lower side of things, but holy hell are 
+                they extremely efficient. The least efficient back in this group, is Patterson with 4.83 yards per carry... the most 
+                efficient is Swift with <b>5.47 yards per carry!</b>
+            </p>
+            <p class="blog-p-tag">
+                I said it in part one, Swift is worth grabbing, especially as a contender. He's in a better situation than last year. The Eagles are handling
+                him better and he's getting more opportunities. I think he could explode later in the season, especially in the playoffs against
+                the Giants (week 16 at home) and the Cardinals (week 17 at home). I'd happily pay a first for him as a contender, and I would be
+                ecstatic if he is my RB2 or RB3.
+            </p>
+
+
+            <h3 class="h3-blog">RBs as Seven Tiers</h3>
+            <p class="blog-p-tag">
+                Last but not least, looking at the landscape with seven tiers:
+            </p>
+            <div class="iframe-container">
+                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-7.html" width="100%" height="100%" frameborder="0"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                The seven tiers:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Christian McCaffrey</li>
+                        <li>Saquon Barkley</li>
+                        <li>Dalvin Cook</li>
+                        <li>Najee Harris</li>
+                        <li>Miles Sanders</li>
+                    </ul>
+
+                    <b>Cluster 1 (Teal)</b>
+                    <ul class='bullet-list'>
+                        <li>Joe Mixon</li>
+                        <li>James Conner</li>
+                        <li>Ezekiel Elliott</li>
+                        <li>David Montgomery</li>
+                        <li>AJ Dillon</li>
+                        <li>Cam Akers</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Pink)</b>
+                    <ul class='bullet-list'>
+                        <li>Leonard Fournette</li>
+                        <li>Jerick McKinnon</li>
+                        <li>Antonio Gibson</li>
+                        <li>Samaje Perine</li>
+                        <li>Rachaad White</li>
+                        <li>Kareem Hunt</li>
+                        <li>Michael Carter</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Rhamondre Stevenson</li>
+                        <li>Aaron Jones</li>
+                        <li>Alvin Kamara</li>
+                        <li>Travis Etienne</li>
+                        <li>Devin Singletary</li>
+                        <li>Dameon Pierce</li>
+                        <li>Jeff Wilson</li>
+                        <li>Jonathan Taylor</li>
+                        <li>Isiah Pacheco</li>
+                    </ul>
+
+                    <b>Cluster 4 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Josh Jacobs</li>
+                        <li>Derrick Henry</li>
+                        <li>Nick Chubb</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 5 (Orange)</b>
+                    <ul class='bullet-list'>
+                        <li>Tony Pollard</li>
+                        <li>Kenneth Walker III</li>
+                        <li>D'Andre Swift</li>
+                        <li>Raheem Mostert</li>
+                        <li>Tyler Allgeier</li>
+                        <li>Cordarrelle Patterson</li>
+                        <li>Latavius Murray</li>
+                        <li>D'Onta Foreman</li>
+                    </ul>
+
+                    <b>Cluster 6 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Austin Ekeler</li>
+                        <li>Jamaal Williams</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                Our backs with an aversion to rushing stats continue to stick together, that tier keeps on chugging in the form
+                of Cluster 2 in the graph above.
+            </p>
+            <p class="blog-p-tag">
+                Our hyper-efficient group of backs has become a bit more muddled, see Cluster 5, with Murray and Foreman joining in. This was unexpected,
+                but the rest of their stats are pretty in line with other backs in that group.
+            </p>
+            <p class="blog-p-tag">
+                Murray does intrigue me a bit. He still seems to have a bit of juice compared to other vet backs, and if
+                James Cook goes down he could be very valuable down the stretch. A handcuff I would roster if the space is available
+                and if you can get him for nothing.
+            </p>
+            <p class="blog-p-tag">
+                The touchdown hog tier in Cluster 6 has shrunk, losing Henry. This makes a little more sense to me as Ekeler and Williams 
+                were not great at piling up rushing numbers outside of touchdowns, whereas Henry offers more.
+            </p>
+            <p class="blog-p-tag">
+                The elite tier of rushers has shifted a bit, and we now end up with Jacobs, Henry and Chubb in Cluster 4. These are the guys
+                that put up big numbers overall, but aren't necesarilly efficient.
+            </p>
+            <p class="blog-p-tag">
+                Cluster 3 and Cluster 1 both contian the middling backs.
+            </p>
+            <p class="blog-p-tag">
+                Cluster 3 is more prone to fumbling, but has slightly more rushing yards, and is efficient.
+            </p>
+            <p class="blog-p-tag">
+                Cluster 1 has slightly more carries and more rushing touchdowns.
+            </p>
+            <p class="blog-p-tag">
+                I suppose I would rather have the backs in Clusters 3, with ETN and Taylor being my favorites in that tier.
+                Although, Monty is still a favorite of mine as I see him replacing Williams in Cluster 6 by the end of this year.
+            </p>
+            <p class="blog-p-tag">
+                Lastly, we have Cluster 0, which appears to contain the backs who are slighlty behind those that can
+                post elite rushing numbers in Cluster 4.
+            </p>
+            <p class="blog-p-tag">
+                That being said, I would still love to have or pay for CMC as a contender, especially with how he has played this year.
+            </p>
+            <p class="blog-p-tag">
+                Saquon concerns me a bit more as I wasn't high on the Giants offense coming into the season, and they are playing worse
+                than I expected. So maybe there is a buy low opportunity there for contenders that believe in him?
+                Keep in mind he doesn't have the easiet matchups come playoff time.
+            </p>
+
+
+            <h2 class="h2-blog">Tiers (Rushing Per Game)</h2>
+            <p class="blog-p-tag">
+                Let's see if anything changes when we take a look at the same rushing stats above, but on a per game basis.
+            </p>
+            <h3 class="h3-blog">RBs as Three Tiers</h3>
+            <p class="blog-p-tag">
+                We'll start with three tiers:
+            </p>
+            <div class="iframe-container">
+                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-3-rushing-per-game.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                Here are the three tiers:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Austin Ekeler</li>
+                        <li>Josh Jacobs</li>
+                        <li>Derrick Henry</li>
+                        <li>Saquon Barkley</li>
+                        <li>Nick Chubb</li>
+                        <li>Joe Mixon</li>
+                        <li>Dalvin Cook</li>
+                        <li>Jamaal Williams</li>
+                        <li>Najee Harris</li>
+                        <li>Miles Sanders</li>
+                        <li>Kenneth Walker III</li>
+                        <li>James Conner</li>
+                        <li>Ezekiel Elliott</li>
+                        <li>Dameon Pierce</li>
+                        <li>Jonathan Taylor</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Leonard Fournette</li>
+                        <li>Jerick McKinnon</li>
+                        <li>Antonio Gibson</li>
+                        <li>Samaje Perine</li>
+                        <li>Rachaad White</li>
+                        <li>Kareem Hunt</li>
+                        <li>Michael Carter</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Christian McCaffrey</li>
+                        <li>Rhamondre Stevenson</li>
+                        <li>Tony Pollard</li>
+                        <li>Aaron Jones</li>
+                        <li>Alvin Kamara</li>
+                        <li>Travis Etienne</li>
+                        <li>D'Andre Swift</li>
+                        <li>Devin Singletary</li>
+                        <li>David Montgomery</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <b>Cluster 2 <i>(Continued)</i></b>
+                    <ul class='bullet-list'>
+                        <li>Raheem Mostert</li>
+                        <li>AJ Dillon</li>
+                        <li>Tyler Allgeier</li>
+                        <li>Jeff Wilson</li>
+                        <li>Cordarrelle Patterson</li>
+                        <li>Latavius Murray</li>
+                        <li>Cam Akers</li>
+                        <li>Isiah Pacheco</li>
+                        <li>D'Onta Foreman</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                The dumpster fire tier remains! Cluster 1 contains the same backs that were really poor at rushing totals. Yikes for
+                Rachaad White.
+            </p>
+            <p class="blog-p-tag">
+                Cluster 2 is the tier of backs that puts up the most rushing numbers. It changes a little on a per game basis, as now
+                we see K9, James Conner, Pierce and Taylor enter it.
+            </p>
+            <p class="blog-p-tag">
+                I'm a little surprised to see Pierce and Conner there.
+            </p>
+            <p class="blog-p-tag">
+                As I said in part one, Conner is worth grabbing as a contender. He shouldn't be too expensive, and with Murray coming back
+                he should be even better once he comes back from IR. The IR might also provide even more of a discount for contenders.
+            </p>
+            <p class="blog-p-tag">
+                Pierce has struggled this year, and I was worried about him, as I expected the Texans to be worse than the bottom of the barrel.
+                Stroud has changed that outlook on the overall offense, but Pierce has struggled. I think he might be a sneaky buy low to help contenders
+                this year, but buyer's beware: Pierce is not that talented and I could see the Texans trying to get a better back to
+                surround Stroud with more talent.
+            </p>
+            <p class="blog-p-tag">
+                Our final tier, Cluster 2, has backs that piled decent but not great or bad rushing numbers.
+                There are some pretty talented backs in this category, so it goes to show that elite backs don't
+                always provide their fantasy numbers via rushing.
+            </p>
+
+
+            <h3 class="h3-blog">RBs as Four Tiers</h3>
+            <p class="blog-p-tag">
+                Moving onto four tiers:
+            </p>
+            <div class="iframe-container">
+                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-4-rushing-per-game.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                Here are the players in each of the tiers:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Austin Ekeler</li>
+                        <li>Rhamondre Stevenson</li>
+                        <li>Aaron Jones</li>
+                        <li>Dalvin Cook</li>
+                        <li>Najee Harris</li>
+                        <li>Alvin Kamara</li>
+                        <li>Travis Etienne</li>
+                        <li>James Conner</li>
+                        <li>Devin Singletary</li>
+                        <li>Dameon Pierce</li>
+                        <li>Jeff Wilson</li>
+                        <li>Jonathan Taylor</li>
+                        <li>Isiah Pacheco</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Leonard Fournette</li>
+                        <li>Jerick McKinnon</li>
+                        <li>Antonio Gibson</li>
+                        <li>Samaje Perine</li>
+                        <li>Rachaad White</li>
+                        <li>Kareem Hunt</li>
+                        <li>Michael Carter</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Christian McCaffrey</li>
+                        <li>Tony Pollard</li>
+                        <li>Joe Mixon</li>
+                        <li>Kenneth Walker III</li>
+                        <li>D'Andre Swift</li>
+                        <li>Ezekiel Elliott</li>
+                        <li>David Montgomery</li>
+                        <li>Raheem Mostert</li>
+                        <li>AJ Dillon</li>
+                        <li>Tyler Allgeier</li>
+                        <li>Cordarrelle Patterson</li>
+                        <li>Latavius Murray</li>
+                        <li>Cam Akers</li>
+                        <li>D'Onta Foreman</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Josh Jacobs</li>
+                        <li>Derrick Henry</li>
+                        <li>Saquon Barkley</li>
+                        <li>Nick Chubb</li>
+                        <li>Jamaal Williams</li>
+                        <li>Miles Sanders</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                I'm glad I can feel safe at night with how consistent this bad tier is: see Cluster 1.
+            </p>
+            <p class="blog-p-tag">
+                On a per game basis our group of backs with the best rushing stats has shrunk much quicker. Cluster 3 has superstar backs, 
+                plus touchdown darling Williams, and Eagles oline merchant Miles Sanders. It really is crazy how much an oline and a 
+                situation can boost your stock as a back, as these two have no business being mentioned with the others in that tier.
+            </p>
+            <p class="blog-p-tag">
+                Then Cluster 0 and Cluster 2 separates the middle of the pack based on fumbles again, with Cluster 2 have way less fumbles
+                on a per game basis. Otherwise, these tiers are pretty even when looking at the graph.
+            </p>
+
+            <h3 class="h3-blog">RBs as Five Tiers</h3>
+            <p class="blog-p-tag">
+                Expanding our number of tiers to five yields the following:
+            </p>
+            <div class="iframe-container">
+                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-5-rushing-per-game.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                The players in each tier:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Christian McCaffrey</li>
+                        <li>Tony Pollard</li>
+                        <li>Joe Mixon</li>
+                        <li>Kenneth Walker III</li>
+                        <li>Ezekiel Elliott</li>
+                        <li>David Montgomery</li>
+                        <li>Raheem Mostert</li>
+                        <li>AJ Dillon</li>
+                        <li>Tyler Allgeier</li>
+                        <li>Cordarrelle Patterson</li>
+                        <li>Latavius Murray</li>
+                        <li>Cam Akers</li>
+                        <li>D'Onta Foreman</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Josh Jacobs</li>
+                        <li>Derrick Henry</li>
+                        <li>Saquon Barkley</li>
+                        <li>Nick Chubb</li>
+                        <li>Jamaal Williams</li>
+                        <li>Miles Sanders</li>
+                    </ul>
+            
+                    <b>Cluster 2 (Orange)</b>
+                    <ul class='bullet-list'>
+                        <li>Leonard Fournette</li>
+                        <li>Jerick McKinnon</li>
+                        <li>Antonio Gibson</li>
+                        <li>Samaje Perine</li>
+                        <li>Rachaad White</li>
+                        <li>Kareem Hunt</li>
+                        <li>Michael Carter</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Dalvin Cook</li>
+                        <li>Najee Harris</li>
+                        <li>Alvin Kamara</li>
+                        <li>James Conner</li>
+                        <li>Dameon Pierce</li>
+                        <li>Jonathan Taylor</li>
+                    </ul>
+            
+                    <b>Cluster 4 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Austin Ekeler</li>
+                        <li>Rhamondre Stevenson</li>
+                        <li>Aaron Jones</li>
+                        <li>Travis Etienne</li>
+                        <li>D'Andre Swift</li>
+                        <li>Devin Singletary</li>
+                        <li>Jeff Wilson</li>
+                        <li>Isiah Pacheco</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                The worst tier, Cluster 2, stays the same. As well as the elite tier, in Cluster 1.
+            </p>
+            <p class="blog-p-tag">
+                The group of running backs in the middle tier that had less fumbling problems remains largely the same. The only difference
+                is that Swift moves out of Cluster 0.
+            </p>
+            <p class="blog-p-tag">
+                So, now we have two tiers to essentially split the backs who were in the middling tier, with more fumbling problems.
+                Cluster 3 seems to hold the backs that get more rushing yards per game and more carries per game.
+                Cluster 4 has the backs with better efficiency.
+            </p>
+            <p class="blog-p-tag">
+                I want to spend a second on Taylor and Kamara from Cluster 3.
+            </p>
+            <p class="blog-p-tag">
+                Taylor did well last year depsite health concerns and the Colts taking a step back. Plus, with how Moss has
+                played this year, you could see Taylor improving his numbers as he gets healthier and the season goes on. Taylor could
+                be really exciting once AR is fully healthy.
+            </p>
+            <p class="blog-p-tag">
+                Taylor had the most rushing yards and carries per game in Cluster 3 with 78.27 yards on 17.45 carries per game.
+                It's not bad efficiency at 4.48 yards a carry. Also, Taylor had a touchdown roughly once every three games. That
+                excites me, as a down year for him is still very good and the situation seems to be getting better in Indy.
+            </p>
+            <p class="blog-p-tag">
+                I am also interested in Kamara because his rushing numbers seem pretty solid, which bolster his speciality as a receiver.
+                He had 59.8 rushing yards per game on 14.86 carries per game. There are some concerns with his efficiency, as he only
+                had 4.02 yards per carry last year. Additionally, he doesn't get into the endzone much as a rusher with less than one 
+                touchdown every five games. That being said, it's a decent rushing base for someone who is very dangerous in the receiving game.
+                Also, Carr should elevate his game compared to Dalton.
+            </p>
+            <p class="blog-p-tag">
+                Kamara has started off hot since coming back from suspension and I don't think it's crazy to think he finishes as
+                a top ten running back in PPR formats with how many targets he's currently getting. Might be good value for contenders,
+                but the buy for cheap window is almost certainly gone.
+            </p>
+
+            <h3 class="h3-blog">RBs as Six Tiers</h3>
+            <p class="blog-p-tag">
+                Moving onto six tiers:
+            </p>
+            <div class="iframe-container">
+                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-6-rushing-per-game.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                Once again, the players in each tier:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Austin Ekeler</li>
+                        <li>Dalvin Cook</li>
+                        <li>Jamaal Williams</li>
+                        <li>Najee Harris</li>
+                        <li>Alvin Kamara</li>
+                        <li>James Conner</li>
+                        <li>Dameon Pierce</li>
+                        <li>Jonathan Taylor</li>
+                    </ul>
+            
+                    <b>Cluster 1 (Orange)</b>
+                    <ul class='bullet-list'>
+                        <li>Joe Mixon</li>
+                        <li>Ezekiel Elliott</li>
+                        <li>David Montgomery</li>
+                        <li>AJ Dillon</li>
+                        <li>Cam Akers</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Christian McCaffrey</li>
+                        <li>Tony Pollard</li>
+                        <li>Kenneth Walker III</li>
+                        <li>D'Andre Swift</li>
+                        <li>Raheem Mostert</li>
+                        <li>Tyler Allgeier</li>
+                        <li>Cordarrelle Patterson</li>
+                        <li>Latavius Murray</li>
+                        <li>D'Onta Foreman</li>
+                    </ul>
+            
+                    <b>Cluster 3 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Rhamondre Stevenson</li>
+                        <li>Aaron Jones</li>
+                        <li>Travis Etienne</li>
+                        <li>Devin Singletary</li>
+                        <li>Jeff Wilson</li>
+                        <li>Isiah Pacheco</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <b>Cluster 4 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Josh Jacobs</li>
+                        <li>Derrick Henry</li>
+                        <li>Saquon Barkley</li>
+                        <li>Nick Chubb</li>
+                        <li>Miles Sanders</li>
+                    </ul>
+            
+                    <b>Cluster 5 (Teal)</b>
+                    <ul class='bullet-list'>
+                        <li>Leonard Fournette</li>
+                        <li>Jerick McKinnon</li>
+                        <li>Antonio Gibson</li>
+                        <li>Samaje Perine</li>
+                        <li>Rachaad White</li>
+                        <li>Kareem Hunt</li>
+                        <li>Michael Carter</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                The worst tier, Cluster 5, remains the same (death, taxes, and this tier).
+            </p>
+            <p class="blog-p-tag">
+                The best tier, Cluster 4, loses Jamaal Williams, which makes sense, as his numbers are more reflective of those in Cluster 0.
+                His touchdowns were propping him up into the best tier when we only had five tiers.
+            </p>
+            <p class="blog-p-tag">
+                The rest of our tiers have quite a shakeup. 
+            </p>
+            <p class="blog-p-tag">
+                Cluster 1 is probably the next worst tier after Cluster 5.
+            </p>
+            <p class="blog-p-tag">
+                Mixon and Elliot lead the pack, both are just under 59 yards rushing a game and around 15 carries a game.
+                None of these backs averages more than 4.2 yards per carry. The only redeeming quality is touchdowns, where
+                the worst of which, Monty, scored a touchdown roughly once every three games.
+            </p>
+            <p class="blog-p-tag">
+                Clusters 0 and 3 are pretty similar. Both groups fumble quite a bit.
+            </p>
+            <p class="blog-p-tag">
+                Cluster 0 has slightly better at rushing yards per game and carries per game. They also score touchdowns at a much higher rate.
+            </p>
+            <p class="blog-p-tag">
+                Cluster 3 is much more efficient.
+            </p>
+            <p class="blog-p-tag">
+                The backs in Cluster 2 are pretty similar to the backs in Cluster 3, except they score a bit more and fumble much less.
+            </p>
+            <p class="blog-p-tag">
+                Clusters 0, 2, and 3 are all in the discussion for next best tier, after Cluster 4.
+                They each have some studs, solid, and meh backs, but none of them consistenly shine too much at any one stat.
+            </p>
+
+
+            <h3 class="h3-blog">RBs as Seven Tiers</h3>
+            <p class="blog-p-tag">
+                Last but not least, what happens when we split the backs into seven tiers?
+            </p>
+            <div class="iframe-container">
+                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-7-rushing-per-game.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                The seven tiers:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Josh Jacobs</li>
+                        <li>Derrick Henry</li>
+                        <li>Saquon Barkley</li>
+                        <li>Nick Chubb</li>
+                    </ul>
+            
+                    <b>Cluster 1 (Teal)</b>
+                    <ul class='bullet-list'>
+                        <li>Dalvin Cook</li>
+                        <li>Najee Harris</li>
+                        <li>Alvin Kamara</li>
+                        <li>Dameon Pierce</li>
+                        <li>Jonathan Taylor</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Pink)</b>
+                    <ul class='bullet-list'>
+                        <li>Leonard Fournette</li>
+                        <li>Jerick McKinnon</li>
+                        <li>Antonio Gibson</li>
+                        <li>Samaje Perine</li>
+                        <li>Rachaad White</li>
+                        <li>Kareem Hunt</li>
+                        <li>Michael Carter</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Christian McCaffrey</li>
+                        <li>Tony Pollard</li>
+                        <li>Miles Sanders</li>
+                        <li>Kenneth Walker III</li>
+                        <li>D'Andre Swift</li>
+                        <li>Raheem Mostert</li>
+                        <li>Tyler Allgeier</li>
+                        <li>Cordarrelle Patterson</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 4 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Rhamondre Stevenson</li>
+                        <li>Aaron Jones</li>
+                        <li>Travis Etienne</li>
+                        <li>Devin Singletary</li>
+                        <li>Jeff Wilson</li>
+                        <li>Isiah Pacheco</li>
+                    </ul>
+            
+                    <b>Cluster 5 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Austin Ekeler</li>
+                        <li>Jamaal Williams</li>
+                        <li>James Conner</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 6 (Orange)</b>
+                    <ul class='bullet-list'>
+                        <li>Joe Mixon</li>
+                        <li>Ezekiel Elliott</li>
+                        <li>David Montgomery</li>
+                        <li>AJ Dillon</li>
+                        <li>Latavius Murray</li>
+                        <li>Cam Akers</li>
+                        <li>D'Onta Foreman</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                The worst tier is consistent as ever, not a name changes in that tier represented by Cluster 2 above.
+            </p>
+            <p class="blog-p-tag">
+                Our elite tier of ruhsers, Cluster 0, has lost Miles Sanders, and it has the names you would expect from last season in
+                Jacobs, Henry, Barkley, and Chubb.
+            </p>
+            <p class="blog-p-tag">
+                Sanders is just too far behind those guys, in regards to his ruhsing yards per game and his carries per games. He was at 74.64 
+                ruhsing yards on 15.23 carries a game. Meanwhile, the other monsters had at least 82 rushing yards on 17.76 yards a game.
+            </p>
+            <p class="blog-p-tag">
+                Cluster 3 picks up Sanders, and loses Foreman and Murray. This is the group of good, but not great rushers that doens't fumble
+                much.
+            </p>
+            <p class="blog-p-tag">
+                It's good to see K9 in it, as a Walker stan. Additionally, Swift in this group shows that he isn't just a hyper-efficient guy, but
+                can produce good numbers when given opportunities. Again, very excited for Swift as long as he stays with the Eagles.
+            </p>
+            <p class="blog-p-tag">
+                Cluster 4 remains unchanged, this is another group of good but not great backs, who fumble a bit more than Cluster 3.
+                Otherwise, these two groups are very similar, with Cluster 4 scoring less.
+            </p>
+            <p class="blog-p-tag">
+                Cluster 6 is the next worst group of backs, when it comes to accumulating rushing stats. That being said, they are closer
+                to the middling back groups than they are to Cluster 2.
+            </p>
+            <p class="blog-p-tag">
+                It is kinda sad to see Mixon in Cluster 6, especially since he is (or at least was) viewed as a top fantasy back.
+                Given his situation hasn't really changed, I'm not optmistic for him going forward and would sell if I could get something
+                like a first or two seconds. That being said, he probably has at least one more year in him for contenders.
+            </p>
+            <p class="blog-p-tag">
+                Foreman and Murray have been moved to this tier in Cluster 6, which doesn't excite me for any of the other players in that
+                group (sorry Dillon owners), bar Monty due to his tremendous situation in Detroit.
+            </p>
+            <p class="blog-p-tag">
+                Cluster 5 and Cluster 1 separate the tier from the previous graph that was represented as Cluster 0.
+                This was the group of middling backs that was slightly better at rushing yards per game and carries per game.
+                They also score touchdowns at a much higher rate, but were meh-to-bad at efficiency.
+            </p>
+            <p class="blog-p-tag">
+                This separation makes a distinction on touchdowns per game. The two clusters are pretty similar otherwise, but Cluster 5
+                does score quite a bit more.
+            </p>
+            <p class="blog-p-tag">
+                Big ups to Conner for being in the same tier as Ekeler and Williams, as those two were 
+                ruhsing touchdown monsters last year. Once again, a great buy for contenders, especially with the IR discount.
+            </p>
+
+
+            <h2 class="h2-blog">Tiers (Receiving Totals)</h2>
+            <p class="blog-p-tag">
+                Now we shall take a look at running back tiers based on receiving stats,
+                specifically the following: "Receiving Yards", "Receptions", "Receiving TDs",
+                and "Targets".
+            </p>
+
+            <h3 class="h3-blog">RBs as Three Tiers</h3>
+            <p class="blog-p-tag">
+                We start by dividing running backs into three tiers:
+            </p>
+            <div class="iframe-container">
+                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-3-receiving.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                The players in each tier:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Josh Jacobs</li>
+                        <li>Derrick Henry</li>
+                        <li>Saquon Barkley</li>
+                        <li>Rhamondre Stevenson</li>
+                        <li>Tony Pollard</li>
+                        <li>Joe Mixon</li>
+                        <li>Dalvin Cook</li>
+                        <li>Najee Harris</li>
+                        <li>Alvin Kamara</li>
+                        <li>Travis Etienne</li>
+                        <li>James Conner</li>
+                        <li>D'Andre Swift</li>
+                        <li>Devin Singletary</li>
+                        <li>David Montgomery</li>
+                        <li>Antonio Gibson</li>
+                        <li>Samaje Perine</li>
+                        <li>Rachaad White</li>
+                        <li>Michael Carter</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Nick Chubb</li>
+                        <li>Jamaal Williams</li>
+                        <li>Miles Sanders</li>
+                        <li>Kenneth Walker III</li>
+                        <li>Ezekiel Elliott</li>
+                        <li>Raheem Mostert</li>
+                        <li>AJ Dillon</li>
+                        <li>Dameon Pierce</li>
+                        <li>Tyler Allgeier</li>
+                        <li>Jeff Wilson</li>
+                        <li>Cordarrelle Patterson</li>
+                        <li>Latavius Murray</li>
+                        <li>Jonathan Taylor</li>
+                        <li>Cam Akers</li>
+                        <li>Isiah Pacheco</li>
+                        <li>D'Onta Foreman</li>
+                        <li>Kareem Hunt</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Austin Ekeler</li>
+                        <li>Christian McCaffrey</li>
+                        <li>Aaron Jones</li>
+                        <li>Leonard Fournette</li>
+                        <li>Jerick McKinnon</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                From this first glance, it seems we have
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> The backs that kinda understand the art of receiving</li>
+                    <li><b>Cluster 1:</b> The backs that either don't know how to catch or just aren't used in the passing game</li>
+                    <li><b>Cluster 2:</b> The backs that tell coach to put them in at wide receiver</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                I'm a little surprised that Jones was in Cluster 2, but it seems his receiving touchdowns push him up into that group.
+            </p>
+            <p class="blog-p-tag">
+                Outside of that, I would have expected Kamara to be in Cluster 2, but perhaps he will redeem himself in the per game analysis.
+            </p>
+            <p class="blog-p-tag">
+                The rest is kinda expected, especially since Clusters 0 and 1 are so close to each other.
+            </p>
+
+            <h3 class="h3-blog">RBs as Four Tiers</h3>
+            <p class="blog-p-tag">
+                Taking a look at what changes when we have four tiers:
+            </p>
+            <div class="iframe-container">
+                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-4-receiving.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                Here are the tiers:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Jamaal Williams</li>
+                        <li>Miles Sanders</li>
+                        <li>Kenneth Walker III</li>
+                        <li>Ezekiel Elliott</li>
+                        <li>AJ Dillon</li>
+                        <li>Dameon Pierce</li>
+                        <li>Tyler Allgeier</li>
+                        <li>Jeff Wilson</li>
+                        <li>Cordarrelle Patterson</li>
+                        <li>Latavius Murray</li>
+                        <li>Jonathan Taylor</li>
+                        <li>Cam Akers</li>
+                        <li>Isiah Pacheco</li>
+                        <li>D'Onta Foreman</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Josh Jacobs</li>
+                        <li>Saquon Barkley</li>
+                        <li>Rhamondre Stevenson</li>
+                        <li>Aaron Jones</li>
+                        <li>Joe Mixon</li>
+                        <li>Leonard Fournette</li>
+                        <li>Alvin Kamara</li>
+                        <li>D'Andre Swift</li>
+                    </ul>
+            
+                    <b>Cluster 2 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Austin Ekeler</li>
+                        <li>Christian McCaffrey</li>
+                        <li>Jerick McKinnon</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Derrick Henry</li>
+                        <li>Nick Chubb</li>
+                        <li>Tony Pollard</li>
+                        <li>Dalvin Cook</li>
+                        <li>Najee Harris</li>
+                        <li>Travis Etienne</li>
+                        <li>James Conner</li>
+                        <li>Devin Singletary</li>
+                        <li>David Montgomery</li>
+                        <li>Raheem Mostert</li>
+                        <li>Antonio Gibson</li>
+                        <li>Samaje Perine</li>
+                        <li>Rachaad White</li>
+                        <li>Kareem Hunt</li>
+                        <li>Michael Carter</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                When going to four tiers we get a little more separation and insight to the receiving levels of backs.
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> The worst of the worst when it comes to receiving</li>
+                    <li><b>Cluster 1:</b> Good, but not insane</li>
+                    <li><b>Cluster 2:</b> Might as well start you at wide receiver</li>
+                    <li><b>Cluster 3:</b> Ehh, I guess you could catch a ball and do something with it</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                The elite tier contains CMC and Ekeler, which shouldn't really surprise anyone, but I am shocked that McKinnon is able
+                to hang around.
+            </p>
+            <p class="blog-p-tag">
+                McKinnon's receptions, receiving yards and targets are all within those of Cluster 1, but his receiving touchdowns (9)
+                led the league, which is what props him up in this elite tier of receiving backs.
+            </p>
+            <p class="blog-p-tag">
+                I am a little surprised that Taylor is in Cluster 0, but his value here is deflated a bit due to totals rather than per
+                game numbers.
+            </p>
+            <p class="blog-p-tag">
+                Addtionally, K9 being in Cluster 0 is interesting, as this might allow Charbonent to take up the passing down role for
+                the Seahawks. Something to keep an eye on, as the rookie gets integrated into the offense.
+            </p>
+            <p class="blog-p-tag">
+                Outside of that, I am a little surprised that both Pollard and ETN are not in Cluster 1, I thought they were a bit better
+                in the receiving game.
+            </p>
+
+            <h3 class="h3-blog">RBs as Five Tiers</h3>
+            <p class="blog-p-tag">
+                Let's check out the landscape when we evaluate it with five tiers:
+            </p>
+            <div class="iframe-container">
+                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-5-receiving.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                Each of the five tiers:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Josh Jacobs</li>
+                        <li>Derrick Henry</li>
+                        <li>Saquon Barkley</li>
+                        <li>Tony Pollard</li>
+                        <li>Dalvin Cook</li>
+                        <li>Najee Harris</li>
+                        <li>Travis Etienne</li>
+                        <li>James Conner</li>
+                        <li>Devin Singletary</li>
+                        <li>David Montgomery</li>
+                        <li>Raheem Mostert</li>
+                        <li>Antonio Gibson</li>
+                        <li>Samaje Perine</li>
+                        <li>Rachaad White</li>
+                        <li>Kareem Hunt</li>
+                        <li>Michael Carter</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Nick Chubb</li>
+                        <li>Jamaal Williams</li>
+                        <li>Miles Sanders</li>
+                        <li>Kenneth Walker III</li>
+                        <li>Ezekiel Elliott</li>
+                        <li>AJ Dillon</li>
+                        <li>Dameon Pierce</li>
+                        <li>Tyler Allgeier</li>
+                        <li>Jeff Wilson</li>
+                        <li>Cordarrelle Patterson</li>
+                        <li>Latavius Murray</li>
+                        <li>Jonathan Taylor</li>
+                        <li>Cam Akers</li>
+                        <li>Isiah Pacheco</li>
+                        <li>D'Onta Foreman</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Austin Ekeler</li>
+                        <li>Christian McCaffrey</li>
+                    </ul>
+            
+                    <b>Cluster 3 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Rhamondre Stevenson</li>
+                        <li>Aaron Jones</li>
+                        <li>Joe Mixon</li>
+                        <li>Leonard Fournette</li>
+                        <li>Alvin Kamara</li>
+                        <li>D'Andre Swift</li>
+                    </ul>
+            
+                    <b>Cluster 4 (Orange)</b>
+                    <ul class='bullet-list'>
+                        <li>Jerick McKinnon</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                A quick breakdown of the clusters:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> Middle of the pack receiving backs, they don't particularly excel at anything, but they aren't putrid at anything either.</li>
+                    <li><b>Cluster 1:</b> The worst of the worst. These backs only know how to run, hopefully.</li>
+                    <li><b>Cluster 2:</b> Gods amongst backs.</li>
+                    <li><b>Cluster 3:</b> Demi-gods?</li>
+                    <li><b>Cluster 4:</b> McKinnon.</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                McKinnon in his own tier makes a lot of sense to me. He's a Cluster 3 guy with elite touchdown numbers.
+                For that reason I thought he would be pretty decent as a zero running back option in PPR leauges, yet that
+                hasn't happened so far. I would still keep an eye on McKinnon, as he did come on late last year, but this is a take
+                that hasn't panned out for me so far.
+            </p>
+            <p class="blog-p-tag">
+                Swift in Cluster 3 highlights his value in my eyes. In terms of rushing, he was in the CMC tier.
+                In receiving, he's put himself in a good position.
+                Swift is someone I want anywhere I am contending and have pieces to buy him.
+            </p>
+            <p class="blog-p-tag">
+                The rest seems pretty expected to me.
+                I don't see a huge difference between those in the high end of Cluster 1 (Chubb, K9, Taylor) and Cluster 0, so, for me, these
+                backs are not ones I invest in because they have a high receiving ceiling.
+            </p>
+            <p class="blog-p-tag">
+                The interesting tiers for me are Clusters 2, 3, and 4, as these are areas where we could potentially identify a back who puts
+                up good receiving numbers (enough to be fantasy relevant), but is undervalued.
+            </p>
+
+            <h3 class="h3-blog">RBs as Six Tiers</h3>
+            <p class="blog-p-tag">
+                Taking a look at six tiers:
+            </p>
+            <div class="iframe-container">
+                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-6-receiving.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                These are the players in each of the tiers:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Orange)</b>
+                    <ul class='bullet-list'>
+                        <li>Jamaal Williams</li>
+                        <li>Miles Sanders</li>
+                        <li>Ezekiel Elliott</li>
+                        <li>Tyler Allgeier</li>
+                        <li>Cordarrelle Patterson</li>
+                        <li>Cam Akers</li>
+                        <li>Isiah Pacheco</li>
+                        <li>D'Onta Foreman</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Tony Pollard</li>
+                        <li>Aaron Jones</li>
+                        <li>Dalvin Cook</li>
+                        <li>Najee Harris</li>
+                        <li>James Conner</li>
+                        <li>D'Andre Swift</li>
+                        <li>Antonio Gibson</li>
+                        <li>Samaje Perine</li>
+                        <li>Rachaad White</li>
+                    </ul>
+
+                    <b>Cluster 2 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Austin Ekeler</li>
+                        <li>Christian McCaffrey</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Derrick Henry</li>
+                        <li>Nick Chubb</li>
+                        <li>Travis Etienne</li>
+                        <li>Kenneth Walker III</li>
+                        <li>Devin Singletary</li>
+                        <li>David Montgomery</li>
+                        <li>Raheem Mostert</li>
+                        <li>AJ Dillon</li>
+                        <li>Dameon Pierce</li>
+                        <li>Jeff Wilson</li>
+                        <li>Latavius Murray</li>
+                        <li>Jonathan Taylor</li>
+                        <li>Kareem Hunt</li>
+                        <li>Michael Carter</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 4 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Josh Jacobs</li>
+                        <li>Saquon Barkley</li>
+                        <li>Rhamondre Stevenson</li>
+                        <li>Joe Mixon</li>
+                        <li>Leonard Fournette</li>
+                        <li>Alvin Kamara</li>
+                    </ul>
+            
+                    <b>Cluster 5 (Teal)</b>
+                    <ul class='bullet-list'>
+                        <li>Jerick McKinnon</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                The breakdown of the clusters:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> I might be able to catch more balls than these guys, pause.</li>
+                    <li><b>Cluster 1:</b> These guys can catch, but are more valuable for their receiving touchdowns.</li>
+                    <li><b>Cluster 2:</b> Gods amongst backs.</li>
+                    <li><b>Cluster 3:</b> They might be able to react if a ball is thrown their way.</li>
+                    <li><b>Cluster 4:</b> Pretty good at receiving.</li>
+                    <li><b>Cluster 5:</b> McKinnon.</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                If I'm not trying to purchase the elite players (CMC and Ekeler), I would take a look at those in Clusters 1 and 4,
+                and maybe the McKinnon experiment (but that dream might already be dead).
+            </p>
+            <p class="blog-p-tag">
+                These players have a decent receiving base, from 200-520 receiving yards a season on 35-75 catches a season, with up
+                to 5 touchdowns. That's not bad production, especially if there is some rushing production to go along with it.
+            </p>
+            <p class="blog-p-tag">
+                There are some studs in this cluster, but for my money I would put it on Swift and Conner. They see to be the most undervalued
+                in my eyes, as both can produce borderline RB1 numbers on a per game basis.
+            </p>
+            <p class="blog-p-tag">
+                I think Kamara also desrves a shout, but his price may have exploded after his return from suspension. That would be my only 
+                hesitation on purchasing Kamara over Swift or Conner. I think for a similar price you could get Swift and Conner is a great
+                budget option.
+            </p>
+            <p class="blog-p-tag">
+                I want to also highlight that Rachaad White is in Cluster 1, so he may have some redeeming qualities in PPR settings. I 
+                still don't see a special player when I watch him, but 50 receptions on 58 targets for 290 yards is not bad from a
+                production perspective, especially since he was behind Big Lenny.
+            </p>
+            <p class="blog-p-tag">
+                I would sell after a couple of big PPR performances, like the one he just had on TNF against the Bills. Perhaps package him
+                in a deal for Kamara, Ekeler, or Swift. Ekeler may be especially worth it due to his rough start to this season.
+            </p>
+
+            <h3 class="h3-blog">RBs as Seven Tiers</h3>
+            <p class="blog-p-tag">
+                Last but not least, seven tiers:
+            </p>
+            <div class="iframe-container">
+                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-7-receiving.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                One last time, all of the tiers:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Orange)</b>
+                    <ul class='bullet-list'>
+                        <li>Tony Pollard</li>
+                        <li>Aaron Jones</li>
+                        <li>Dalvin Cook</li>
+                        <li>Najee Harris</li>
+                        <li>D'Andre Swift</li>
+                        <li>Antonio Gibson</li>
+                        <li>Samaje Perine</li>
+                        <li>Rachaad White</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Austin Ekeler</li>
+                        <li>Christian McCaffrey</li>
+                    </ul>
+            
+                    <b>Cluster 2 (Teal)</b>
+                    <ul class='bullet-list'>
+                        <li>Jamaal Williams</li>
+                        <li>Miles Sanders</li>
+                        <li>Ezekiel Elliott</li>
+                        <li>Tyler Allgeier</li>
+                        <li>Cam Akers</li>
+                        <li>Isiah Pacheco</li>
+                        <li>D'Onta Foreman</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Saquon Barkley</li>
+                        <li>Rhamondre Stevenson</li>
+                        <li>Joe Mixon</li>
+                        <li>Leonard Fournette</li>
+                        <li>Alvin Kamara</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 4 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Nick Chubb</li>
+                        <li>Kenneth Walker III</li>
+                        <li>Raheem Mostert</li>
+                        <li>AJ Dillon</li>
+                        <li>Dameon Pierce</li>
+                        <li>Jeff Wilson</li>
+                        <li>Cordarrelle Patterson</li>
+                        <li>Latavius Murray</li>
+                        <li>Jonathan Taylor</li>
+                        <li>Kareem Hunt</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 5 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Josh Jacobs</li>
+                        <li>Derrick Henry</li>
+                        <li>Travis Etienne</li>
+                        <li>James Conner</li>
+                        <li>Devin Singletary</li>
+                        <li>David Montgomery</li>
+                        <li>Michael Carter</li>
+                    </ul>
+            
+                    <b>Cluster 6 (Pink)</b>
+                    <ul class='bullet-list'>
+                        <li>Jerick McKinnon</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                The last breakdown on season receiving totals:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> Decent receiving backs with a nose for the endzone.</li>
+                    <li><b>Cluster 1:</b> The Gods.</li>
+                    <li><b>Cluster 2:</b> The dumpster fire.</li>
+                    <li><b>Cluster 3:</b> Great receiving backs, hampered by their touchdown stats.</li>
+                    <li><b>Cluster 4:</b> Not quite garbage, but also not good.</li>
+                    <li><b>Cluster 5:</b> A slightly worse version of Cluster 3.</li>
+                    <li><b>Cluster 6:</b> McKinnon.</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                Kamara is the back that stands out to me from this clustering.
+                He's in that tier of backs that is just behind the Gods and has looked good so far this year.
+                I think he could improve on his catches to target ratio with Carr, so a big buy for me.
+            </p>
+            <p class="blog-p-tag">
+                Conner is also in Cluster 5, so I'll keep pushing him as a great budget option for contenders.
+            </p>
+            <p class="blog-p-tag">
+                Note, ETN has popped into Cluster 5. He is a back I really like, and think is one of the more future proof guys in the
+                NFL due to his age and situation. I expect him to be pricey, but if you can splurge, I see it as a good investment.
+            </p>
+            <p class="blog-p-tag">
+                That wraps up what I have to say on the receiving total numbers from last season.
+            </p>
+
+
+            <h2 class="h2-blog">Tiers (Receiving Per Game)</h2>
+            <p class="blog-p-tag">
+                Let's see if any of our tiers change if we take look at the numbers on a per game basis. 
+            </p>
+            <h3 class="h3-blog">RBs as Three Tiers</h3>
+            <p class="blog-p-tag">
+                Starting with three tiers:
+            </p>
+            <div class="iframe-container">
+                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-3-receiving-per-game.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                The players in the three tiers:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Josh Jacobs</li>
+                        <li>Derrick Henry</li>
+                        <li>Saquon Barkley</li>
+                        <li>Rhamondre Stevenson</li>
+                        <li>Tony Pollard</li>
+                        <li>Dalvin Cook</li>
+                        <li>Najee Harris</li>
+                        <li>Travis Etienne</li>
+                        <li>James Conner</li>
+                        <li>Devin Singletary</li>
+                        <li>David Montgomery</li>
+                        <li>Raheem Mostert</li>
+                        <li>Dameon Pierce</li>
+                        <li>Antonio Gibson</li>
+                        <li>Jonathan Taylor</li>
+                        <li>Samaje Perine</li>
+                        <li>Rachaad White</li>
+                        <li>Michael Carter</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Nick Chubb</li>
+                        <li>Jamaal Williams</li>
+                        <li>Miles Sanders</li>
+                        <li>Kenneth Walker III</li>
+                        <li>Ezekiel Elliott</li>
+                        <li>AJ Dillon</li>
+                        <li>Tyler Allgeier</li>
+                        <li>Jeff Wilson</li>
+                        <li>Cordarrelle Patterson</li>
+                        <li>Latavius Murray</li>
+                        <li>Cam Akers</li>
+                        <li>Isiah Pacheco</li>
+                        <li>D'Onta Foreman</li>
+                        <li>Kareem Hunt</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Austin Ekeler</li>
+                        <li>Christian McCaffrey</li>
+                        <li>Aaron Jones</li>
+                        <li>Joe Mixon</li>
+                        <li>Leonard Fournette</li>
+                        <li>Alvin Kamara</li>
+                        <li>Jerick McKinnon</li>
+                        <li>D'Andre Swift</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                The breakdown of these three tiers:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> The solid receiving backs.</li>
+                    <li><b>Cluster 1:</b> Those that any fan feels like they can replace.</li>
+                    <li><b>Cluster 2:</b> The elites.</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                On a per game basis, that elite tier opens up a bit to some names you might've expected, like Swift and Kamara.
+                To my surprise, Mixon is also in it, which is a saving grace for him as he seemed pedestrian as a runner last year.
+            </p>
+            <p class="blog-p-tag">
+                The rest seems about right to me, and I don't have any intriguing observations or grievances.
+            </p>
+
+            <h3 class="h3-blog">RBs as Four Tiers</h3>
+            <p class="blog-p-tag">
+                Taking a look at our backs when we split them into four tiers:
+            </p>
+            <div class="iframe-container">
+                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-4-receiving-per-game.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                The players in each tier:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Jamaal Williams</li>
+                        <li>Miles Sanders</li>
+                        <li>Ezekiel Elliott</li>
+                        <li>Tyler Allgeier</li>
+                        <li>Cam Akers</li>
+                        <li>Isiah Pacheco</li>
+                        <li>D'Onta Foreman</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Josh Jacobs</li>
+                        <li>Saquon Barkley</li>
+                        <li>Rhamondre Stevenson</li>
+                        <li>Tony Pollard</li>
+                        <li>Aaron Jones</li>
+                        <li>Joe Mixon</li>
+                        <li>Leonard Fournette</li>
+                        <li>Alvin Kamara</li>
+                        <li>James Conner</li>
+                        <li>D'Andre Swift</li>
+                        <li>Antonio Gibson</li>
+                        <li>Samaje Perine</li>
+                    </ul>
+            
+                    <b>Cluster 2 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Austin Ekeler</li>
+                        <li>Christian McCaffrey</li>
+                        <li>Jerick McKinnon</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Derrick Henry</li>
+                        <li>Nick Chubb</li>
+                        <li>Dalvin Cook</li>
+                        <li>Najee Harris</li>
+                        <li>Travis Etienne</li>
+                        <li>Kenneth Walker III</li>
+                        <li>Devin Singletary</li>
+                        <li>David Montgomery</li>
+                        <li>Raheem Mostert</li>
+                        <li>AJ Dillon</li>
+                        <li>Dameon Pierce</li>
+                        <li>Jeff Wilson</li>
+                        <li>Cordarrelle Patterson</li>
+                        <li>Latavius Murray</li>
+                        <li>Jonathan Taylor</li>
+                        <li>Rachaad White</li>
+                        <li>Kareem Hunt</li>
+                        <li>Michael Carter</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                The breakdown of these three tiers:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> Avoid like the plague.</li>
+                    <li><b>Cluster 1:</b> The upper middle class.</li>
+                    <li><b>Cluster 2:</b> Goldmine.</li>
+                    <li><b>Cluster 3:</b> The lower middle class.</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                Again, I want to point out that McKinnon is in that tier with CMC and Ekeler here. I do wonder if he will showcase
+                anything this year, or if he remains fool's bronze (hard to call him gold with his age and current price). 
+            </p>
+            <p class="blog-p-tag">
+                Outside of that, we get a little nuance in regards to the middle of the pack. For PPR, the bakcs in Cluster 1 are
+                more favorable, as they edge out most of the backs in Cluster 3 in each of the stats above. 
+            </p>
+            <p class="blog-p-tag">
+                There isn't enough information or nuance to talk much further about values from this chart.
+            </p>
+
+            <h3 class="h3-blog">RBs as Five Tiers</h3>
+            <p class="blog-p-tag">
+                Extending our graphs to five tiers:
+            </p>
+            <div class="iframe-container">
+                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-5-receiving-per-game.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                Here are the tiers:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Josh Jacobs</li>
+                        <li>Derrick Henry</li>
+                        <li>Nick Chubb</li>
+                        <li>Dalvin Cook</li>
+                        <li>Najee Harris</li>
+                        <li>Travis Etienne</li>
+                        <li>Kenneth Walker III</li>
+                        <li>Devin Singletary</li>
+                        <li>David Montgomery</li>
+                        <li>Raheem Mostert</li>
+                        <li>AJ Dillon</li>
+                        <li>Dameon Pierce</li>
+                        <li>Jeff Wilson</li>
+                        <li>Cordarrelle Patterson</li>
+                        <li>Latavius Murray</li>
+                        <li>Jonathan Taylor</li>
+                        <li>Rachaad White</li>
+                        <li>Kareem Hunt</li>
+                        <li>Michael Carter</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Austin Ekeler</li>
+                        <li>Christian McCaffrey</li>
+                    </ul>
+            
+                    <b>Cluster 2 (Orange)</b>
+                    <ul class='bullet-list'>
+                        <li>Jamaal Williams</li>
+                        <li>Miles Sanders</li>
+                        <li>Ezekiel Elliott</li>
+                        <li>Tyler Allgeier</li>
+                        <li>Cam Akers</li>
+                        <li>Isiah Pacheco</li>
+                        <li>D'Onta Foreman</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Tony Pollard</li>
+                        <li>Aaron Jones</li>
+                        <li>Jerick McKinnon</li>
+                        <li>Samaje Perine</li>
+                    </ul>
+            
+                    <b>Cluster 4 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Saquon Barkley</li>
+                        <li>Rhamondre Stevenson</li>
+                        <li>Joe Mixon</li>
+                        <li>Leonard Fournette</li>
+                        <li>Alvin Kamara</li>
+                        <li>James Conner</li>
+                        <li>D'Andre Swift</li>
+                        <li>Antonio Gibson</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                A quick breakdown of each tier:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> These backs provide a little production in the passing game, but not enough to be viable off of just receiving numbers.</li>
+                    <li><b>Cluster 1:</b> The Gods.</li>
+                    <li><b>Cluster 2:</b> The dumpster.</li>
+                    <li><b>Cluster 3:</b> Decent receiving production on a per game basis. Slightly worse than Cluster 4, but the touchdown numbers salvage them.</li>
+                    <li><b>Cluster 4:</b> Really good receiving backs that are only held back by their receiving touchdowns.</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                That green group (Cluster 4) has some players in it that I really like to grab as a contender.
+                Again, we see Kamara, Swift and Conner being very valuable in the passing game.
+            </p>
+            <p class="blog-p-tag">
+                I cannot iterate enough how much I like each of these players for contenders. They are great purchases in PPR formats for those
+                who don't want to break the bank for Ekeler and CMC.
+            </p>
+            <p class="blog-p-tag">
+                The purple tier also offers some value in Pollard and Jones, and I do like both of these players.
+            </p>
+            <p class="blog-p-tag">
+                Although, Pollard is someone who I see priced closer to his ceiling that other backs, so I love the player, but not at his current price.
+            </p>
+            <p class="blog-p-tag">
+                Jones is someone I prefer more as he can be had for less and gives contenders a great RB2.
+            </p>
+            <p class="blog-p-tag">
+                Some of you may have noticed Perine and Gibson in these good, but not great tiers. I'm not a fan of either player.
+            </p>
+            <p class="blog-p-tag">
+                Gibson fumbles too much and seems put himself in the dog house frequently. Also, judging by his performances so far, volume
+                is a big concern.
+            </p>
+            <p class="blog-p-tag">
+                As for Perine, I don't like Denver very much this year. Also, most of his production came in 3-4 games last year, and I find
+                it hard for him to build on that for the remainder of the season.
+            </p>
+
+
+            <h3 class="h3-blog">RBs as Six Tiers</h3>
+            <p class="blog-p-tag">
+                Moving onto six tiers:
+            </p>
+            <div class="iframe-container">
+                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-6-receiving-per-game.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                Once again, the players in the tiers:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Josh Jacobs</li>
+                        <li>Derrick Henry</li>
+                        <li>Nick Chubb</li>
+                        <li>Travis Etienne</li>
+                        <li>Kenneth Walker III</li>
+                        <li>Devin Singletary</li>
+                        <li>David Montgomery</li>
+                        <li>Raheem Mostert</li>
+                        <li>AJ Dillon</li>
+                        <li>Dameon Pierce</li>
+                        <li>Jeff Wilson</li>
+                        <li>Cordarrelle Patterson</li>
+                        <li>Latavius Murray</li>
+                        <li>Jonathan Taylor</li>
+                        <li>Kareem Hunt</li>
+                        <li>Michael Carter</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Saquon Barkley</li>
+                        <li>Rhamondre Stevenson</li>
+                        <li>Joe Mixon</li>
+                        <li>Leonard Fournette</li>
+                        <li>Alvin Kamara</li>
+                        <li>James Conner</li>
+                        <li>D'Andre Swift</li>
+                    </ul>
+            
+                    <b>Cluster 2 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Austin Ekeler</li>
+                        <li>Christian McCaffrey</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 (Orange)</b>
+                    <ul class='bullet-list'>
+                        <li>Jamaal Williams</li>
+                        <li>Miles Sanders</li>
+                        <li>Ezekiel Elliott</li>
+                        <li>Tyler Allgeier</li>
+                        <li>Cam Akers</li>
+                        <li>Isiah Pacheco</li>
+                        <li>D'Onta Foreman</li>
+                    </ul>
+            
+                    <b>Cluster 4 (Teal)</b>
+                    <ul class='bullet-list'>
+                        <li>Jerick McKinnon</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 5 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Tony Pollard</li>
+                        <li>Aaron Jones</li>
+                        <li>Dalvin Cook</li>
+                        <li>Najee Harris</li>
+                        <li>Antonio Gibson</li>
+                        <li>Samaje Perine</li>
+                        <li>Rachaad White</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                The breakdown for six tiers:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> Provide some receiving production, but not much.</li>
+                    <li><b>Cluster 1:</b> Good receiving backs that are held back by their receiving touchdowns.</li>
+                    <li><b>Cluster 2:</b> CMC and Ekeler.</li>
+                    <li><b>Cluster 3:</b> The dumpster.</li>
+                    <li><b>Cluster 4:</b> McKinnon.</li>
+                    <li><b>Cluster 5:</b> A worse version of Cluster 1, but with more touchdown production.</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                It's good to see Swift, Kamara and Conner in that tier that is below the Gods, CMC and Ekeler.
+                This continues to reinforce my belief in them.
+            </p>
+            <p class="blog-p-tag">
+                Mixon being in that tier should be a relief to owners, as at least his receiving numbers prop up his value as a fantasy asset a bit.
+                That being said, Mixon is someone I would look to try and sidegrade - in terms of fantasy production - or upgrade after a high note.
+                He looked pretty poor last year, and the numbers seem to back up the eyes in this case.
+            </p>
+            <p class="blog-p-tag">
+                Some other observations:
+                <ul class="bullet-list">
+                    <li>
+                        The receiving production of both Jones and Pollard seems to depend on touchdowns.
+                        Makes me a little nervous that their numbers will dip a little this year, but I do think
+                        both are quality fantasy assets.
+                    </li>
+                    <li>
+                        Sanders did not get much receiving work last year. Makes you wonder if that will cap Swift in the Eagles receiving game,
+                        but so far he has benefitted from quite a bit of work in passing situations.
+                    </li>
+                    <li>
+                        I wonder if either ETN or K9 can develop a stronger receiving game. 
+                        It would make them incredible fantasy assets. As of now, it limits their ceiling.
+                        Although, ETN has improved dramatically this season with 27 catches on
+                        35 targets for 266 yards. Last season, he had 35 catches on 45 targets for 316 yards. 
+                        He is one of the most exciting running back assets to own.
+                    </li>
+                </ul>
+            </p>
+
+            <h3 class="h3-blog">RBs as Seven Tiers</h3>
+            <p class="blog-p-tag">
+                Finally, taking a look at the receiving stats for backs with seven tiers:
+            </p>
+            <div class="iframe-container">
+                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-7-receiving-per-game.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                Our last tier list for this section:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Teal)</b>
+                    <ul class='bullet-list'>
+                        <li>Jamaal Williams</li>
+                        <li>Miles Sanders</li>
+                        <li>Ezekiel Elliott</li>
+                        <li>Tyler Allgeier</li>
+                        <li>Cam Akers</li>
+                        <li>Isiah Pacheco</li>
+                        <li>D'Onta Foreman</li>
+                    </ul>
+            
+                    <b>Cluster 1 (Orange)</b>
+                    <ul class='bullet-list'>
+                        <li>Aaron Jones</li>
+                        <li>Joe Mixon</li>
+                        <li>Leonard Fournette</li>
+                        <li>Alvin Kamara</li>
+                        <li>D'Andre Swift</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Derrick Henry</li>
+                        <li>Nick Chubb</li>
+                        <li>Travis Etienne</li>
+                        <li>Kenneth Walker III</li>
+                        <li>Devin Singletary</li>
+                        <li>David Montgomery</li>
+                        <li>Raheem Mostert</li>
+                        <li>AJ Dillon</li>
+                        <li>Dameon Pierce</li>
+                        <li>Jeff Wilson</li>
+                        <li>Cordarrelle Patterson</li>
+                        <li>Latavius Murray</li>
+                        <li>Jonathan Taylor</li>
+                        <li>Kareem Hunt</li>
+                        <li>Michael Carter</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Austin Ekeler</li>
+                        <li>Christian McCaffrey</li>
+                    </ul>
+            
+                    <b>Cluster 4 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Tony Pollard</li>
+                        <li>Dalvin Cook</li>
+                        <li>Najee Harris</li>
+                        <li>Antonio Gibson</li>
+                        <li>Samaje Perine</li>
+                        <li>Rachaad White</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 5 (Pink)</b>
+                    <ul class='bullet-list'>
+                        <li>Jerick McKinnon</li>
+                    </ul>
+            
+                    <b>Cluster 6 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Josh Jacobs</li>
+                        <li>Saquon Barkley</li>
+                        <li>Rhamondre Stevenson</li>
+                        <li>James Conner</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                Our final tier breakdown:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> Backs that will not produce via the air.</li>
+                    <li><b>Cluster 1:</b> The tier just below CMC and Ekeler.</li>
+                    <li><b>Cluster 2:</b> These backs give a little receiving production, but they will not be fantasy relevant mainly through the air.</li>
+                    <li><b>Cluster 3:</b> CMC and Ekeler.</li>
+                    <li><b>Cluster 4:</b> Middle of the pack receiving backs who have a nose for the endzone.</li>
+                    <li><b>Cluster 5:</b> McKinnon.</li>
+                    <li><b>Cluster 6:</b> Good receiving backs who struggle to score receiving touchdowns.</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                Again, Swift in Kamara are in that tier just behind CMC and Ekeler. Both have
+                performed well this year, but I suspect their price is still worth paying for.
+            </p>
+            <p class="blog-p-tag">
+                The rest is much of the same at this point, so I'll leave the analysis at that for this post.
+            </p>
+
+
+            <h2 class="h2-blog">Summary</h2>
+            <p class="blog-p-tag">
+                Thanks to those who have made it this far! I hope you enjoyed this deeper dive in the running back position.
+            </p>
+            <p class="blog-p-tag">
+                Keep an eye out for the next piece, which will be part three on backs. I will look at the running back landscape via tiers 
+                in regards to both rushing and receiving stats, to try and get a final, comprehensive picture of the position.
+            </p>
+            <p class="blog-p-tag">
+                As always, the recap:
+            </p>
+            <ul class="bullet-list">
+                <li>For those still stuck in a dinosaur mindset, the game has changed. Backs who mainly (or only) produce via receiving numbers can be more than effective fantasy assets.</li>
+                <li>ETN flashed last year and is getting much better as an all around back. He's still a buy for me, as ETN appears to be a cornerstone going forward. Being tied to that offense for a while is very appealing.</li>
+                <li>Swift and Monty were my buys heading into this season. The situations they have inherited are out of this world. Buy if you still can.</li>
+                <li>Kamara and Conner turned into buys for me after looking at the numbers. Kamara is the budget Ekeler for contenders. Conner is the budget Kamara. Buy before it's too late.</li>
+                <li>Pierce is a really interesting buy low. He should be cheap and on volume alone might be serviceable as an RB2 for a contender, but Singletary and Pierce's performances this year make buying him risky.</li>
+                <li>Raschaad White does not pass the eye test for me. Sell if you can. Wait until he puts together a few PPR performances and then package him for someone better.</li>
+                <li>Taylor is a screaming buy low in my eyes. Tough situation this year, and injuries are still lingering. The future with AR looks bright, could be a smart buy (later in the season/the offseason) for a rebuilder who is very close to turning it around.</li>
+            </ul>
+            <p class="blog-p-tag">
+                Thanks again for reading! Excited for the next one!
+            </p>
+            <p class="blog-p-tag">
+                Cheers, <br />
+                Alex
+            </p>
+        </div>
+    </div>
+</body>
+<script>
+    $("#common-header").load("../header.html");
+</script>
