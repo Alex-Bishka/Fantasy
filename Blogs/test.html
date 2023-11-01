@@ -1,0 +1,27 @@
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var lazyImages = [].slice.call(document.querySelectorAll(".lazy-iframe"));
+  
+      if ("IntersectionObserver" in window) {
+        let lazyImageObserver = new IntersectionObserver(function(entries, observer) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              let lazyImage = entry.target;
+              lazyImage.src = lazyImage.dataset.src;
+              lazyImage.classList.remove("lazy-iframe");
+              lazyImageObserver.unobserve(lazyImage);
+            }
+          });
+        });
+  
+        lazyImages.forEach(function(lazyImage) {
+          lazyImageObserver.observe(lazyImage);
+        });
+      }
+    });
+  </script>
+  
+  <div class="iframe-container">
+      <iframe class="lazy-iframe" width="1020px" height="1020px" data-src="/Fantasy/Analysis/interactive/RB/clustering-4-both.html" frameborder="0"></iframe>
+  </div>
+  
