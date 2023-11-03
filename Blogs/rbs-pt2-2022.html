@@ -18,6 +18,34 @@
 
         gtag('config', 'G-MM1J2J7R3Q');
     </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let iframes = [].slice.call(document.querySelectorAll("iframe"));
+        
+            if ("IntersectionObserver" in window) {
+            let observer = new IntersectionObserver(function(entries, observer) {
+                entries.forEach(function(entry) {
+                console.log("entry:", entry)
+                if (entry.isIntersecting) {
+                    let iframe = entry.target;
+                    if (!iframe.getAttribute('data-loaded')) {
+                    iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                    iframe.setAttribute('data-loaded', 'true');
+                    }
+                } else {
+                    let iframe = entry.target;
+                    iframe.src = '';  // Unload the src if iframe is out of view
+                    iframe.removeAttribute('data-loaded');
+                }
+                });
+            }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+        
+            iframes.forEach(function(iframe) {
+                observer.observe(iframe);
+            });
+            }
+        });
+        </script>
 </head>
 
 <body>
@@ -87,7 +115,7 @@
                 This first graph represents running backs split into three tiers:
             </p>
             <div class="iframe-container">
-                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-3.html"></iframe>
+                <iframe data-src="/Fantasy/Analysis/interactive/RB/clustering-3.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 In addition to being able to interact with the graph below, here are the
@@ -218,7 +246,7 @@
                 With all that being said, let's see if we can get more nuance with four tiers:
             </p>
             <div class="iframe-container">
-                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-4.html" width="100%" height="100%" frameborder="0"></iframe>
+                <iframe data-src="/Fantasy/Analysis/interactive/RB/clustering-4.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 Here are the corresponding tiers:
@@ -310,7 +338,7 @@
                 Let's add another layer of complexity to this by creating another tier:
             </p>
             <div class="iframe-container">
-                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-5.html" width="100%" height="100%" frameborder="0"></iframe>
+                <iframe data-src="/Fantasy/Analysis/interactive/RB/clustering-5.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 Here are the five tiers:
@@ -407,7 +435,7 @@
                 How does the picture change when we increase to six tiers?
             </p>
             <div class="iframe-container">
-                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-6.html" width="100%" height="100%" frameborder="0"></iframe>
+                <iframe data-src="/Fantasy/Analysis/interactive/RB/clustering-6.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 The six tiers:
@@ -529,7 +557,7 @@
                 Last but not least, looking at the landscape with seven tiers:
             </p>
             <div class="iframe-container">
-                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-7.html" width="100%" height="100%" frameborder="0"></iframe>
+                <iframe data-src="/Fantasy/Analysis/interactive/RB/clustering-7.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 The seven tiers:
@@ -668,7 +696,7 @@
                 We'll start with three tiers:
             </p>
             <div class="iframe-container">
-                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-3-rushing-per-game.html"></iframe>
+                <iframe data-src="/Fantasy/Analysis/interactive/RB/clustering-3-rushing-per-game.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 Here are the three tiers:
@@ -771,7 +799,7 @@
                 Moving onto four tiers:
             </p>
             <div class="iframe-container">
-                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-4-rushing-per-game.html"></iframe>
+                <iframe data-src="/Fantasy/Analysis/interactive/RB/clustering-4-rushing-per-game.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 Here are the players in each of the tiers:
@@ -859,7 +887,7 @@
                 Expanding our number of tiers to five yields the following:
             </p>
             <div class="iframe-container">
-                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-5-rushing-per-game.html"></iframe>
+                <iframe data-src="/Fantasy/Analysis/interactive/RB/clustering-5-rushing-per-game.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 The players in each tier:
@@ -974,7 +1002,7 @@
                 Moving onto six tiers:
             </p>
             <div class="iframe-container">
-                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-6-rushing-per-game.html"></iframe>
+                <iframe data-src="/Fantasy/Analysis/interactive/RB/clustering-6-rushing-per-game.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 Once again, the players in each tier:
@@ -1091,7 +1119,7 @@
                 Last but not least, what happens when we split the backs into seven tiers?
             </p>
             <div class="iframe-container">
-                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-7-rushing-per-game.html"></iframe>
+                <iframe data-src="/Fantasy/Analysis/interactive/RB/clustering-7-rushing-per-game.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 The seven tiers:
@@ -1238,7 +1266,7 @@
                 We start by dividing running backs into three tiers:
             </p>
             <div class="iframe-container">
-                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-3-receiving.html"></iframe>
+                <iframe data-src="/Fantasy/Analysis/interactive/RB/clustering-3-receiving.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 The players in each tier:
@@ -1325,7 +1353,7 @@
                 Taking a look at what changes when we have four tiers:
             </p>
             <div class="iframe-container">
-                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-4-receiving.html"></iframe>
+                <iframe data-src="/Fantasy/Analysis/interactive/RB/clustering-4-receiving.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 Here are the tiers:
@@ -1428,7 +1456,7 @@
                 Let's check out the landscape when we evaluate it with five tiers:
             </p>
             <div class="iframe-container">
-                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-5-receiving.html"></iframe>
+                <iframe data-src="/Fantasy/Analysis/interactive/RB/clustering-5-receiving.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 Each of the five tiers:
@@ -1536,7 +1564,7 @@
                 Taking a look at six tiers:
             </p>
             <div class="iframe-container">
-                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-6-receiving.html"></iframe>
+                <iframe data-src="/Fantasy/Analysis/interactive/RB/clustering-6-receiving.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 These are the players in each of the tiers:
@@ -1657,7 +1685,7 @@
                 Last but not least, seven tiers:
             </p>
             <div class="iframe-container">
-                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-7-receiving.html"></iframe>
+                <iframe data-src="/Fantasy/Analysis/interactive/RB/clustering-7-receiving.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 One last time, all of the tiers:
@@ -1779,7 +1807,7 @@
                 Starting with three tiers:
             </p>
             <div class="iframe-container">
-                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-3-receiving-per-game.html"></iframe>
+                <iframe data-src="/Fantasy/Analysis/interactive/RB/clustering-3-receiving-per-game.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 The players in the three tiers:
@@ -1864,7 +1892,7 @@
                 Taking a look at our backs when we split them into four tiers:
             </p>
             <div class="iframe-container">
-                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-4-receiving-per-game.html"></iframe>
+                <iframe data-src="/Fantasy/Analysis/interactive/RB/clustering-4-receiving-per-game.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 The players in each tier:
@@ -1958,7 +1986,7 @@
                 Extending our graphs to five tiers:
             </p>
             <div class="iframe-container">
-                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-5-receiving-per-game.html"></iframe>
+                <iframe data-src="/Fantasy/Analysis/interactive/RB/clustering-5-receiving-per-game.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 Here are the tiers:
@@ -2075,7 +2103,7 @@
                 Moving onto six tiers:
             </p>
             <div class="iframe-container">
-                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-6-receiving-per-game.html"></iframe>
+                <iframe data-src="/Fantasy/Analysis/interactive/RB/clustering-6-receiving-per-game.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 Once again, the players in the tiers:
@@ -2200,7 +2228,7 @@
                 Finally, taking a look at the receiving stats for backs with seven tiers:
             </p>
             <div class="iframe-container">
-                <iframe src="/Fantasy/Analysis/interactive/RB/clustering-7-receiving-per-game.html"></iframe>
+                <iframe data-src="/Fantasy/Analysis/interactive/RB/clustering-7-receiving-per-game.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 Our last tier list for this section:
