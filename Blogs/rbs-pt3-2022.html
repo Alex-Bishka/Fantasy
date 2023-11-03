@@ -3,7 +3,7 @@
     <link rel="stylesheet" href="/Fantasy/styles.css">
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script data-src="/Fantasy/script.js" defer></script>
+    <script src="/Fantasy/script.js" defer></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,18 +28,13 @@
               entries.forEach(function(entry) {
                 console.log("entry:", entry)
                 if (entry.isIntersecting) {
-                  console.log("showing iframe")
                   let iframe = entry.target;
-                  console.log(iframe.src)
                   if (!iframe.getAttribute('data-loaded')) {
-                    console.log("iframe source being set:", iframe.dataset.src)
                     iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
                     iframe.setAttribute('data-loaded', 'true');
                   }
                 } else {
-                  console.log("hiding the iframe")
                   let iframe = entry.target;
-                  console.log(iframe.src)
                   iframe.src = '';  // Unload the src if iframe is out of view
                   iframe.removeAttribute('data-loaded');
                 }
