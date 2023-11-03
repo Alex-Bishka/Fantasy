@@ -3,7 +3,7 @@
     <link rel="stylesheet" href="/Fantasy/styles.css">
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="/Fantasy/script.js" defer></script>
+    <script data-src="/Fantasy/script.js" defer></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,6 +18,40 @@
 
         gtag('config', 'G-MM1J2J7R3Q');
     </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+      
+          if ("IntersectionObserver" in window) {
+            let observer = new IntersectionObserver(function(entries, observer) {
+              entries.forEach(function(entry) {
+                console.log("entry:", entry)
+                if (entry.isIntersecting) {
+                  console.log("showing iframe")
+                  let iframe = entry.target;
+                  console.log(iframe.src)
+                  if (!iframe.getAttribute('data-loaded')) {
+                    console.log("iframe source being set:", iframe.dataset.src)
+                    iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                    iframe.setAttribute('data-loaded', 'true');
+                  }
+                } else {
+                  console.log("hiding the iframe")
+                  let iframe = entry.target;
+                  console.log(iframe.src)
+                  iframe.src = '';  // Unload the src if iframe is out of view
+                  iframe.removeAttribute('data-loaded');
+                }
+              });
+            }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+      
+            iframes.forEach(function(iframe) {
+              observer.observe(iframe);
+            });
+          }
+        });
+      </script>
 </head>
 
 <body>
@@ -80,7 +114,7 @@
                 Let's dive in and see what the position group looks like with three tiers:
             </p>
             <div class="iframe-container">
-                <iframe class="large-iframe"src="/Fantasy/Analysis/interactive/RB/clustering-3-both.html"></iframe>
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/RB/clustering-3-both.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 Here are the players in each tier:  
@@ -188,7 +222,7 @@
                 Let's analyze the running back landscape with the lens of four tiers:
             </p>
             <div class="iframe-container">
-                <iframe class="large-iframe"src="/Fantasy/Analysis/interactive/RB/clustering-4-both.html" width="100%" height="100%" frameborder="0"></iframe>
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/RB/clustering-4-both.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 The players in each tier:
@@ -310,7 +344,7 @@
                 Adding another tier to the pot:
             </p>
             <div class="iframe-container">
-                <iframe class="large-iframe"src="/Fantasy/Analysis/interactive/RB/clustering-5-both.html" width="100%" height="100%" frameborder="0"></iframe>
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/RB/clustering-5-both.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 The backs in each tier:
@@ -425,7 +459,7 @@
                 This brings us to six tiers:
             </p>
             <div class="iframe-container">
-                <iframe class="large-iframe"src="/Fantasy/Analysis/interactive/RB/clustering-6-both.html" width="100%" height="100%" frameborder="0"></iframe>
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/RB/clustering-6-both.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 The six tiers broken down:
@@ -543,7 +577,7 @@
                 Our final tier analysis for season totals:
             </p>
             <div class="iframe-container">
-                <iframe class="large-iframe"src="/Fantasy/Analysis/interactive/RB/clustering-7-both.html" width="100%" height="100%" frameborder="0"></iframe>
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/RB/clustering-7-both.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 Players in each of the seven tiers 
@@ -690,7 +724,7 @@
                 We start with separating the backs into three tiers:
             </p>
             <div class="iframe-container">
-                <iframe class="large-iframe"src="/Fantasy/Analysis/interactive/RB/clustering-3-both-per-game.html"></iframe>
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/RB/clustering-3-both-per-game.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 The tier list:
@@ -787,7 +821,7 @@
                 Moving on to seeing the running back landscape with four tiers:
             </p>
             <div class="iframe-container">
-                <iframe class="large-iframe"src="/Fantasy/Analysis/interactive/RB/clustering-4-both-per-game.html"></iframe>
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/RB/clustering-4-both-per-game.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 Each tier with the players in them:
@@ -892,7 +926,7 @@
                 Expanding our analysis to five tiers:
             </p>
             <div class="iframe-container">
-                <iframe class="large-iframe"src="/Fantasy/Analysis/interactive/RB/clustering-5-both-per-game.html"></iframe>
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/RB/clustering-5-both-per-game.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 The players in each of the five tiers:
@@ -1004,7 +1038,7 @@
                 Now we see how the landscape shifts with six tiers:
             </p>
             <div class="iframe-container">
-                <iframe class="large-iframe"src="/Fantasy/Analysis/interactive/RB/clustering-6-both-per-game.html"></iframe>
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/RB/clustering-6-both-per-game.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 The six tiers of backs listed:
@@ -1127,7 +1161,7 @@
                 Our final tier analysis break down:
             </p>
             <div class="iframe-container">
-                <iframe class="large-iframe"src="/Fantasy/Analysis/interactive/RB/clustering-7-both-per-game.html"></iframe>
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/RB/clustering-7-both-per-game.html"></iframe>
             </div>
             <p class="blog-p-tag">
                 The players in each cluster:
