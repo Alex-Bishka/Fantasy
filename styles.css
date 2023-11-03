@@ -16,6 +16,13 @@ iframe {
     display: inline-block;
 }
 
+.large-iframe {
+    width: 1020px;
+    height: 1020px;
+    border: 0;
+    display: inline-block;
+}
+
 .iframe-container {
     text-align: center;
 }
