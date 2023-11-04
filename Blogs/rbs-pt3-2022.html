@@ -26,7 +26,6 @@
           if ("IntersectionObserver" in window) {
             let observer = new IntersectionObserver(function(entries, observer) {
               entries.forEach(function(entry) {
-                console.log("entry:", entry)
                 if (entry.isIntersecting) {
                   let iframe = entry.target;
                   if (!iframe.getAttribute('data-loaded')) {
