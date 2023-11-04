@@ -1,0 +1,1017 @@
+<head>
+    <title>QBs in 2022 Part 2</title>
+    <link rel="stylesheet" href="/Fantasy/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/Fantasy/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+      
+          if ("IntersectionObserver" in window) {
+            let observer = new IntersectionObserver(function(entries, observer) {
+              entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                  let iframe = entry.target;
+                  if (!iframe.getAttribute('data-loaded')) {
+                    iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                    iframe.setAttribute('data-loaded', 'true');
+                  }
+                } else {
+                  let iframe = entry.target;
+                  iframe.src = '';  // Unload the src if iframe is out of view
+                  iframe.removeAttribute('data-loaded');
+                }
+              });
+            }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+      
+            iframes.forEach(function(iframe) {
+              observer.observe(iframe);
+            });
+          }
+        });
+      </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div class="scroll-div">
+            <h1>QBs in 2022 Part 2</h1>
+
+
+            <h2>TL;DR</h2>
+            <p class="blog-p-tag">
+            <ul class="bullet-list">
+                <li>TODO</li>
+                <li></li>
+            </ul>
+            </p>
+
+            <h2 class="h2-blog">Overview</h2>
+            <p class="blog-p-tag">
+                Welcome back to yet another analysis piece on position group performance in 2022. This is part two for quarterbacks,
+                where we be using passing stats to create quarterback tiers.
+            </p>
+            <p class="blog-p-tag">
+                The goal is to find hidden value from these tiers, in other words: opportunities to add underappreciated talent to your roster.
+            </p>
+            <p class="blog-p-tag">
+                <a href="https://alex-bishka.github.io/Fantasy/Blogs/qbs2022">Part one</a> focuses on trends amongst quarterback stats to find points of arbitrage, so if you're interested
+                in looking even further into the subject, I would recommned looking back at it.
+            </p>
+            <p class="blog-p-tag">
+                For those curious about analysis on the other position groups in 2022, please check out the <a href="https://alex-bishka.github.io/Fantasy/Blogs.html">blogs page</a>.
+            </p>
+            <p class="blog-p-tag">
+                <b>My data disclaimer, as always:</b>
+            <ul class="bullet-list">
+                <li>I don't take into account anything related to two point conversions, partly due to
+                    the randomness and small sample size but mostly because it was difficult to incorporate into the
+                    data I
+                    fetched</li>
+                <li>The top 30 QBs I analyze are by the top 40 fantasy point totals, this is done for
+                    simplicity and reusability of graphing code</li>
+            </ul>
+            </p>
+
+
+            <h2 class="h2-blog">Tiers (Season Totals)</h2>
+            <p class="blog-p-tag">
+                The passing stats that we will evaluate quarterbacks on:
+                "Passing Yards", "Attempts", "Completions", "Passing TDs", and "Interceptions".
+            </p>
+
+            <h3 class="h3-blog">QBs as Three Tiers</h3>
+            <p class="blog-p-tag">
+                Starting off with three tiers:
+            </p>
+            <div class="iframe-container">
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-3.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                The players in each tier:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Jalen Hurts</li>
+                        <li>Aaron Rodgers</li>
+                        <li>Tua Tagovailoa</li>
+                        <li>Russell Wilson</li>
+                        <li>Derek Carr</li>
+                        <li>Dak Prescott</li>
+                        <li>Davis Mills</li>
+                        <li>Mac Jones</li>
+                        <li>Matt Ryan</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Patrick Mahomes</li>
+                        <li>Josh Allen</li>
+                        <li>Joe Burrow</li>
+                        <li>Geno Smith</li>
+                        <li>Trevor Lawrence</li>
+                        <li>Kirk Cousins</li>
+                        <li>Jared Goff</li>
+                        <li>Justin Herbert</li>
+                        <li>Tom Brady</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Fields</li>
+                        <li>Daniel Jones</li>
+                        <li>Lamar Jackson</li>
+                        <li>Kyler Murray</li>
+                        <li>Marcus Mariota</li>
+                        <li>Andy Dalton</li>
+                        <li>Jacoby Brissett</li>
+                        <li>Jimmy Garoppolo</li>
+                        <li>Ryan Tannehill</li>
+                        <li>Kenny Pickett</li>
+                        <li>Baker Mayfield</li>
+                        <li>Taylor Heinicke</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                A quick breakdown of each tier:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> Middling numbers, very much between Cluster 1 and Cluster 2. The exception is interceptions: this group is slightly worse than Cluster 1.</li>
+                    <li><b>Cluster 1:</b> QB 1 territory. These guys thorw the ball frequently, and accumulate a substantial amount of yards and touchdowns. Their interception numbers are about on par with Cluster 0.</li>
+                    <li><b>Cluster 2:</b> Quarterbacks who don't attempt or complete many passes. As a result, they don't have many passing yards, touchdowns or interceptions.</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                You definitely want a quarterback in Cluster 1. That is a sustainable and successful fantasy archetype for the quarterback position.
+                Obviously not everyone will be Mahomes, but 2022 Goff, TLaw, Cousins, etc. offer very solid QB1 numbers.
+            </p>
+            <p class="blog-p-tag">
+                Furthermore, you can get a decent start without breaking the bank like Brady. For this season, my favorite quarterback from
+                this cluster - in terms of bang for your buck - was Goff.
+            </p>
+            <p class="blog-p-tag">
+                I would still say Goff is at a good price: listed as QB14 on KTC (as of 10/3/23). That feels like a pretty sweet price for QB9 on the season.
+                I am quite confident he will finish as a QB1 in that Detroit offense, and see no reason why he can't be a lower end QB1 for the foreseeable future
+                in that situation.
+            </p>
+            <p class="blog-p-tag">
+                Another observation worth mentioning: Cluster 2 has some star names in it.
+                Looking at the per game numbers, Murray does improve, so I'll hold off my judgement on him for now.
+            </p>
+            <p class="blog-p-tag">
+                Lamar, Fields, and Danny Dimes are all in Cluster 2. That concerns me. I love the running threat that each of them have,
+                but I would want them to at least be in Cluster 0... 
+            </p>
+            <p class="blog-p-tag">
+                I said in in <a href="https://alex-bishka.github.io/Fantasy/Blogs/qbs2022">part one</a>, but for the major deficiencies in the passing game, I would want out on Fields.
+                Fields is such an outlier, it terrifies me. Could he turn it around? Maybe... but I am doubtful for many reasons.
+            </p>
+            <p class="blog-p-tag">
+                Fields had two monster games in 2023, but they were against very favorable matchups: Denver and Washington.
+                Every other game, he has looked meh at best. I would look to sell after a couple of monster rushing games.
+            </p>
+            <p class="blog-p-tag">
+                I am a little more lenient on Jones and Jackson, because they both have showed much more in the passing game than Fields,
+                but Jones would make me very uneasy. The Giants have such a bad oline and the Waller experiment hasn't really worked out.
+            </p>
+            <p class="blog-p-tag">
+                The reason I'm more iffy on moving off of Jones is because I don't think you can recoup much value for him, and he still might offer a 
+                QB1/QB2 game here and there, which is useful in superflex. Fields, on the other hand, could still yield a good-to-great haul.
+            </p>
+            <p class="blog-p-tag">
+                I am most comfortable riding out Jackson. He's having a really good season so far, and could beat his MVP season passing numbers, which
+                are in the ball park of being in Cluster 2 above. That being said, I would consider a TLaw+ offer for Jackson, just for sustainablity concerns,
+                running quarterbacks getting hurt a little too much for my taste.
+            </p>
+
+            <h3 class="h3-blog">QBs as Four Tiers</h3>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <div class="iframe-container">
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-4.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Patrick Mahomes</li>
+                        <li>Josh Allen</li>
+                        <li>Joe Burrow</li>
+                        <li>Geno Smith</li>
+                        <li>Trevor Lawrence</li>
+                        <li>Kirk Cousins</li>
+                        <li>Jared Goff</li>
+                        <li>Justin Herbert</li>
+                        <li>Tom Brady</li>
+                        <li>Aaron Rodgers</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Fields</li>
+                        <li>Lamar Jackson</li>
+                        <li>Kyler Murray</li>
+                        <li>Marcus Mariota</li>
+                        <li>Jacoby Brissett</li>
+                        <li>Jimmy Garoppolo</li>
+                        <li>Ryan Tannehill</li>
+                        <li>Kenny Pickett</li>
+                        <li>Baker Mayfield</li>
+                        <li>Taylor Heinicke</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Jalen Hurts</li>
+                        <li>Daniel Jones</li>
+                        <li>Tua Tagovailoa</li>
+                        <li>Andy Dalton</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Russell Wilson</li>
+                        <li>Derek Carr</li>
+                        <li>Dak Prescott</li>
+                        <li>Davis Mills</li>
+                        <li>Mac Jones</li>
+                        <li>Matt Ryan</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                TODO:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> TODO</li>
+                    <li><b>Cluster 1:</b> TODO</li>
+                    <li><b>Cluster 2:</b> TODO</li>
+                    <li><b>Cluster 3:</b> TODO</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+
+            <h3 class="h3-blog">QBs as Five Tiers</h3>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <div class="iframe-container">
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-5.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Fields</li>
+                        <li>Lamar Jackson</li>
+                        <li>Kyler Murray</li>
+                        <li>Marcus Mariota</li>
+                        <li>Andy Dalton</li>
+                        <li>Jacoby Brissett</li>
+                        <li>Jimmy Garoppolo</li>
+                        <li>Ryan Tannehill</li>
+                        <li>Kenny Pickett</li>
+                        <li>Baker Mayfield</li>
+                        <li>Taylor Heinicke</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Patrick Mahomes</li>
+                        <li>Josh Allen</li>
+                        <li>Joe Burrow</li>
+                        <li>Geno Smith</li>
+                        <li>Kirk Cousins</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Aaron Rodgers</li>
+                        <li>Russell Wilson</li>
+                        <li>Derek Carr</li>
+                        <li>Dak Prescott</li>
+                        <li>Davis Mills</li>
+                        <li>Mac Jones</li>
+                        <li>Matt Ryan</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Jalen Hurts</li>
+                        <li>Daniel Jones</li>
+                        <li>Tua Tagovailoa</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 4 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Trevor Lawrence</li>
+                        <li>Jared Goff</li>
+                        <li>Justin Herbert</li>
+                        <li>Tom Brady</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                TODO:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> TODO</li>
+                    <li><b>Cluster 1:</b> TODO</li>
+                    <li><b>Cluster 2:</b> TODO</li>
+                    <li><b>Cluster 3:</b> TODO</li>
+                    <li><b>Cluster 4:</b> TODO</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+
+            <h3 class="h3-blog">QBs as Six Tiers</h3>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <div class="iframe-container">
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-6.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Fields</li>
+                        <li>Marcus Mariota</li>
+                        <li>Andy Dalton</li>
+                        <li>Kenny Pickett</li>
+                        <li>Baker Mayfield</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Trevor Lawrence</li>
+                        <li>Jared Goff</li>
+                        <li>Justin Herbert</li>
+                        <li>Tom Brady</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Patrick Mahomes</li>
+                        <li>Josh Allen</li>
+                        <li>Joe Burrow</li>
+                        <li>Geno Smith</li>
+                        <li>Kirk Cousins</li>
+                        <li>Aaron Rodgers</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Russell Wilson</li>
+                        <li>Derek Carr</li>
+                        <li>Dak Prescott</li>
+                        <li>Davis Mills</li>
+                        <li>Mac Jones</li>
+                        <li>Matt Ryan</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 4 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Lamar Jackson</li>
+                        <li>Kyler Murray</li>
+                        <li>Jacoby Brissett</li>
+                        <li>Jimmy Garoppolo</li>
+                        <li>Ryan Tannehill</li>
+                        <li>Taylor Heinicke</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 5 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Jalen Hurts</li>
+                        <li>Daniel Jones</li>
+                        <li>Tua Tagovailoa</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                TODO:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> TODO</li>
+                    <li><b>Cluster 1:</b> TODO</li>
+                    <li><b>Cluster 2:</b> TODO</li>
+                    <li><b>Cluster 3:</b> TODO</li>
+                    <li><b>Cluster 4:</b> TODO</li>
+                    <li><b>Cluster 5:</b> TODO</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+
+            <h3 class="h3-blog">QBs as Seven Tiers</h3>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <div class="iframe-container">
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-7.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Patrick Mahomes</li>
+                        <li>Josh Allen</li>
+                        <li>Joe Burrow</li>
+                        <li>Geno Smith</li>
+                        <li>Kirk Cousins</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Fields</li>
+                        <li>Kyler Murray</li>
+                        <li>Marcus Mariota</li>
+                        <li>Kenny Pickett</li>
+                        <li>Baker Mayfield</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Russell Wilson</li>
+                        <li>Derek Carr</li>
+                        <li>Dak Prescott</li>
+                        <li>Davis Mills</li>
+                        <li>Mac Jones</li>
+                        <li>Matt Ryan</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Jalen Hurts</li>
+                        <li>Daniel Jones</li>
+                        <li>Tua Tagovailoa</li>
+                        <li>Andy Dalton</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 4 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Herbert</li>
+                        <li>Tom Brady</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 5 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Lamar Jackson</li>
+                        <li>Jacoby Brissett</li>
+                        <li>Jimmy Garoppolo</li>
+                        <li>Ryan Tannehill</li>
+                        <li>Taylor Heinicke</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 6 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Trevor Lawrence</li>
+                        <li>Jared Goff</li>
+                        <li>Aaron Rodgers</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                TODO:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> TODO</li>
+                    <li><b>Cluster 1:</b> TODO</li>
+                    <li><b>Cluster 2:</b> TODO</li>
+                    <li><b>Cluster 3:</b> TODO</li>
+                    <li><b>Cluster 4:</b> TODO</li>
+                    <li><b>Cluster 5:</b> TODO</li>
+                    <li><b>Cluster 6:</b> TODO</li>
+                </ul>
+            </p>
+
+
+            <h2 class="h2-blog">Tiers (Per Game)</h2>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+
+            <h3 class="h3-blog">QBs as Three Tiers</h3>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <div class="iframe-container">
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-3-per-game.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Aaron Rodgers</li>
+                        <li>Russell Wilson</li>
+                        <li>Derek Carr</li>
+                        <li>Kyler Murray</li>
+                        <li>Dak Prescott</li>
+                        <li>Davis Mills</li>
+                        <li>Mac Jones</li>
+                        <li>Matt Ryan</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Fields</li>
+                        <li>Daniel Jones</li>
+                        <li>Lamar Jackson</li>
+                        <li>Marcus Mariota</li>
+                        <li>Andy Dalton</li>
+                        <li>Jacoby Brissett</li>
+                        <li>Jimmy Garoppolo</li>
+                        <li>Ryan Tannehill</li>
+                        <li>Kenny Pickett</li>
+                        <li>Baker Mayfield</li>
+                        <li>Taylor Heinicke</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Patrick Mahomes</li>
+                        <li>Josh Allen</li>
+                        <li>Jalen Hurts</li>
+                        <li>Joe Burrow</li>
+                        <li>Geno Smith</li>
+                        <li>Trevor Lawrence</li>
+                        <li>Kirk Cousins</li>
+                        <li>Jared Goff</li>
+                        <li>Justin Herbert</li>
+                        <li>Tom Brady</li>
+                        <li>Tua Tagovailoa</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                TODO:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> TODO</li>
+                    <li><b>Cluster 1:</b> TODO</li>
+                    <li><b>Cluster 2:</b> TODO</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+
+            <h3 class="h3-blog">QBs as Four Tiers</h3>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <div class="iframe-container">
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-4-per-game.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Patrick Mahomes</li>
+                        <li>Josh Allen</li>
+                        <li>Joe Burrow</li>
+                        <li>Kirk Cousins</li>
+                        <li>Justin Herbert</li>
+                        <li>Tom Brady</li>
+                        <li>Matt Ryan</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Fields</li>
+                        <li>Daniel Jones</li>
+                        <li>Lamar Jackson</li>
+                        <li>Marcus Mariota</li>
+                        <li>Andy Dalton</li>
+                        <li>Jacoby Brissett</li>
+                        <li>Ryan Tannehill</li>
+                        <li>Kenny Pickett</li>
+                        <li>Baker Mayfield</li>
+                        <li>Taylor Heinicke</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Jalen Hurts</li>
+                        <li>Geno Smith</li>
+                        <li>Trevor Lawrence</li>
+                        <li>Jared Goff</li>
+                        <li>Tua Tagovailoa</li>
+                        <li>Kyler Murray</li>
+                        <li>Jimmy Garoppolo</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Aaron Rodgers</li>
+                        <li>Russell Wilson</li>
+                        <li>Derek Carr</li>
+                        <li>Dak Prescott</li>
+                        <li>Davis Mills</li>
+                        <li>Mac Jones</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                TODO:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> TODO</li>
+                    <li><b>Cluster 1:</b> TODO</li>
+                    <li><b>Cluster 2:</b> TODO</li>
+                    <li><b>Cluster 3:</b> TODO</li>
+                </ul>
+            </p>
+
+            <h3 class="h3-blog">QBs as Five Tiers</h3>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <div class="iframe-container">
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-5-per-game.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Daniel Jones</li>
+                        <li>Lamar Jackson</li>
+                        <li>Russell Wilson</li>
+                        <li>Andy Dalton</li>
+                        <li>Mac Jones</li>
+                        <li>Jimmy Garoppolo</li>
+                        <li>Ryan Tannehill</li>
+                        <li>Kenny Pickett</li>
+                        <li>Baker Mayfield</li>
+                        <li>Taylor Heinicke</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Patrick Mahomes</li>
+                        <li>Josh Allen</li>
+                        <li>Joe Burrow</li>
+                        <li>Kirk Cousins</li>
+                        <li>Justin Herbert</li>
+                        <li>Tom Brady</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Derek Carr</li>
+                        <li>Dak Prescott</li>
+                        <li>Davis Mills</li>
+                        <li>Matt Ryan</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Fields</li>
+                        <li>Marcus Mariota</li>
+                        <li>Jacoby Brissett</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 4 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Jalen Hurts</li>
+                        <li>Geno Smith</li>
+                        <li>Trevor Lawrence</li>
+                        <li>Jared Goff</li>
+                        <li>Aaron Rodgers</li>
+                        <li>Tua Tagovailoa</li>
+                        <li>Kyler Murray</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                TODO:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> TODO</li>
+                    <li><b>Cluster 1:</b> TODO</li>
+                    <li><b>Cluster 2:</b> TODO</li>
+                    <li><b>Cluster 3:</b> TODO</li>
+                    <li><b>Cluster 4:</b> TODO</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+
+            <h3 class="h3-blog">QBs as Six Tiers</h3>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <div class="iframe-container">
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-6-per-game.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Fields</li>
+                        <li>Marcus Mariota</li>
+                        <li>Jacoby Brissett</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Patrick Mahomes</li>
+                        <li>Josh Allen</li>
+                        <li>Joe Burrow</li>
+                        <li>Geno Smith</li>
+                        <li>Kirk Cousins</li>
+                        <li>Tua Tagovailoa</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Jalen Hurts</li>
+                        <li>Trevor Lawrence</li>
+                        <li>Jared Goff</li>
+                        <li>Kyler Murray</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Daniel Jones</li>
+                        <li>Aaron Rodgers</li>
+                        <li>Lamar Jackson</li>
+                        <li>Russell Wilson</li>
+                        <li>Andy Dalton</li>
+                        <li>Mac Jones</li>
+                        <li>Jimmy Garoppolo</li>
+                        <li>Ryan Tannehill</li>
+                        <li>Kenny Pickett</li>
+                        <li>Baker Mayfield</li>
+                        <li>Taylor Heinicke</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 4 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Derek Carr</li>
+                        <li>Dak Prescott</li>
+                        <li>Davis Mills</li>
+                        <li>Matt Ryan</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 5 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Herbert</li>
+                        <li>Tom Brady</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                TODO:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> TODO</li>
+                    <li><b>Cluster 1:</b> TODO</li>
+                    <li><b>Cluster 2:</b> TODO</li>
+                    <li><b>Cluster 3:</b> TODO</li>
+                    <li><b>Cluster 4:</b> TODO</li>
+                    <li><b>Cluster 5:</b> TODO</li>
+                    <li><b>Cluster 6:</b> TODO</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+
+            <h3 class="h3-blog">QBs as Seven Tiers</h3>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <div class="iframe-container">
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-7-per-game.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Jalen Hurts</li>
+                        <li>Daniel Jones</li>
+                        <li>Andy Dalton</li>
+                        <li>Jimmy Garoppolo</li>
+                        <li>Ryan Tannehill</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Derek Carr</li>
+                        <li>Dak Prescott</li>
+                        <li>Matt Ryan</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Fields</li>
+                        <li>Lamar Jackson</li>
+                        <li>Marcus Mariota</li>
+                        <li>Jacoby Brissett</li>
+                        <li>Baker Mayfield</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Herbert</li>
+                        <li>Tom Brady</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 4 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Patrick Mahomes</li>
+                        <li>Josh Allen</li>
+                        <li>Joe Burrow</li>
+                        <li>Kirk Cousins</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 5 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Aaron Rodgers</li>
+                        <li>Russell Wilson</li>
+                        <li>Kyler Murray</li>
+                        <li>Davis Mills</li>
+                        <li>Mac Jones</li>
+                        <li>Kenny Pickett</li>
+                        <li>Taylor Heinicke</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 6 ()</b>
+                    <ul class='bullet-list'>
+                        <li>Geno Smith</li>
+                        <li>Trevor Lawrence</li>
+                        <li>Jared Goff</li>
+                        <li>Tua Tagovailoa</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                TODO:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> TODO</li>
+                    <li><b>Cluster 1:</b> TODO</li>
+                    <li><b>Cluster 2:</b> TODO</li>
+                    <li><b>Cluster 3:</b> TODO</li>
+                    <li><b>Cluster 4:</b> TODO</li>
+                    <li><b>Cluster 5:</b> TODO</li>
+                    <li><b>Cluster 6:</b> TODO</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+
+
+            <h2 class="h2-blog">Summary</h2>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <ul class="bullet-list">
+                <li>TODO</li>
+                <li></li>
+            </ul>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <p class="blog-p-tag">
+                Cheers, <br />
+                Alex
+            </p>
+        </div>
+    </div>
+</body>
+<script>
+    $("#common-header").load("../header.html");
+</script>
