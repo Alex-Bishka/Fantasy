@@ -168,12 +168,41 @@ p {
 .multi-img {
     display: inline-block;
     margin-right: 10px;
-    width: 530px;  /* or any value you prefer */
-    height: auto;  /* maintain aspect ratio */
-  }
+    width: 530px;
+    /* or any value you prefer */
+    height: auto;
+    /* maintain aspect ratio */
+}
 
 .bullet-list {
     margin-top: auto;
     font-size: 20px;
 }
 
+
+#toc-container {
+    position: fixed;
+    top: 120px;
+    /* Adjust this value based on your header height */
+    left: 0;
+    width: 10vw;
+}
+
+#table-of-contents {
+    display: flex;
+    flex-direction: column;
+}
+
+#table-of-contents a {
+    font-size: 14px;
+}
+
+#table-of-contents a.active {
+    font-weight: bold;
+    color: blue;
+}
+
+#table-of-contents a:visited {
+    color: blue;
+    /* This will inherit the color property from the parent element or a higher specificity selector */
+}

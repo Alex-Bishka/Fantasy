@@ -12,46 +12,113 @@
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
     <script>
+        // google analytics
         window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
+        function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
 
         gtag('config', 'G-MM1J2J7R3Q');
     </script>
-
+    
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-          let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
-      
-          if ("IntersectionObserver" in window) {
-            let observer = new IntersectionObserver(function(entries, observer) {
-              entries.forEach(function(entry) {
-                if (entry.isIntersecting) {
-                  let iframe = entry.target;
-                  if (!iframe.getAttribute('data-loaded')) {
-                    iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
-                    iframe.setAttribute('data-loaded', 'true');
-                  }
-                } else {
-                  let iframe = entry.target;
-                  iframe.src = '';  // Unload the src if iframe is out of view
-                  iframe.removeAttribute('data-loaded');
-                }
-              });
-            }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
-      
-            iframes.forEach(function(iframe) {
-              observer.observe(iframe);
-            });
-          }
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
         });
-      </script>
+    </script>
+    
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+            </script>
 </head>
 
 <body>
     <div id="common-header"></div>
     <div class="content-container">
         <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
             <h1>QBs in 2022 Part 2</h1>
 
 
@@ -209,17 +276,17 @@
 
             <h3 class="h3-blog">QBs as Four Tiers</h3>
             <p class="blog-p-tag">
-                TODO
+                Taking a look at the quarterback position with four tiers:
             </p>
             <div class="iframe-container">
                 <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-4.html"></iframe>
             </div>
             <p class="blog-p-tag">
-                TODO
+                The players in each tier:
             </p>
             <div style='display: flex; justify-content: space-evenly;''>
                 <div>
-                    <b>Cluster 0 ()</b>
+                    <b>Cluster 0 (Blue)</b>
                     <ul class='bullet-list'>
                         <li>Patrick Mahomes</li>
                         <li>Josh Allen</li>
@@ -235,7 +302,7 @@
                 </div>
             
                 <div>
-                    <b>Cluster 1 ()</b>
+                    <b>Cluster 1 (Green)</b>
                     <ul class='bullet-list'>
                         <li>Justin Fields</li>
                         <li>Lamar Jackson</li>
@@ -251,7 +318,7 @@
                 </div>
             
                 <div>
-                    <b>Cluster 2 ()</b>
+                    <b>Cluster 2 (Red)</b>
                     <ul class='bullet-list'>
                         <li>Jalen Hurts</li>
                         <li>Daniel Jones</li>
@@ -261,7 +328,7 @@
                 </div>
             
                 <div>
-                    <b>Cluster 3 ()</b>
+                    <b>Cluster 3 (Purple)</b>
                     <ul class='bullet-list'>
                         <li>Russell Wilson</li>
                         <li>Derek Carr</li>
@@ -273,31 +340,70 @@
                 </div>
             </div>
             <p class="blog-p-tag">
-                TODO:
+                A breakdown of each cluster:
                 <ul class="bullet-list">
-                    <li><b>Cluster 0:</b> TODO</li>
-                    <li><b>Cluster 1:</b> TODO</li>
-                    <li><b>Cluster 2:</b> TODO</li>
-                    <li><b>Cluster 3:</b> TODO</li>
+                    <li><b>Cluster 0:</b> See Cluster 1 in the previous graph: <i>"QB 1 territory. These guys thorw the ball frequently, and accumulate a substantial amount of yards and touchdowns. This group tends to throw more interceptions than clusters 1 and 2."</i></li>
+                    <li><b>Cluster 1:</b> Quarterbacks that do not throw the ball much - this depresses the rest of their passing stats.</li>
+                    <li><b>Cluster 2:</b> These qbs are in the middle across all passing stats - not super excited from any of their stats, but also not very disappointed.</li>
+                    <li><b>Cluster 3:</b> About on par with Cluster 2, but this group throws more interceptions.</li>
                 </ul>
             </p>
             <p class="blog-p-tag">
-                TODO
+                Our QB1 tier, Cluster 0 in this case, remains pretty unchanged. The only change, here, when 
+                going from three tiers to four tiers is that Rodgers joins the group.
+            </p>
+            <p class="blog-p-tag">
+                I don't think it would shock many people to see Rodgers be part of the better passing group(s) in this analysis.
+                I was actually pretty high on him going into this season. He finished as QB13 last year with some minor injuries
+                bothering him, and I believe the Jets offense puts him in a better position.
+            </p>
+            <p class="blog-p-tag">
+                It's a shame that he tore his achilles
+                on the first play of the year, but he might be worth a punt for next year. I wouldn't pay more than a 3rd, because
+                it would probably be about one year of production at most.
+            </p>
+            <p class="blog-p-tag">
+                The other noticeable change worth talking about with four tiers is that Hurts and Tua fall to a lower tier passing cluster.
+            </p>
+            <p class="blog-p-tag">
+                I think this is an argument for being a bit more pessimistic on Hurts, compared to Allen and Mahomes. Hurts is great, but
+                the lack of a strong passing base might prove to be the reason why he can't consistently shake up those two as the quarterbacks to have
+                for the next five-to-ten years. It's the only knock against him joining or surpassing Allen and Mahomes.
+            </p>
+            <p class="blog-p-tag">
+                I would like to withhold judgement on Tua until we hit the per game numbers, as he only played in 13 games last year, and in one
+                of them he played only 39% of the snaps.
+            </p>
+            <p class="blog-p-tag">
+                One more thing to add: Jones is in Cluster 2. To me this shows that his passing base is borderline legitamate, which is why I have less
+                concerns for him long term, compared to, say, Fields.
+            </p>
+            <p class="blog-p-tag">
+                I will say that Fields' ceiling is insanely high, but, throughout this analysis,
+                I have developed serious questions about his sustainablity and future as a quarterback. 
+            </p>
+            <p class="blog-p-tag">
+                Can he stay healthy with all the running he does? Can he become a more consistent and better passer?
+                If not, can he reliably deliver RB1 numbers? Is that a recipe for winning in the NFL?
+                Will he still be a starting quarterback in a year or two with how things have gone for the Bears?
+            </p>
+            <p class="blog-p-tag">
+                Too many concerns there for me to consider him a dynasty cornerstone piece.
             </p>
 
             <h3 class="h3-blog">QBs as Five Tiers</h3>
             <p class="blog-p-tag">
-                TODO
+                Time to add another layer to the puzzle:
             </p>
             <div class="iframe-container">
                 <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-5.html"></iframe>
             </div>
             <p class="blog-p-tag">
-                TODO
+                The five tiers listed out:
             </p>
             <div style='display: flex; justify-content: space-evenly;''>
                 <div>
-                    <b>Cluster 0 ()</b>
+                    <b>Cluster 0 (Green)</b>
                     <ul class='bullet-list'>
                         <li>Justin Fields</li>
                         <li>Lamar Jackson</li>
@@ -314,7 +420,7 @@
                 </div>
             
                 <div>
-                    <b>Cluster 1 ()</b>
+                    <b>Cluster 1 (Blue)</b>
                     <ul class='bullet-list'>
                         <li>Patrick Mahomes</li>
                         <li>Josh Allen</li>
@@ -325,7 +431,7 @@
                 </div>
             
                 <div>
-                    <b>Cluster 2 ()</b>
+                    <b>Cluster 2 (Orange)</b>
                     <ul class='bullet-list'>
                         <li>Aaron Rodgers</li>
                         <li>Russell Wilson</li>
@@ -338,16 +444,14 @@
                 </div>
             
                 <div>
-                    <b>Cluster 3 ()</b>
+                    <b>Cluster 3 (Red)</b>
                     <ul class='bullet-list'>
                         <li>Jalen Hurts</li>
                         <li>Daniel Jones</li>
                         <li>Tua Tagovailoa</li>
                     </ul>
-                </div>
             
-                <div>
-                    <b>Cluster 4 ()</b>
+                    <b>Cluster 4 (Purple)</b>
                     <ul class='bullet-list'>
                         <li>Trevor Lawrence</li>
                         <li>Jared Goff</li>
@@ -357,32 +461,59 @@
                 </div>
             </div>
             <p class="blog-p-tag">
-                TODO:
+                A quick breakdown of the five clusters:
                 <ul class="bullet-list">
-                    <li><b>Cluster 0:</b> TODO</li>
-                    <li><b>Cluster 1:</b> TODO</li>
-                    <li><b>Cluster 2:</b> TODO</li>
-                    <li><b>Cluster 3:</b> TODO</li>
-                    <li><b>Cluster 4:</b> TODO</li>
+                    <li><b>Cluster 0:</b> Quarterbacks that do not attempt or complete many passes. Low passing stats across the board.</li>
+                    <li><b>Cluster 1:</b> The higher end of the QB1 scale, in regards to passing. High passing yards, attempts, completions, touchdowns, and interceptions.</li>
+                    <li><b>Cluster 2:</b> Middle of the pack quarterbacks that throw the most picks compared to other tiers.</li>
+                    <li><b>Cluster 3:</b> About on par with Cluster 2, but far less interceptions thrown.</li>
+                    <li><b>Cluster 4:</b> In contention with Cluster 1 for being the best tier here. The lower amount of passing touchdowns holds them back, but they do throw less interceptions.</li>
                 </ul>
             </p>
             <p class="blog-p-tag">
-                TODO
+                Daniel Jones sticking with Hurts is interesting... perhaps he is Hurts lite? This season has been really tough for Jones, but I do wonder
+                what would happen if the Giants gave him a good oline and a legitmate receiving threat or two.
+                Might be a good buy low, as you shouldn't have to break the bank for him and the Giants seem committed to Jones.
+            </p>
+            <p class="blog-p-tag">
+                Clusters 1 and 4 really catch my eye. Burrow sticking around with Mahomes and Allen seems reasonable, but Geno and Kirk too?
+            </p>
+            <p class="blog-p-tag">
+                Geno revitalized himself last year, and I thought he would be a decent option in startups or re-draft, but he has struggled 
+                to capture the magic from 2022. I do expect him to improve in the second half of 2023 as he has some easier matchups, but 
+                probably someone I would stay away from unless the price was very cheap. For what it's worth Geno is currently QB21 on KTC
+                (10/4/23), and is worth just above a 2025 early 2nd. However, for that price I would rather take a shot on Jordon Love or
+                Danny Dimes.
+            </p>
+            <p class="blog-p-tag">
+                Captain Kirk is a really solid fantasy quarterback, and him being in Cluster 1 confirms to me that his passing base is really, really good.
+                After his achilles injury, he might be a great buy low for next year. It should be noted that he may no longer be a Viking, and who knows 
+                how this injury will affect him in the few remaining years of his career. However, he could also get a massive upgrade and end up somewhere
+                like Atlanta. Kirk with those weapons would be pretty mouthwatering.
+            </p>
+            <p class="blog-p-tag">
+                Now, Cluster 4 has three names that I would consider investing in as any dynasty franchise: TLaw, Goff, and Herbert.
+                Each of these three should continue to deliver in this range, and I believe TLaw and Herbert could break into that
+                Burrow range at some point (better than everyone else, but just below Mahomes and Allen).
+            </p>
+            <p class="blog-p-tag">
+                For the record, I have paid up for TLaw and Herbert, but I see them as cornerstone pieces that are likely part of my
+                rooster until they retire, only parting with them if I were to receive an insane offer for either.
             </p>
 
             <h3 class="h3-blog">QBs as Six Tiers</h3>
             <p class="blog-p-tag">
-                TODO
+                Taking a look at the quarterback landscape with six tiers:
             </p>
             <div class="iframe-container">
                 <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-6.html"></iframe>
             </div>
             <p class="blog-p-tag">
-                TODO
+                The players in the six tiers:
             </p>
             <div style='display: flex; justify-content: space-evenly;''>
                 <div>
-                    <b>Cluster 0 ()</b>
+                    <b>Cluster 0 (Green)</b>
                     <ul class='bullet-list'>
                         <li>Justin Fields</li>
                         <li>Marcus Mariota</li>
@@ -390,10 +521,8 @@
                         <li>Kenny Pickett</li>
                         <li>Baker Mayfield</li>
                     </ul>
-                </div>
             
-                <div>
-                    <b>Cluster 1 ()</b>
+                    <b>Cluster 1 (Purple)</b>
                     <ul class='bullet-list'>
                         <li>Trevor Lawrence</li>
                         <li>Jared Goff</li>
@@ -403,7 +532,7 @@
                 </div>
             
                 <div>
-                    <b>Cluster 2 ()</b>
+                    <b>Cluster 2 (Blue)</b>
                     <ul class='bullet-list'>
                         <li>Patrick Mahomes</li>
                         <li>Josh Allen</li>
@@ -415,7 +544,7 @@
                 </div>
             
                 <div>
-                    <b>Cluster 3 ()</b>
+                    <b>Cluster 3 (Teal)</b>
                     <ul class='bullet-list'>
                         <li>Russell Wilson</li>
                         <li>Derek Carr</li>
@@ -427,7 +556,7 @@
                 </div>
             
                 <div>
-                    <b>Cluster 4 ()</b>
+                    <b>Cluster 4 (Orange)</b>
                     <ul class='bullet-list'>
                         <li>Lamar Jackson</li>
                         <li>Kyler Murray</li>
@@ -436,10 +565,8 @@
                         <li>Ryan Tannehill</li>
                         <li>Taylor Heinicke</li>
                     </ul>
-                </div>
             
-                <div>
-                    <b>Cluster 5 ()</b>
+                    <b>Cluster 5 (Red)</b>
                     <ul class='bullet-list'>
                         <li>Jalen Hurts</li>
                         <li>Daniel Jones</li>
@@ -448,7 +575,7 @@
                 </div>
             </div>
             <p class="blog-p-tag">
-                TODO:
+                A breakdown of the clusters:
                 <ul class="bullet-list">
                     <li><b>Cluster 0:</b> TODO</li>
                     <li><b>Cluster 1:</b> TODO</li>
@@ -464,17 +591,17 @@
 
             <h3 class="h3-blog">QBs as Seven Tiers</h3>
             <p class="blog-p-tag">
-                TODO
+                Our last tier analysis on the season stats:
             </p>
             <div class="iframe-container">
                 <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-7.html"></iframe>
             </div>
             <p class="blog-p-tag">
-                TODO
+                The clusters in detail:
             </p>
             <div style='display: flex; justify-content: space-evenly;''>
                 <div>
-                    <b>Cluster 0 ()</b>
+                    <b>Cluster 0 (Blue)</b>
                     <ul class='bullet-list'>
                         <li>Patrick Mahomes</li>
                         <li>Josh Allen</li>
@@ -485,7 +612,7 @@
                 </div>
             
                 <div>
-                    <b>Cluster 1 ()</b>
+                    <b>Cluster 1 (Green)</b>
                     <ul class='bullet-list'>
                         <li>Justin Fields</li>
                         <li>Kyler Murray</li>
@@ -496,7 +623,7 @@
                 </div>
             
                 <div>
-                    <b>Cluster 2 ()</b>
+                    <b>Cluster 2 (Pink)</b>
                     <ul class='bullet-list'>
                         <li>Russell Wilson</li>
                         <li>Derek Carr</li>
@@ -508,17 +635,15 @@
                 </div>
             
                 <div>
-                    <b>Cluster 3 ()</b>
+                    <b>Cluster 3 (Red)</b>
                     <ul class='bullet-list'>
                         <li>Jalen Hurts</li>
                         <li>Daniel Jones</li>
                         <li>Tua Tagovailoa</li>
                         <li>Andy Dalton</li>
                     </ul>
-                </div>
             
-                <div>
-                    <b>Cluster 4 ()</b>
+                    <b>Cluster 4 (Orange)</b>
                     <ul class='bullet-list'>
                         <li>Justin Herbert</li>
                         <li>Tom Brady</li>
@@ -526,7 +651,7 @@
                 </div>
             
                 <div>
-                    <b>Cluster 5 ()</b>
+                    <b>Cluster 5 (Teal)</b>
                     <ul class='bullet-list'>
                         <li>Lamar Jackson</li>
                         <li>Jacoby Brissett</li>
@@ -534,10 +659,8 @@
                         <li>Ryan Tannehill</li>
                         <li>Taylor Heinicke</li>
                     </ul>
-                </div>
             
-                <div>
-                    <b>Cluster 6 ()</b>
+                    <b>Cluster 6 (Purple)</b>
                     <ul class='bullet-list'>
                         <li>Trevor Lawrence</li>
                         <li>Jared Goff</li>
@@ -546,7 +669,7 @@
                 </div>
             </div>
             <p class="blog-p-tag">
-                TODO:
+                The final breakdown for season total clusters:
                 <ul class="bullet-list">
                     <li><b>Cluster 0:</b> TODO</li>
                     <li><b>Cluster 1:</b> TODO</li>
@@ -557,26 +680,30 @@
                     <li><b>Cluster 6:</b> TODO</li>
                 </ul>
             </p>
-
-
-            <h2 class="h2-blog">Tiers (Per Game)</h2>
             <p class="blog-p-tag">
                 TODO
             </p>
 
+
+            <h2 class="h2-blog">Tiers (Per Game)</h2>
+            <p class="blog-p-tag">
+                We will now take a look at the per game version of the stats used in the previous section.
+                As a reminder the stats were: "Passing Yards", "Attempts", "Completions", "Passing TDs", and "Interceptions". 
+            </p>
+
             <h3 class="h3-blog">QBs as Three Tiers</h3>
             <p class="blog-p-tag">
-                TODO
+                Starting with three tiers, as always:
             </p>
             <div class="iframe-container">
                 <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-3-per-game.html"></iframe>
             </div>
             <p class="blog-p-tag">
-                TODO
+                The players listed in each tier:
             </p>
             <div style='display: flex; justify-content: space-evenly;''>
                 <div>
-                    <b>Cluster 0 ()</b>
+                    <b>Cluster 0 (Green)</b>
                     <ul class='bullet-list'>
                         <li>Aaron Rodgers</li>
                         <li>Russell Wilson</li>
@@ -590,7 +717,7 @@
                 </div>
             
                 <div>
-                    <b>Cluster 1 ()</b>
+                    <b>Cluster 1 (Red)</b>
                     <ul class='bullet-list'>
                         <li>Justin Fields</li>
                         <li>Daniel Jones</li>
@@ -607,7 +734,7 @@
                 </div>
             
                 <div>
-                    <b>Cluster 2 ()</b>
+                    <b>Cluster 2 (Blue)</b>
                     <ul class='bullet-list'>
                         <li>Patrick Mahomes</li>
                         <li>Josh Allen</li>
@@ -624,7 +751,7 @@
                 </div>
             </div>
             <p class="blog-p-tag">
-                TODO:
+                A breakdown of the tiers:
                 <ul class="bullet-list">
                     <li><b>Cluster 0:</b> TODO</li>
                     <li><b>Cluster 1:</b> TODO</li>
@@ -637,17 +764,17 @@
 
             <h3 class="h3-blog">QBs as Four Tiers</h3>
             <p class="blog-p-tag">
-                TODO
+                Moving on to four tiers:
             </p>
             <div class="iframe-container">
                 <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-4-per-game.html"></iframe>
             </div>
             <p class="blog-p-tag">
-                TODO
+                The players in each tier:
             </p>
             <div style='display: flex; justify-content: space-evenly;''>
                 <div>
-                    <b>Cluster 0 ()</b>
+                    <b>Cluster 0 (Blue)</b>
                     <ul class='bullet-list'>
                         <li>Patrick Mahomes</li>
                         <li>Josh Allen</li>
@@ -660,7 +787,7 @@
                 </div>
             
                 <div>
-                    <b>Cluster 1 ()</b>
+                    <b>Cluster 1 (Green)</b>
                     <ul class='bullet-list'>
                         <li>Justin Fields</li>
                         <li>Daniel Jones</li>
@@ -676,7 +803,7 @@
                 </div>
             
                 <div>
-                    <b>Cluster 2 ()</b>
+                    <b>Cluster 2 (Red)</b>
                     <ul class='bullet-list'>
                         <li>Jalen Hurts</li>
                         <li>Geno Smith</li>
@@ -689,7 +816,7 @@
                 </div>
             
                 <div>
-                    <b>Cluster 3 ()</b>
+                    <b>Cluster 3 (Purple)</b>
                     <ul class='bullet-list'>
                         <li>Aaron Rodgers</li>
                         <li>Russell Wilson</li>
@@ -701,7 +828,7 @@
                 </div>
             </div>
             <p class="blog-p-tag">
-                TODO:
+                The breakdown of the clusters:
                 <ul class="bullet-list">
                     <li><b>Cluster 0:</b> TODO</li>
                     <li><b>Cluster 1:</b> TODO</li>
@@ -709,20 +836,23 @@
                     <li><b>Cluster 3:</b> TODO</li>
                 </ul>
             </p>
+            <p class="blog-p-tag">
+                TODO
+            </p>
 
             <h3 class="h3-blog">QBs as Five Tiers</h3>
             <p class="blog-p-tag">
-                TODO
+                Seeing how things change with five tiers:
             </p>
             <div class="iframe-container">
                 <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-5-per-game.html"></iframe>
             </div>
             <p class="blog-p-tag">
-                TODO
+                The five tiers:
             </p>
             <div style='display: flex; justify-content: space-evenly;''>
                 <div>
-                    <b>Cluster 0 ()</b>
+                    <b>Cluster 0 (Purple)</b>
                     <ul class='bullet-list'>
                         <li>Daniel Jones</li>
                         <li>Lamar Jackson</li>
@@ -738,7 +868,7 @@
                 </div>
             
                 <div>
-                    <b>Cluster 1 ()</b>
+                    <b>Cluster 1 (Blue)</b>
                     <ul class='bullet-list'>
                         <li>Patrick Mahomes</li>
                         <li>Josh Allen</li>
@@ -750,17 +880,15 @@
                 </div>
             
                 <div>
-                    <b>Cluster 2 ()</b>
+                    <b>Cluster 2 (Orange)</b>
                     <ul class='bullet-list'>
                         <li>Derek Carr</li>
                         <li>Dak Prescott</li>
                         <li>Davis Mills</li>
                         <li>Matt Ryan</li>
                     </ul>
-                </div>
             
-                <div>
-                    <b>Cluster 3 ()</b>
+                    <b>Cluster 3 (Green)</b>
                     <ul class='bullet-list'>
                         <li>Justin Fields</li>
                         <li>Marcus Mariota</li>
@@ -769,7 +897,7 @@
                 </div>
             
                 <div>
-                    <b>Cluster 4 ()</b>
+                    <b>Cluster 4 (Red)</b>
                     <ul class='bullet-list'>
                         <li>Jalen Hurts</li>
                         <li>Geno Smith</li>
@@ -782,7 +910,7 @@
                 </div>
             </div>
             <p class="blog-p-tag">
-                TODO:
+                A breakdown of the five clusters:
                 <ul class="bullet-list">
                     <li><b>Cluster 0:</b> TODO</li>
                     <li><b>Cluster 1:</b> TODO</li>
@@ -797,26 +925,24 @@
 
             <h3 class="h3-blog">QBs as Six Tiers</h3>
             <p class="blog-p-tag">
-                TODO
+                Examining the quarterback position by splitting into six tiers:
             </p>
             <div class="iframe-container">
                 <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-6-per-game.html"></iframe>
             </div>
             <p class="blog-p-tag">
-                TODO
+                The players in each of the six tiers:
             </p>
             <div style='display: flex; justify-content: space-evenly;''>
                 <div>
-                    <b>Cluster 0 ()</b>
+                    <b>Cluster 0 (Green)</b>
                     <ul class='bullet-list'>
                         <li>Justin Fields</li>
                         <li>Marcus Mariota</li>
                         <li>Jacoby Brissett</li>
                     </ul>
-                </div>
             
-                <div>
-                    <b>Cluster 1 ()</b>
+                    <b>Cluster 1 (Blue)</b>
                     <ul class='bullet-list'>
                         <li>Patrick Mahomes</li>
                         <li>Josh Allen</li>
@@ -828,7 +954,7 @@
                 </div>
             
                 <div>
-                    <b>Cluster 2 ()</b>
+                    <b>Cluster 2 (Red)</b>
                     <ul class='bullet-list'>
                         <li>Jalen Hurts</li>
                         <li>Trevor Lawrence</li>
@@ -838,7 +964,7 @@
                 </div>
             
                 <div>
-                    <b>Cluster 3 ()</b>
+                    <b>Cluster 3 (Purple)</b>
                     <ul class='bullet-list'>
                         <li>Daniel Jones</li>
                         <li>Aaron Rodgers</li>
@@ -855,17 +981,15 @@
                 </div>
             
                 <div>
-                    <b>Cluster 4 ()</b>
+                    <b>Cluster 4 (Teal)</b>
                     <ul class='bullet-list'>
                         <li>Derek Carr</li>
                         <li>Dak Prescott</li>
                         <li>Davis Mills</li>
                         <li>Matt Ryan</li>
                     </ul>
-                </div>
             
-                <div>
-                    <b>Cluster 5 ()</b>
+                    <b>Cluster 5 (Orange)</b>
                     <ul class='bullet-list'>
                         <li>Justin Herbert</li>
                         <li>Tom Brady</li>
@@ -873,7 +997,7 @@
                 </div>
             </div>
             <p class="blog-p-tag">
-                TODO:
+                The breakdown:
                 <ul class="bullet-list">
                     <li><b>Cluster 0:</b> TODO</li>
                     <li><b>Cluster 1:</b> TODO</li>
@@ -881,7 +1005,6 @@
                     <li><b>Cluster 3:</b> TODO</li>
                     <li><b>Cluster 4:</b> TODO</li>
                     <li><b>Cluster 5:</b> TODO</li>
-                    <li><b>Cluster 6:</b> TODO</li>
                 </ul>
             </p>
             <p class="blog-p-tag">
@@ -890,17 +1013,17 @@
 
             <h3 class="h3-blog">QBs as Seven Tiers</h3>
             <p class="blog-p-tag">
-                TODO
+                Our final tier graph of the day:
             </p>
             <div class="iframe-container">
                 <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-7-per-game.html"></iframe>
             </div>
             <p class="blog-p-tag">
-                TODO
+                The tiers with the players listed in each of them:
             </p>
             <div style='display: flex; justify-content: space-evenly;''>
                 <div>
-                    <b>Cluster 0 ()</b>
+                    <b>Cluster 0 (Red)</b>
                     <ul class='bullet-list'>
                         <li>Jalen Hurts</li>
                         <li>Daniel Jones</li>
@@ -908,10 +1031,8 @@
                         <li>Jimmy Garoppolo</li>
                         <li>Ryan Tannehill</li>
                     </ul>
-                </div>
             
-                <div>
-                    <b>Cluster 1 ()</b>
+                    <b>Cluster 1 (Pink)</b>
                     <ul class='bullet-list'>
                         <li>Derek Carr</li>
                         <li>Dak Prescott</li>
@@ -920,7 +1041,7 @@
                 </div>
             
                 <div>
-                    <b>Cluster 2 ()</b>
+                    <b>Cluster 2 (Purple)</b>
                     <ul class='bullet-list'>
                         <li>Justin Fields</li>
                         <li>Lamar Jackson</li>
@@ -931,15 +1052,13 @@
                 </div>
             
                 <div>
-                    <b>Cluster 3 ()</b>
+                    <b>Cluster 3 (Orange)</b>
                     <ul class='bullet-list'>
                         <li>Justin Herbert</li>
                         <li>Tom Brady</li>
                     </ul>
-                </div>
             
-                <div>
-                    <b>Cluster 4 ()</b>
+                    <b>Cluster 4 (Blue)</b>
                     <ul class='bullet-list'>
                         <li>Patrick Mahomes</li>
                         <li>Josh Allen</li>
@@ -949,7 +1068,7 @@
                 </div>
             
                 <div>
-                    <b>Cluster 5 ()</b>
+                    <b>Cluster 5 (Teal)</b>
                     <ul class='bullet-list'>
                         <li>Aaron Rodgers</li>
                         <li>Russell Wilson</li>
@@ -962,7 +1081,7 @@
                 </div>
             
                 <div>
-                    <b>Cluster 6 ()</b>
+                    <b>Cluster 6 (Green)</b>
                     <ul class='bullet-list'>
                         <li>Geno Smith</li>
                         <li>Trevor Lawrence</li>
@@ -972,7 +1091,7 @@
                 </div>
             </div>
             <p class="blog-p-tag">
-                TODO:
+                The last tier breakdown:
                 <ul class="bullet-list">
                     <li><b>Cluster 0:</b> TODO</li>
                     <li><b>Cluster 1:</b> TODO</li>
