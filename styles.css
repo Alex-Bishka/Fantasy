@@ -195,14 +195,15 @@ p {
 
 #table-of-contents a {
     font-size: 14px;
+    color: black;
 }
 
 #table-of-contents a.active {
     font-weight: bold;
-    color: blue;
+    color: black;
 }
 
 #table-of-contents a:visited {
-    color: blue;
+    color: black;
     /* This will inherit the color property from the parent element or a higher specificity selector */
 }
