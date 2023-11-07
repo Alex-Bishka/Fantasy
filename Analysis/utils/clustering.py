@@ -5,24 +5,25 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from models.player_season import Player_Season
+from typing import List
 
 
-def get_stats_array(player: Player_Season, stats):
+def get_stats_array(player: Player_Season, stats: List[str]) -> List[float]:
     """"""
     player_data = list()
     for stat in stats:
         # total stats (non-qb)
         if stat == "Total Yards":
             player_data.append(float(player.receiving_yards + player.rushing_yards))
-        if stat == "Yards Per Game":
+        elif stat == "Yards Per Game":
             player_data.append(float((player.receiving_yards + player.rushing_yards) / player.games))
-        if stat == "Total TDs":
+        elif stat == "Total TDs":
             player_data.append(float(player.receiving_td + player.rushing_touchdowns))
-        if stat == "TDs Per Game":
+        elif stat == "TDs Per Game":
             player_data.append(float((player.receiving_td + player.rushing_touchdowns) / player.games))
 
         # receiving stats
-        if stat == "Receiving Yards":
+        elif stat == "Receiving Yards":
             player_data.append(float(player.receiving_yards))
         elif stat == "Receiving Yards Per Game":
             player_data.append(float(player.receiving_yards / player.games))
@@ -60,13 +61,13 @@ def get_stats_array(player: Player_Season, stats):
             player_data.append(float(player.fumbles / player.games))
 
         # passing stats
-        elif stat == "Passing Interceptions":
+        elif stat == "Interceptions":
             player_data.append(float(player.passing_interceptions))
-        elif stat == "Passing Inteceptions Per Game":
+        elif stat == "Interceptions Per Game":
             player_data.append(float(player.passing_interceptions / player.games))
-        elif stat == "Passing Touchdowns":
+        elif stat == "Passing TDs":
             player_data.append(float(player.passing_touchdowns))
-        elif stat == "Passing Touchdowns Per Game":
+        elif stat == "Passing TDs Per Game":
             player_data.append(float(player.passing_touchdowns / player.games))
         elif stat == "Passing Yards":
             player_data.append(float(player.passing_yards))
@@ -81,6 +82,9 @@ def get_stats_array(player: Player_Season, stats):
         elif stat == "Completions Per Game":
             player_data.append(float(player.passing_completions / player.games))
 
+        # error
+        else:
+            raise ValueError(f"Passed in stat - '{stat}' - is not available for stat array creation!")
     return player_data
 
 

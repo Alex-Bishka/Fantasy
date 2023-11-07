@@ -18,12 +18,76 @@
 
       gtag('config', 'G-MM1J2J7R3Q');
   </script>
+
+  <script>
+    // auto generate ids for table of contents creation
+    document.addEventListener('DOMContentLoaded', () => {
+        const headingTextMap = new Map();
+
+        document.querySelectorAll('h1, h2, h3').forEach(heading => {
+            const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+            const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+            headingTextMap.set(baseId, count + 1);
+            heading.id = `${baseId}-${count}`;
+        });
+    });
+
+    // for table of contents creation
+    document.addEventListener('DOMContentLoaded', () => {
+        const toc = document.getElementById('table-of-contents');
+        const headings = document.querySelectorAll('h1, h2, h3');
+
+        headings.forEach((heading, index) => {
+            const link = document.createElement('a');
+            link.textContent = heading.textContent;
+            link.href = `#${heading.id}`;
+            toc.appendChild(link);
+
+            // Optional: Add some indentation based on heading level
+            link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+        });
+
+        // finding the highest header and highlighting it until we move to the next one
+        function highlightClosestHeading() {
+            let closestHeading = null;
+            let closestDistance = Infinity;
+
+            headings.forEach(heading => {
+                const rect = heading.getBoundingClientRect();
+                const distance = Math.abs(rect.top);
+
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestHeading = heading;
+                }
+            });
+
+            // Remove active class from all links
+            toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+            // Add active class to the link corresponding to the closest heading
+            if (closestHeading) {
+                const id = closestHeading.getAttribute('id');
+                document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+            }
+        }
+
+        // Call the function initially and on scroll
+        highlightClosestHeading();
+        window.addEventListener('scroll', highlightClosestHeading);
+    });
+  </script>
 </head>
 
 <body>
   <div id="common-header"></div>
   <div class="content-container">
-    <div class="scroll-div">
+    <div>
+      <div id="toc-container">
+        <nav id="table-of-contents">
+          <!-- ToC will be generated here -->
+        </nav>
+      </div>
 
       <h1>QBs in 2022</h1>
 
