@@ -103,6 +103,15 @@ def create_cluster_data(players, stats):
     return X, X_scaled
 
 
+def create_vectors_advanced(subset_df):
+    """"""
+    X = subset_df.to_numpy()
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    return X, X_scaled
+
+
 def get_candidate_cluster_n_values(X_scaled):
     """"""
     # Elbow method
@@ -128,6 +137,18 @@ def create_clusters(cluster_num, X_scaled, players):
     cluster_ranking = dict()
     for player, cluster_num in zip(players, kmeans.labels_):
         cluster_ranking[player.player_name] = cluster_num
+
+    return [str(label) for label in kmeans.labels_], cluster_ranking
+
+
+def create_clusters_advanced(cluster_num, X_scaled, df):
+    """"""
+    kmeans = KMeans(n_clusters=cluster_num, random_state=0, n_init=10).fit(X_scaled)
+    kmeans.labels_
+
+    cluster_ranking = dict()
+    for i, cluster_num in enumerate(kmeans.labels_):
+        cluster_ranking[df.loc[df.index[i], 'name']] = cluster_num
 
     return [str(label) for label in kmeans.labels_], cluster_ranking
 
@@ -158,11 +179,35 @@ def graph_pair_plot(df, stats, position, palette="bright", save_fig=True, save_s
     plt.show()
 
 
+import plotly.graph_objs as go
+
+def add_subplot_border(fig, positions, color='red', width=3):
+    # Calculate the domain of the subplot to add a border
+    # The positions are the fractions (0-1) of the subplot's location on the canvas
+    x0, x1, y0, y1 = positions
+    
+    # Add shapes to create the border effect
+    fig.add_shape(
+        type="rect",
+        xref="paper",
+        yref="paper",
+        x0=x0,
+        y0=y0,
+        x1=x1,
+        y1=y1,
+        line=dict(
+            color=color,
+            width=width
+        ),
+        layer="above"
+    )
+
+
 import plotly.express as px
-def graph_pair_plot_plotly(df, cluster_rankings, stats,
-        position, save_fig=True, save_suffix="",
-        font_size=12, marker_size=4, diagonal_is_visible=False,
-        width=700, height=700
+def graph_pair_plot_plotly(df: pd.DataFrame, cluster_rankings, stats,
+        position, save_fig: bool = True, save_suffix: str = "",
+        font_size: int = 12, marker_size: int = 4, diagonal_is_visible: bool = False,
+        width: int = 700, height: int = 700, showupperhalf: bool = False, legend_size: int = 14
     ):
     """
     Create a pair plot using Plotly
@@ -176,7 +221,7 @@ def graph_pair_plot_plotly(df, cluster_rankings, stats,
     df.set_index('Names', inplace=True)
 
     fig = px.scatter_matrix(
-        df,
+        data_frame=df,
         dimensions=stats,
         color="Cluster",
         hover_name=df.index,  # Assuming the player's name is the index
@@ -184,7 +229,7 @@ def graph_pair_plot_plotly(df, cluster_rankings, stats,
     )
     
     # Customize the appearance (optional)
-    fig.update_traces(diagonal_visible=diagonal_is_visible)
+    fig.update_traces(diagonal_visible=diagonal_is_visible, showupperhalf=showupperhalf)
 
     # improving UI
     fig.update_layout(
@@ -202,6 +247,20 @@ def graph_pair_plot_plotly(df, cluster_rankings, stats,
 
     fig.update_layout(width=width, height=height)  # Adjust as necessary
     fig.update_traces(marker=dict(size=marker_size))  # Adjust marker size as needed
+
+    fig.update_layout(legend=dict(font=dict(size=legend_size)))
+    # highligh a subplot by giving it a border
+    # col = 2
+    # row = 1
+    # num_plots_per_side = 5
+    # step = 1.0 / num_plots_per_side
+    # x0 = (col - 1) * step
+    # x1 = col * step
+    # y0 = 1 - row * step
+    # y1 = 1 - (row - 1) * step
+    # positions = (x0, x1, y0, y1)
+    # add_subplot_border(fig, positions)
+    # highlight_subplot_background(fig, rows=[1], cols=[1, 2, 3], color='rgba(255, 235, 238, 1)')  # A light red background color
 
     # Save the plot as HTML
     if save_fig:
