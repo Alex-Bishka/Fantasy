@@ -207,3 +207,33 @@ p {
     color: black;
     /* This will inherit the color property from the parent element or a higher specificity selector */
 }
+
+#dataContainer {
+    margin-top: 20px;
+}
+
+.table-scroll {
+    width: 100%; /* Adjust this to your desired width */
+    max-width: 78vw; /* Example fixed max width */
+    overflow-x: auto;
+    margin-top: 20px;
+    border: 1px solid #ddd;
+    max-height: 70vh;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    max-width: 78vw; /* This should be greater than the table-scroll width to enable horizontal scrolling */
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+th {
+    background-color: #f2f2f2;
+}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fantasy Football Data Bank</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="script.js" defer></script>
+    <script src="data.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <h1>Player Data Bank</h1>
+
+        <div>
+            <input type="text" id="searchBox" placeholder="Search for players..." onkeydown="enterPressed(event)">
+            <button onclick="searchData()">Search</button>
+
+            <select id="yearSelect" onchange="loadSelectedData()">
+                <!-- Populate with options for years -->
+            </select>
+            <select id="positionSelect" onchange="loadSelectedData()">
+                <!-- Populate with options for positions -->
+            </select>
+        </div>
+
+        <div id="dataContainer" class="table-scroll">
+            <!-- The table will be generated here -->
+        </div>
+
+        <script src="data.js"></script>
+    </div>
+</body>
+</html>
+<script>
+  $("#common-header").load("header.html");
+</script>
