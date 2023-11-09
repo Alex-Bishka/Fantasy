@@ -70,7 +70,8 @@ def create_mappings(
 
 
 def create_position_groups(
-        player_map: player_map_type
+        player_map: player_map_type,
+        game_limit: int = 2
     ) -> Union[
         List[player_map_type],
         List[player_map_type],
@@ -85,7 +86,8 @@ def create_position_groups(
 
     for key in player_map:
         player = player_map[key]
-        if "seasonal_df" in player:  # not all players have a seasonal df
+        # not all players have a seasonal df
+        if "seasonal_df" in player and player["seasonal_df"]["games"] >= game_limit:
             if player["position"] == "QB":
                 qbs.append(player)
             if player["position"] == "RB":
@@ -98,10 +100,14 @@ def create_position_groups(
     return qbs, rbs, wrs, tes
 
 
-def create_positional_df(columns: List[str], players):
+def create_positional_df(players) -> pd.DataFrame:
     """
-    TODO: complete custimization for this function
     """
-    df_pos = pd.DataFrame(columns=columns)
+    columns = list(players[0]["seasonal_df"].keys())
+
+    list_of_seasonal_dicts = list()
     for player in players:
-        pass
+        list_of_seasonal_dicts.append(player["seasonal_df"])
+    
+    df = pd.DataFrame(list_of_seasonal_dicts)
+    return df
