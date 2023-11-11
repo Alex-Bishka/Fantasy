@@ -296,3 +296,8 @@ th {
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
+.sort-arrow {
+    cursor: pointer;
+    user-select: none; /* Prevents text selection */
+}
