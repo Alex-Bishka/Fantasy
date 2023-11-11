@@ -72,10 +72,13 @@ function loadSelectedData() {
     loadData(year, position);
 }
 
+// Variable to keep track of the current CSV path
+let currentCSVPath = '';
+
 // Modify loadData function to take parameters for year and position
 function loadData(year, position) {
-    const filePath = `/Fantasy/Analysis/FantasyData/advanced-stats/${position}/${year}.csv`;
-    fetch(filePath)
+    const currentCSVPath = `/Fantasy/Analysis/FantasyData/advanced-stats/${position}/${year}.csv`;
+    fetch(currentCSVPath)
         .then(response => response.text())
         .then(csv => {
             const data = csvToJson(csv);
@@ -145,4 +148,21 @@ function searchData() {
             }
         }       
     }
+}
+
+// Function to download the current CSV
+function downloadCSV() {
+    const csvPath = document.getElementById('downloadBtn').getAttribute('data-csv-path');
+    if (!csvPath) {
+        alert('No CSV file is available for download.');
+        return;
+    }
+
+    // Create a temporary link to trigger the download
+    const tempLink = document.createElement('a');
+    tempLink.href = csvPath;
+    tempLink.setAttribute('download', '');
+    document.body.appendChild(tempLink);
+    tempLink.click();
+    document.body.removeChild(tempLink);
 }
