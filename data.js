@@ -75,6 +75,7 @@ function loadSelectedData() {
 // Variable to keep track of the current CSV path
 let currentCSVPath = '';
 let globalCsvData;
+let selectedColumns;
 
 // Modify loadData function to take parameters for year and position
 function loadData(year, position) {
@@ -83,11 +84,11 @@ function loadData(year, position) {
         .then(response => response.text())
         .then(csv => {
             globalCsvData = csvToJson(csv); // Store parsed data in the global variable
-            const headers = Object.keys(globalCsvData[0])
+            selectedColumns = Object.keys(globalCsvData[0])
 
             // After fetching and parsing CSV data
-            populateColumnCheckboxes(headers);
-            renderTable(globalCsvData, headers);
+            populateColumnCheckboxes(selectedColumns);
+            renderTable(globalCsvData, selectedColumns);
         })
         .catch(error => console.error('Error loading the CSV:', error));
 }
@@ -119,7 +120,7 @@ function renderTable(data, selectedColumns) {
     table += '<tr>';
     Object.keys(data[0]).forEach(key => {
         if (selectedColumns.includes(key) && key.length) {
-            table += `<th>${key}</th>`;
+            table += `<th>${key} <span class="sort-arrow" onclick="sortTable('${key}')">↕️</span></th>`;
         }
     });
     table += '</tr>';
@@ -247,8 +248,62 @@ document.getElementById('applyColumnsBtn').addEventListener('click', () => {
 });
 
 function renderTableBasedOnSelection() {
-    const selectedColumns = Array.from(document.querySelectorAll('#checkboxContainer input[type="checkbox"]:checked')).map(cb => cb.value);
+    selectedColumns = Array.from(document.querySelectorAll('#checkboxContainer input[type="checkbox"]:checked')).map(cb => cb.value);
 
     // Call renderTable with selected columns
+    renderTable(globalCsvData, selectedColumns);
+}
+
+let sortDirection = {}; // Object to keep track of the sort direction for each column
+let currentSortedColumn = null;
+
+function sortTable(column) {
+    // Determine if the first non-null/undefined value is numeric
+    let firstNonNullValue = globalCsvData.find(row => row[column] != null && row[column] !== '');
+    let isNumeric = firstNonNullValue && !isNaN(firstNonNullValue[column]);
+
+    // Toggle sort direction
+    if (currentSortedColumn !== column) {
+        sortDirection[column] = true; // Default to ascending when first clicked
+        currentSortedColumn = column;
+    } else {
+        sortDirection[column] = !sortDirection[column];
+    }
+
+    // Update arrow direction for all headers
+    // const headers = document.querySelectorAll('#dataContainer th');
+    // headers.forEach(header => {
+    //     if (header.textContent.includes(column)) {
+    //         // Found the right header, update its arrow
+    //         const arrowSpan = header.querySelector('.sort-arrow');
+    //         arrowSpan.textContent = sortDirection[column] ? '▲' : '▼';
+    //     } else {
+    //         // Reset other arrows to default
+    //         const arrowSpan = header.querySelector('.sort-arrow');
+    //         if (arrowSpan) arrowSpan.textContent = '↕️';
+    //     }
+    // });
+
+    // Sort data
+    globalCsvData.sort((a, b) => {
+        let valA = a[column];
+        let valB = b[column];
+
+        if (isNumeric) {
+            // Convert strings to numbers for comparison
+            valA = parseFloat(valA);
+            valB = parseFloat(valB);
+        }
+
+        if (valA < valB) {
+            return sortDirection[column] ? -1 : 1;
+        }
+        if (valA > valB) {
+            return sortDirection[column] ? 1 : -1;
+        }
+        return 0;
+    });
+
+    // Re-render the table with sorted data
     renderTable(globalCsvData, selectedColumns);
 }
