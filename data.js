@@ -74,6 +74,7 @@ function loadSelectedData() {
 
 // Variable to keep track of the current CSV path
 let currentCSVPath = '';
+let globalCsvData;
 
 // Modify loadData function to take parameters for year and position
 function loadData(year, position) {
@@ -81,8 +82,12 @@ function loadData(year, position) {
     fetch(currentCSVPath)
         .then(response => response.text())
         .then(csv => {
-            const data = csvToJson(csv);
-            renderTable(data);
+            globalCsvData = csvToJson(csv); // Store parsed data in the global variable
+            const headers = Object.keys(globalCsvData[0])
+
+            // After fetching and parsing CSV data
+            populateColumnCheckboxes(headers);
+            renderTable(globalCsvData, headers);
         })
         .catch(error => console.error('Error loading the CSV:', error));
 }
@@ -106,21 +111,27 @@ function csvToJson(csv) {
 }
 
 // render the json data into the table
-function renderTable(data) {
+function renderTable(data, selectedColumns) {
     const container = document.getElementById('dataContainer');
     let table = '<table>';
+    
+    // Render headers for selected columns
     table += '<tr>';
-    // Assuming all objects have the same keys, use the first one for column headers
     Object.keys(data[0]).forEach(key => {
-        table += `<th>${key}</th>`;
+        if (selectedColumns.includes(key) && key.length) {
+            table += `<th>${key}</th>`;
+        }
     });
     table += '</tr>';
-    
+
+    // Render rows for selected columns
     data.forEach(row => {
         if (row.name) {
             table += '<tr>';
-            Object.values(row).forEach(val => {
-                table += `<td>${val}</td>`;
+            Object.entries(row).forEach(([key, val]) => {
+                if (selectedColumns.includes(key) && key.length) {
+                    table += `<td>${val}</td>`;
+                }
             });
             table += '</tr>';
         }
@@ -165,4 +176,79 @@ function downloadCSV() {
     document.body.appendChild(tempLink);
     tempLink.click();
     document.body.removeChild(tempLink);
+}
+
+// Get the modal
+let modal = document.getElementById("columnSelectModal");
+
+// Get the button that opens the modal
+let openModalBtn = document.getElementById("selectColumnsBtn");
+
+// Get the <span> element that closes the modal
+let span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+openModalBtn.onclick = function() {
+    modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+function populateColumnCheckboxes(headers) {
+    const container = document.getElementById('checkboxContainer');
+    container.innerHTML = ''; // Clear previous checkboxes
+
+    headers.forEach(header => {
+        if (header.length) {
+            // Create checkbox for each header
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = header;
+            checkbox.name = header;
+            checkbox.value = header;
+            checkbox.checked = true; // Default to checked
+
+            const label = document.createElement('label');
+            label.htmlFor = header;
+            label.appendChild(document.createTextNode(header));
+
+            container.appendChild(checkbox);
+            container.appendChild(label);
+            container.appendChild(document.createElement('br'));
+        }
+    });
+}
+
+document.getElementById('selectAllBtn').addEventListener('click', () => {
+    document.querySelectorAll('#checkboxContainer input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = true;
+    });
+});
+
+document.getElementById('deselectAllBtn').addEventListener('click', () => {
+    document.querySelectorAll('#checkboxContainer input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+});
+
+document.getElementById('applyColumnsBtn').addEventListener('click', () => {
+    modal.style.display = "none";
+    renderTableBasedOnSelection();
+});
+
+function renderTableBasedOnSelection() {
+    const selectedColumns = Array.from(document.querySelectorAll('#checkboxContainer input[type="checkbox"]:checked')).map(cb => cb.value);
+
+    // Call renderTable with selected columns
+    renderTable(globalCsvData, selectedColumns);
 }
