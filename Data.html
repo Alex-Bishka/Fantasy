@@ -29,7 +29,7 @@
     <div class="content-container">
         <h1>Player Data Bank</h1>
 
-        <div>
+        <div class="control-group">
             <input type="text" id="searchBox" placeholder="Search for players..." onkeydown="enterPressed(event)">
             <button onclick="searchData()">Search</button>
 
@@ -39,6 +39,10 @@
             <select id="positionSelect" onchange="loadSelectedData()">
                 <!-- Populate with options for positions -->
             </select>
+
+            <div class="download-button-container">
+                <button id="downloadBtn" onclick="downloadCSV()">Download CSV</button>
+            </div>
         </div>
 
         <div id="dataContainer" class="table-scroll">
