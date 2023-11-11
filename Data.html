@@ -39,6 +39,8 @@
             <select id="positionSelect" onchange="loadSelectedData()">
                 <!-- Populate with options for positions -->
             </select>
+            
+            <button id="selectColumnsBtn">Select Columns</button>
 
             <div class="download-button-container">
                 <button id="downloadBtn" onclick="downloadCSV()">Download CSV</button>
@@ -48,9 +50,23 @@
         <div id="dataContainer" class="table-scroll">
             <!-- The table will be generated here -->
         </div>
-
-        <script src="data.js"></script>
     </div>
+    <!-- Modal placeholder -->
+    <div id="columnSelectModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Select Columns</h2>
+            <div class="modal-select-btn-container">
+                <button id="selectAllBtn">Select All</button>
+                <button id="deselectAllBtn">Deselect All</button>
+                <button id="applyColumnsBtn">Apply</button>
+            </div>
+            <div id="checkboxContainer">
+                <!-- Checkboxes will be populated here -->
+            </div>
+        </div>
+    </div>
+    <script src="data.js"></script>
 </body>
 </html>
 <script>
