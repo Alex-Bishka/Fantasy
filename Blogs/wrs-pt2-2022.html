@@ -1,0 +1,1215 @@
+<head>
+    <title>WRs in 2022 Part 2</title>
+    <link rel="stylesheet" href="/Fantasy/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/Fantasy/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        // google analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>WRs in 2022 Part 2</h1>
+
+
+            <h2>TL;DR</h2>
+            <p class="blog-p-tag">
+            <ul class="bullet-list">
+                <li>TODO</li>
+                <li></li>
+            </ul>
+            </p>
+
+            <h2 class="h2-blog">Overview</h2>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <p class="blog-p-tag">
+                <b>My data disclaimer, as always:</b>
+            <ul class="bullet-list">
+                <li>I don't take into account anything related to two point conversions, partly due to
+                    the randomness and small sample size but mostly because it was difficult to incorporate into the
+                    data I
+                    fetched</li>
+                <li>The top 48 WRs I analyze are by the top 48 fantasy point totals, this is done for
+                    simplicity and reusability of graphing code</li>
+            </ul>
+            </p>
+
+
+            <h2 class="h2-blog">Tiers (Season Totals)</h2>
+            <p class="blog-p-tag">
+                The receiving stats that we will evaluate wide receivers by are:
+                "Receiving Yards", "Receptions", "Receiving TDs", and "Targets".
+            </p>
+
+            <div>
+                <div>
+                    <h3 class='h3-blog'>WRs as Three Tiers</h3>
+                    <p class='blog-p-tag'>
+                        TODO
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Fantasy/Analysis/interactive/WR/clustering-3.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        TODO:
+                        <ul class='bullet-list'>
+                            <li><b>Cluster 0:</b> TODO</li>
+                            <li><b>Cluster 1:</b> TODO</li>
+                            <li><b>Cluster 2:</b> TODO</li>
+                        </ul>
+                    </p>
+                    <p class="blog-p-tag">
+                            TODO
+                    </p>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Jerry Jeudy</li>
+                                <li>Cooper Kupp</li>
+                                <li>D.J. Moore</li>
+                                <li>JuJu Smith-Schuster</li>
+                                <li>Jakobi Meyers</li>
+                                <li>Adam Thielen</li>
+                                <li>Drake London</li>
+                                <li>Mike Williams</li>
+                                <li>Curtis Samuel</li>
+                                <li>Allen Lazard</li>
+                                <li>Gabriel Davis</li>
+                                <li>Josh Palmer</li>
+                                <li>Deebo Samuel</li>
+                                <li>Donovan Peoples-Jones</li>
+                                <li>Tyler Boyd</li>
+                                <li>George Pickens</li>
+                                <li>Christian Watson</li>
+                                <li>Keenan Allen</li>
+                                <li>Courtland Sutton</li>
+                                <li>Marquise Brown</li>
+                                <li>K.J. Osborn</li>
+                                <li>Mack Hollins</li>
+                                <li>DeAndre Hopkins</li>
+                                <li>Parris Campbell</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 1 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Justin Jefferson</li>
+                                <li>Tyreek Hill</li>
+                                <li>Davante Adams</li>
+                                <li>Stefon Diggs</li>
+                                <li>CeeDee Lamb</li>
+                                <li>A.J. Brown</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 2 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>Jaylen Waddle</li>
+                                <li>DeVonta Smith</li>
+                                <li>Amari Cooper</li>
+                                <li>Ja'Marr Chase</li>
+                                <li>Christian Kirk</li>
+                                <li>Tyler Lockett</li>
+                                <li>Terry McLaurin</li>
+                                <li>Brandon Aiyuk</li>
+                                <li>D.K. Metcalf</li>
+                                <li>Mike Evans</li>
+                                <li>Chris Godwin</li>
+                                <li>Tee Higgins</li>
+                                <li>Michael Pittman Jr.</li>
+                                <li>Garrett Wilson</li>
+                                <li>Chris Olave</li>
+                                <li>Zay Jones</li>
+                                <li>Diontae Johnson</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>        
+
+                <div>
+                    <h3 class='h3-blog'>WRs as Four Tiers</h3>
+                    <p class='blog-p-tag'>
+                        TODO
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Fantasy/Analysis/interactive/WR/clustering-4.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        TODO:
+                        <ul class='bullet-list'>
+                            <li><b>Cluster 0:</b> TODO</li>
+                            <li><b>Cluster 1:</b> TODO</li>
+                            <li><b>Cluster 2:</b> TODO</li>
+                            <li><b>Cluster 3:</b> TODO</li>
+                        </ul>
+                    </p>
+                <p class="blog-p-tag">
+                        TODO
+                </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>Chris Godwin</li>
+                                <li>Michael Pittman Jr.</li>
+                                <li>Garrett Wilson</li>
+                                <li>Diontae Johnson</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 1 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Jaylen Waddle</li>
+                                <li>DeVonta Smith</li>
+                                <li>Amari Cooper</li>
+                                <li>Ja'Marr Chase</li>
+                                <li>Christian Kirk</li>
+                                <li>Tyler Lockett</li>
+                                <li>Terry McLaurin</li>
+                                <li>Brandon Aiyuk</li>
+                                <li>D.K. Metcalf</li>
+                                <li>Mike Evans</li>
+                                <li>Tee Higgins</li>
+                                <li>D.J. Moore</li>
+                                <li>Chris Olave</li>
+                                <li>Zay Jones</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 2 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Jerry Jeudy</li>
+                                <li>Cooper Kupp</li>
+                                <li>JuJu Smith-Schuster</li>
+                                <li>Jakobi Meyers</li>
+                                <li>Adam Thielen</li>
+                                <li>Drake London</li>
+                                <li>Mike Williams</li>
+                                <li>Curtis Samuel</li>
+                                <li>Allen Lazard</li>
+                                <li>Gabriel Davis</li>
+                                <li>Josh Palmer</li>
+                                <li>Deebo Samuel</li>
+                                <li>Donovan Peoples-Jones</li>
+                                <li>Tyler Boyd</li>
+                                <li>George Pickens</li>
+                                <li>Christian Watson</li>
+                                <li>Keenan Allen</li>
+                                <li>Courtland Sutton</li>
+                                <li>Marquise Brown</li>
+                                <li>K.J. Osborn</li>
+                                <li>Mack Hollins</li>
+                                <li>DeAndre Hopkins</li>
+                                <li>Parris Campbell</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 3 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Justin Jefferson</li>
+                                <li>Tyreek Hill</li>
+                                <li>Davante Adams</li>
+                                <li>Stefon Diggs</li>
+                                <li>CeeDee Lamb</li>
+                                <li>A.J. Brown</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class='h3-blog'>WRs as Five Tiers</h3>
+                    <p class='blog-p-tag'>
+                        TODO
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Fantasy/Analysis/interactive/WR/clustering-5.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        TODO:
+                        <ul class='bullet-list'>
+                            <li><b>Cluster 0:</b> TODO</li>
+                            <li><b>Cluster 1:</b> TODO</li>
+                            <li><b>Cluster 2:</b> TODO</li>
+                            <li><b>Cluster 3:</b> TODO</li>
+                            <li><b>Cluster 4:</b> TODO</li>
+                        </ul>
+                    </p>
+                <p class="blog-p-tag">
+                        TODO
+                </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Jerry Jeudy</li>
+                                <li>Cooper Kupp</li>
+                                <li>JuJu Smith-Schuster</li>
+                                <li>Jakobi Meyers</li>
+                                <li>Adam Thielen</li>
+                                <li>Drake London</li>
+                                <li>Mike Williams</li>
+                                <li>Curtis Samuel</li>
+                                <li>Allen Lazard</li>
+                                <li>Gabriel Davis</li>
+                                <li>Josh Palmer</li>
+                                <li>Deebo Samuel</li>
+                                <li>Donovan Peoples-Jones</li>
+                                <li>Tyler Boyd</li>
+                                <li>George Pickens</li>
+                                <li>Christian Watson</li>
+                                <li>Keenan Allen</li>
+                                <li>Courtland Sutton</li>
+                                <li>Marquise Brown</li>
+                                <li>K.J. Osborn</li>
+                                <li>Mack Hollins</li>
+                                <li>DeAndre Hopkins</li>
+                                <li>Parris Campbell</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 1 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Jaylen Waddle</li>
+                                <li>DeVonta Smith</li>
+                                <li>Amari Cooper</li>
+                                <li>Ja'Marr Chase</li>
+                                <li>Christian Kirk</li>
+                                <li>Tyler Lockett</li>
+                                <li>Terry McLaurin</li>
+                                <li>Brandon Aiyuk</li>
+                                <li>Mike Evans</li>
+                                <li>Tee Higgins</li>
+                                <li>D.J. Moore</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 2 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Justin Jefferson</li>
+                                <li>Tyreek Hill</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 3 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Davante Adams</li>
+                                <li>Stefon Diggs</li>
+                                <li>CeeDee Lamb</li>
+                                <li>A.J. Brown</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 4 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>D.K. Metcalf</li>
+                                <li>Chris Godwin</li>
+                                <li>Michael Pittman Jr.</li>
+                                <li>Garrett Wilson</li>
+                                <li>Chris Olave</li>
+                                <li>Zay Jones</li>
+                                <li>Diontae Johnson</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class='h3-blog'>WRs as Six Tiers</h3>
+                    <p class='blog-p-tag'>
+                        TODO
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Fantasy/Analysis/interactive/WR/clustering-6.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        TODO:
+                        <ul class='bullet-list'>
+                            <li><b>Cluster 0:</b> TODO</li>
+                            <li><b>Cluster 1:</b> TODO</li>
+                            <li><b>Cluster 2:</b> TODO</li>
+                            <li><b>Cluster 3:</b> TODO</li>
+                            <li><b>Cluster 4:</b> TODO</li>
+                            <li><b>Cluster 5:</b> TODO</li>
+                        </ul>
+                    </p>
+                <p class="blog-p-tag">
+                        TODO
+                </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Jerry Jeudy</li>
+                                <li>Cooper Kupp</li>
+                                <li>D.J. Moore</li>
+                                <li>Jakobi Meyers</li>
+                                <li>Adam Thielen</li>
+                                <li>Allen Lazard</li>
+                                <li>Gabriel Davis</li>
+                                <li>Tyler Boyd</li>
+                                <li>Christian Watson</li>
+                                <li>K.J. Osborn</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 1 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Davante Adams</li>
+                                <li>Stefon Diggs</li>
+                                <li>CeeDee Lamb</li>
+                                <li>A.J. Brown</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 2 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>D.K. Metcalf</li>
+                                <li>Chris Godwin</li>
+                                <li>Michael Pittman Jr.</li>
+                                <li>Garrett Wilson</li>
+                                <li>Zay Jones</li>
+                                <li>Diontae Johnson</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 3 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Jaylen Waddle</li>
+                                <li>DeVonta Smith</li>
+                                <li>Amari Cooper</li>
+                                <li>Ja'Marr Chase</li>
+                                <li>Christian Kirk</li>
+                                <li>Tyler Lockett</li>
+                                <li>Terry McLaurin</li>
+                                <li>Brandon Aiyuk</li>
+                                <li>Mike Evans</li>
+                                <li>Tee Higgins</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 4 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Chris Olave</li>
+                                <li>JuJu Smith-Schuster</li>
+                                <li>Drake London</li>
+                                <li>Mike Williams</li>
+                                <li>Curtis Samuel</li>
+                                <li>Josh Palmer</li>
+                                <li>Deebo Samuel</li>
+                                <li>Donovan Peoples-Jones</li>
+                                <li>George Pickens</li>
+                                <li>Keenan Allen</li>
+                                <li>Courtland Sutton</li>
+                                <li>Marquise Brown</li>
+                                <li>Mack Hollins</li>
+                                <li>DeAndre Hopkins</li>
+                                <li>Parris Campbell</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 5 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Justin Jefferson</li>
+                                <li>Tyreek Hill</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class='h3-blog'>WRs as Seven Tiers</h3>
+                    <p class='blog-p-tag'>
+                        TODO
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Fantasy/Analysis/interactive/WR/clustering-7.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        TODO:
+                        <ul class='bullet-list'>
+                            <li><b>Cluster 0:</b> TODO</li>
+                            <li><b>Cluster 1:</b> TODO</li>
+                            <li><b>Cluster 2:</b> TODO</li>
+                            <li><b>Cluster 3:</b> TODO</li>
+                            <li><b>Cluster 4:</b> TODO</li>
+                            <li><b>Cluster 5:</b> TODO</li>
+                            <li><b>Cluster 6:</b> TODO</li>
+                        </ul>
+                    </p>
+                <p class="blog-p-tag">
+                        TODO
+                </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Jaylen Waddle</li>
+                                <li>DeVonta Smith</li>
+                                <li>Amari Cooper</li>
+                                <li>Ja'Marr Chase</li>
+                                <li>Christian Kirk</li>
+                                <li>Tyler Lockett</li>
+                                <li>Brandon Aiyuk</li>
+                                <li>D.K. Metcalf</li>
+                                <li>Mike Evans</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 1 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Terry McLaurin</li>
+                                <li>Tee Higgins</li>
+                                <li>Jerry Jeudy</li>
+                                <li>Cooper Kupp</li>
+                                <li>D.J. Moore</li>
+                                <li>Chris Olave</li>
+                                <li>Zay Jones</li>
+                                <li>JuJu Smith-Schuster</li>
+                                <li>Jakobi Meyers</li>
+                                <li>Adam Thielen</li>
+                                <li>Drake London</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 2 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Davante Adams</li>
+                                <li>Stefon Diggs</li>
+                                <li>CeeDee Lamb</li>
+                                <li>A.J. Brown</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 3 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Mike Williams</li>
+                                <li>Curtis Samuel</li>
+                                <li>Allen Lazard</li>
+                                <li>Josh Palmer</li>
+                                <li>Deebo Samuel</li>
+                                <li>Donovan Peoples-Jones</li>
+                                <li>Tyler Boyd</li>
+                                <li>George Pickens</li>
+                                <li>Keenan Allen</li>
+                                <li>Courtland Sutton</li>
+                                <li>Marquise Brown</li>
+                                <li>K.J. Osborn</li>
+                                <li>Mack Hollins</li>
+                                <li>DeAndre Hopkins</li>
+                                <li>Parris Campbell</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 4 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>Chris Godwin</li>
+                                <li>Michael Pittman Jr.</li>
+                                <li>Garrett Wilson</li>
+                                <li>Diontae Johnson</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 5 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Justin Jefferson</li>
+                                <li>Tyreek Hill</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 6 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Gabriel Davis</li>
+                                <li>Christian Watson</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>        
+            </div>
+
+
+            <h2 class="h2-blog">Tiers (Per Game)</h2>
+            <p class="blog-p-tag">
+                We will now evaluate the wide receiver position in 2022, using the stats from the previous section,
+                but now on a per game basis.
+            </p>
+            <p class="blog-p-tag">
+                For reference, the per game stats we will be looking at:
+                "Receiving Yards Per Game", "Receptions Per Game", "Receiving TDs Per Game", and "Targets Per Game".
+            </p>
+
+            <div>
+                <div>
+                    <h3 class='h3-blog'>WRs as Three Tiers</h3>
+                    <p class='blog-p-tag'>
+                        TODO
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Fantasy/Analysis/interactive/WR/clustering-3-per-game.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        TODO:
+                        <ul class='bullet-list'>
+                            <li><b>Cluster 0:</b> TODO</li>
+                            <li><b>Cluster 1:</b> TODO</li>
+                            <li><b>Cluster 2:</b> TODO</li>
+                        </ul>
+                    </p>
+                    <p class="blog-p-tag">
+                            TODO
+                    </p>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 ()</b>
+                                <ul class='bullet-list'>
+                                <li>D.J. Moore</li>
+                                <li>JuJu Smith-Schuster</li>
+                                <li>Adam Thielen</li>
+                                <li>Drake London</li>
+                                <li>Curtis Samuel</li>
+                                <li>Allen Lazard</li>
+                                <li>Gabriel Davis</li>
+                                <li>Josh Palmer</li>
+                                <li>Deebo Samuel</li>
+                                <li>Donovan Peoples-Jones</li>
+                                <li>Tyler Boyd</li>
+                                <li>George Pickens</li>
+                                <li>Christian Watson</li>
+                                <li>Courtland Sutton</li>
+                                <li>K.J. Osborn</li>
+                                <li>Mack Hollins</li>
+                                <li>Parris Campbell</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 1 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Justin Jefferson</li>
+                                <li>Tyreek Hill</li>
+                                <li>Davante Adams</li>
+                                <li>Stefon Diggs</li>
+                                <li>CeeDee Lamb</li>
+                                <li>A.J. Brown</li>
+                                <li>Ja'Marr Chase</li>
+                                <li>Cooper Kupp</li>
+                                <li>DeAndre Hopkins</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 2 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>Jaylen Waddle</li>
+                                <li>DeVonta Smith</li>
+                                <li>Amari Cooper</li>
+                                <li>Christian Kirk</li>
+                                <li>Tyler Lockett</li>
+                                <li>Terry McLaurin</li>
+                                <li>Brandon Aiyuk</li>
+                                <li>D.K. Metcalf</li>
+                                <li>Mike Evans</li>
+                                <li>Chris Godwin</li>
+                                <li>Tee Higgins</li>
+                                <li>Michael Pittman Jr.</li>
+                                <li>Garrett Wilson</li>
+                                <li>Jerry Jeudy</li>
+                                <li>Chris Olave</li>
+                                <li>Zay Jones</li>
+                                <li>Diontae Johnson</li>
+                                <li>Jakobi Meyers</li>
+                                <li>Mike Williams</li>
+                                <li>Keenan Allen</li>
+                                <li>Marquise Brown</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+    
+                <div>
+                    <h3 class='h3-blog'>WRs as Four Tiers</h3>
+                    <p class='blog-p-tag'>
+                        TODO
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Fantasy/Analysis/interactive/WR/clustering-4-per-game.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        TODO:
+                        <ul class='bullet-list'>
+                            <li><b>Cluster 0:</b> TODO</li>
+                            <li><b>Cluster 1:</b> TODO</li>
+                            <li><b>Cluster 2:</b> TODO</li>
+                            <li><b>Cluster 3:</b> TODO</li>
+                        </ul>
+                    </p>
+                    <p class="blog-p-tag">
+                            TODO
+                    </p>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>Chris Godwin</li>
+                                <li>Michael Pittman Jr.</li>
+                                <li>Garrett Wilson</li>
+                                <li>Diontae Johnson</li>
+                                <li>Keenan Allen</li>
+                                <li>Marquise Brown</li>
+                                <li>DeAndre Hopkins</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 1 ()</b>
+                                <ul class='bullet-list'>
+                                <li>JuJu Smith-Schuster</li>
+                                <li>Adam Thielen</li>
+                                <li>Drake London</li>
+                                <li>Curtis Samuel</li>
+                                <li>Josh Palmer</li>
+                                <li>Deebo Samuel</li>
+                                <li>Donovan Peoples-Jones</li>
+                                <li>Tyler Boyd</li>
+                                <li>George Pickens</li>
+                                <li>Christian Watson</li>
+                                <li>Courtland Sutton</li>
+                                <li>K.J. Osborn</li>
+                                <li>Mack Hollins</li>
+                                <li>Parris Campbell</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 2 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Justin Jefferson</li>
+                                <li>Tyreek Hill</li>
+                                <li>Davante Adams</li>
+                                <li>Stefon Diggs</li>
+                                <li>CeeDee Lamb</li>
+                                <li>A.J. Brown</li>
+                                <li>Ja'Marr Chase</li>
+                                <li>Cooper Kupp</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 3 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Jaylen Waddle</li>
+                                <li>DeVonta Smith</li>
+                                <li>Amari Cooper</li>
+                                <li>Christian Kirk</li>
+                                <li>Tyler Lockett</li>
+                                <li>Terry McLaurin</li>
+                                <li>Brandon Aiyuk</li>
+                                <li>D.K. Metcalf</li>
+                                <li>Mike Evans</li>
+                                <li>Tee Higgins</li>
+                                <li>Jerry Jeudy</li>
+                                <li>D.J. Moore</li>
+                                <li>Chris Olave</li>
+                                <li>Zay Jones</li>
+                                <li>Jakobi Meyers</li>
+                                <li>Mike Williams</li>
+                                <li>Allen Lazard</li>
+                                <li>Gabriel Davis</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+    
+                <div>
+                    <h3 class='h3-blog'>WRs as Five Tiers</h3>
+                    <p class='blog-p-tag'>
+                        TODO
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Fantasy/Analysis/interactive/WR/clustering-5-per-game.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        TODO:
+                        <ul class='bullet-list'>
+                            <li><b>Cluster 0:</b> TODO</li>
+                            <li><b>Cluster 1:</b> TODO</li>
+                            <li><b>Cluster 2:</b> TODO</li>
+                            <li><b>Cluster 3:</b> TODO</li>
+                            <li><b>Cluster 4:</b> TODO</li>
+                        </ul>
+                    </p>
+                    <p class="blog-p-tag">
+                            TODO
+                    </p>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Zay Jones</li>
+                                <li>JuJu Smith-Schuster</li>
+                                <li>Diontae Johnson</li>
+                                <li>Drake London</li>
+                                <li>Josh Palmer</li>
+                                <li>Deebo Samuel</li>
+                                <li>Courtland Sutton</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 1 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Justin Jefferson</li>
+                                <li>Tyreek Hill</li>
+                                <li>Davante Adams</li>
+                                <li>Stefon Diggs</li>
+                                <li>CeeDee Lamb</li>
+                                <li>A.J. Brown</li>
+                                <li>Ja'Marr Chase</li>
+                                <li>Cooper Kupp</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 2 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>DeVonta Smith</li>
+                                <li>D.K. Metcalf</li>
+                                <li>Mike Evans</li>
+                                <li>Chris Godwin</li>
+                                <li>Michael Pittman Jr.</li>
+                                <li>Garrett Wilson</li>
+                                <li>Chris Olave</li>
+                                <li>Keenan Allen</li>
+                                <li>Marquise Brown</li>
+                                <li>DeAndre Hopkins</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 3 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Adam Thielen</li>
+                                <li>Curtis Samuel</li>
+                                <li>Donovan Peoples-Jones</li>
+                                <li>Tyler Boyd</li>
+                                <li>George Pickens</li>
+                                <li>Christian Watson</li>
+                                <li>K.J. Osborn</li>
+                                <li>Mack Hollins</li>
+                                <li>Parris Campbell</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 4 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Jaylen Waddle</li>
+                                <li>Amari Cooper</li>
+                                <li>Christian Kirk</li>
+                                <li>Tyler Lockett</li>
+                                <li>Terry McLaurin</li>
+                                <li>Brandon Aiyuk</li>
+                                <li>Tee Higgins</li>
+                                <li>Jerry Jeudy</li>
+                                <li>D.J. Moore</li>
+                                <li>Jakobi Meyers</li>
+                                <li>Mike Williams</li>
+                                <li>Allen Lazard</li>
+                                <li>Gabriel Davis</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+    
+                <div>
+                    <h3 class='h3-blog'>WRs as Six Tiers</h3>
+                    <p class='blog-p-tag'>
+                        TODO
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Fantasy/Analysis/interactive/WR/clustering-6-per-game.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        TODO:
+                        <ul class='bullet-list'>
+                            <li><b>Cluster 0:</b> TODO</li>
+                            <li><b>Cluster 1:</b> TODO</li>
+                            <li><b>Cluster 2:</b> TODO</li>
+                            <li><b>Cluster 3:</b> TODO</li>
+                            <li><b>Cluster 4:</b> TODO</li>
+                            <li><b>Cluster 5:</b> TODO</li>
+                        </ul>
+                    </p>
+                    <p class="blog-p-tag">
+                            TODO
+                    </p>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Zay Jones</li>
+                                <li>JuJu Smith-Schuster</li>
+                                <li>Diontae Johnson</li>
+                                <li>Drake London</li>
+                                <li>Josh Palmer</li>
+                                <li>Deebo Samuel</li>
+                                <li>Courtland Sutton</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 1 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Justin Jefferson</li>
+                                <li>Davante Adams</li>
+                                <li>Stefon Diggs</li>
+                                <li>A.J. Brown</li>
+                                <li>Ja'Marr Chase</li>
+                                <li>Cooper Kupp</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 2 ()</b>
+                                <ul class='bullet-list'>
+                                <li>DeVonta Smith</li>
+                                <li>Terry McLaurin</li>
+                                <li>D.K. Metcalf</li>
+                                <li>Mike Evans</li>
+                                <li>Michael Pittman Jr.</li>
+                                <li>Garrett Wilson</li>
+                                <li>Chris Olave</li>
+                                <li>Mike Williams</li>
+                                <li>Marquise Brown</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 3 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Adam Thielen</li>
+                                <li>Curtis Samuel</li>
+                                <li>Donovan Peoples-Jones</li>
+                                <li>Tyler Boyd</li>
+                                <li>George Pickens</li>
+                                <li>Christian Watson</li>
+                                <li>K.J. Osborn</li>
+                                <li>Mack Hollins</li>
+                                <li>Parris Campbell</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 4 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Jaylen Waddle</li>
+                                <li>Amari Cooper</li>
+                                <li>Christian Kirk</li>
+                                <li>Tyler Lockett</li>
+                                <li>Brandon Aiyuk</li>
+                                <li>Tee Higgins</li>
+                                <li>Jerry Jeudy</li>
+                                <li>D.J. Moore</li>
+                                <li>Jakobi Meyers</li>
+                                <li>Allen Lazard</li>
+                                <li>Gabriel Davis</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 5 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Tyreek Hill</li>
+                                <li>CeeDee Lamb</li>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>Chris Godwin</li>
+                                <li>Keenan Allen</li>
+                                <li>DeAndre Hopkins</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+    
+                <div>
+                    <h3 class='h3-blog'>WRs as Seven Tiers</h3>
+                    <p class='blog-p-tag'>
+                        TODO
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Fantasy/Analysis/interactive/WR/clustering-7-per-game.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        TODO:
+                        <ul class='bullet-list'>
+                            <li><b>Cluster 0:</b> TODO</li>
+                            <li><b>Cluster 1:</b> TODO</li>
+                            <li><b>Cluster 2:</b> TODO</li>
+                            <li><b>Cluster 3:</b> TODO</li>
+                            <li><b>Cluster 4:</b> TODO</li>
+                            <li><b>Cluster 5:</b> TODO</li>
+                            <li><b>Cluster 6:</b> TODO</li>
+                        </ul>
+                    </p>
+                    <p class="blog-p-tag">
+                            TODO
+                    </p>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 ()</b>
+                                <ul class='bullet-list'>
+                                <li>CeeDee Lamb</li>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>Chris Godwin</li>
+                                <li>Keenan Allen</li>
+                                <li>DeAndre Hopkins</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 1 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Adam Thielen</li>
+                                <li>Curtis Samuel</li>
+                                <li>Donovan Peoples-Jones</li>
+                                <li>Tyler Boyd</li>
+                                <li>George Pickens</li>
+                                <li>Christian Watson</li>
+                                <li>K.J. Osborn</li>
+                                <li>Mack Hollins</li>
+                                <li>Parris Campbell</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 2 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Jaylen Waddle</li>
+                                <li>Amari Cooper</li>
+                                <li>Christian Kirk</li>
+                                <li>Tyler Lockett</li>
+                                <li>Brandon Aiyuk</li>
+                                <li>Tee Higgins</li>
+                                <li>Jerry Jeudy</li>
+                                <li>D.J. Moore</li>
+                                <li>Jakobi Meyers</li>
+                                <li>Allen Lazard</li>
+                                <li>Gabriel Davis</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 3 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Davante Adams</li>
+                                <li>Stefon Diggs</li>
+                                <li>A.J. Brown</li>
+                                <li>Ja'Marr Chase</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 4 ()</b>
+                                <ul class='bullet-list'>
+                                <li>DeVonta Smith</li>
+                                <li>Terry McLaurin</li>
+                                <li>D.K. Metcalf</li>
+                                <li>Mike Evans</li>
+                                <li>Michael Pittman Jr.</li>
+                                <li>Garrett Wilson</li>
+                                <li>Chris Olave</li>
+                                <li>Zay Jones</li>
+                                <li>Mike Williams</li>
+                                <li>Marquise Brown</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 5 ()</b>
+                                <ul class='bullet-list'>
+                                <li>Justin Jefferson</li>
+                                <li>Tyreek Hill</li>
+                                <li>Cooper Kupp</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 6 ()</b>
+                                <ul class='bullet-list'>
+                                <li>JuJu Smith-Schuster</li>
+                                <li>Diontae Johnson</li>
+                                <li>Drake London</li>
+                                <li>Josh Palmer</li>
+                                <li>Deebo Samuel</li>
+                                <li>Courtland Sutton</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>    
+
+
+            <h2 class="h2-blog">Summary</h2>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <p class="blog-p-tag">
+                As always, my recap/takeaways:
+            </p>
+            <ul class="bullet-list">
+                <li>TODO</li>
+                <li></li>
+            </ul>
+            <p class="blog-p-tag">
+                TODO
+            </p>
+            <p class="blog-p-tag">
+                Cheers, <br />
+                Alex
+            </p>
+        </div>
+    </div>
+</body>
+<script>
+    $("#common-header").load("../header.html");
+</script>
