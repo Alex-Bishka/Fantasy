@@ -1,0 +1,1458 @@
+<head>
+    <title>WRs in 2022 Part 2</title>
+    <link rel="stylesheet" href="/Fantasy/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/Fantasy/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        // google analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>WRs in 2022 Part 2</h1>
+
+
+            <h2>TL;DR</h2>
+            <p class="blog-p-tag">
+            <ul class="bullet-list">
+                <li>We are in a golden age of wide receiver talent!</li>
+                <li>London is a great buy low. Has been a WR3 with some of the worst quarterback play in the NFL. It can only go up from here (I hope).</li>
+                <li>Add Christian Watson to the list of buy lows. He flashed quite some ability in 2022, but injuries and quarterback concerns have depressed his value.</li>
+                <li>There's a lot of good young (Wilson, Olave, Pickens, Watson, London, etc.) and old talent (Hopkins, Evans, Allen, etc.) for both rebuilders and contenders to buy.</li>
+                <li>Plenty of studs at varying ages prices as well: Chase, Jefferson, Lamb, Brown, Adams, Diggs, Hill, etc.</li>
+                <li>
+                    Maybe Chase shouldn't be in the same tier as Jefferson? Yes, he has one of the most insane ceilings in fantasy, but his consistency is not quite at the same 
+                    level as that of Jefferson. It seems Burrow is a big factor in keeping these two close in value, but does Dobbs change that?
+                </li>
+            </ul>
+            </p>
+
+            <h2 class="h2-blog">Overview</h2>
+            <p class="blog-p-tag">
+                Welcome back to the final installment of the 2022 position group analysis series. This last piece will continue upon
+                the first <a href="">2022 wide receiver analysis piece</a>. This time around, we will be using receiving stats - season totals and per game
+                numbers - to create wide receiver tiers.
+            </p>
+            <p class="blog-p-tag">
+                I will only be looking at receiving stats for wide receivers, as so few of them actually get carries and produce off of carries.
+                Outside of Amon-Ra, Curtis Samuel, and Deebo, no one really produced on the ground last year. Something to keep in mind for those three,
+                but largely discard for the rest of the wide receivers we will be taking a look at.
+            </p>
+            <p class="blog-p-tag">
+                As always, our goal is to find players who are undervalued so that we can acquire them and acrew more value on our rosters. 
+            </p>
+            <p class="blog-p-tag">
+                <b>My data disclaimer, as always:</b>
+            <ul class="bullet-list">
+                <li>I don't take into account anything related to two point conversions, partly due to
+                    the randomness and small sample size but mostly because it was difficult to incorporate into the
+                    data I
+                    fetched</li>
+                <li>The top 48 WRs I analyze are by the top 48 fantasy point totals, this is done for
+                    simplicity and reusability of graphing code</li>
+            </ul>
+            </p>
+            <p class="blog-p-tag">
+                For those who wish to explore other analysis pieces, please check out the <a href="">blogs page</a> on the site.
+            </p>
+
+
+            <h2 class="h2-blog">Tiers (Season Totals)</h2>
+            <p class="blog-p-tag">
+                The receiving stats that we will evaluate wide receivers by are:
+                "Receiving Yards", "Receptions", "Receiving TDs", and "Targets".
+            </p>
+            <p class='blog-p-tag'>
+                <b>A quick note here:</b> players in the top right of each of these graphs below are better, as all of the stats above are useful
+                for fantasy purposes.
+            </p>
+
+            <div>
+                <div>
+                    <h3 class='h3-blog'>WRs as Three Tiers</h3>
+                    <p class='blog-p-tag'>
+                        As usual, we start by taking a look at the position group with the lens of three tiers:
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Fantasy/Analysis/interactive/WR/clustering-3.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        A summary of the three tiers:
+                        <ul class='bullet-list'>
+                            <li><b>Cluster 0 (Green):</b> The worst of the bunch above. That being said, these guys can still be WR3s or WR4s on a roster, so there's value to be had in this tier.</li>
+                            <li><b>Cluster 1 (Blue):</b> The elite wide receivers. These players put up a lot of numbers, and are must haves on contending rosters.</li>
+                            <li><b>Cluster 2 (Red):</b> The middle of the pack. The worst of the bunch still provides good WR3 value and the best provide some good WR1 options.</li>
+                        </ul>
+                    </p>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Green)</b>
+                            <ul class='bullet-list'>
+                                <li>Jerry Jeudy</li>
+                                <li>Cooper Kupp</li>
+                                <li>D.J. Moore</li>
+                                <li>JuJu Smith-Schuster</li>
+                                <li>Jakobi Meyers</li>
+                                <li>Adam Thielen</li>
+                                <li>Drake London</li>
+                                <li>Mike Williams</li>
+                                <li>Curtis Samuel</li>
+                                <li>Allen Lazard</li>
+                                <li>Gabriel Davis</li>
+                                <li>Josh Palmer</li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <b>Cluster 0 <i>(Continued)</i></b>
+                            <ul class='bullet-list'>
+                                <li>Deebo Samuel</li>
+                                <li>Donovan Peoples-Jones</li>
+                                <li>Tyler Boyd</li>
+                                <li>George Pickens</li>
+                                <li>Christian Watson</li>
+                                <li>Keenan Allen</li>
+                                <li>Courtland Sutton</li>
+                                <li>Marquise Brown</li>
+                                <li>K.J. Osborn</li>
+                                <li>Mack Hollins</li>
+                                <li>DeAndre Hopkins</li>
+                                <li>Parris Campbell</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 1 (Blue)</b>
+                            <ul class='bullet-list'>
+                                <li>Justin Jefferson</li>
+                                <li>Tyreek Hill</li>
+                                <li>Davante Adams</li>
+                                <li>Stefon Diggs</li>
+                                <li>CeeDee Lamb</li>
+                                <li>A.J. Brown</li>
+                            </ul>
+        
+                            <b>Cluster 2 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>Jaylen Waddle</li>
+                                <li>DeVonta Smith</li>
+                                <li>Amari Cooper</li>
+                                <li>Ja'Marr Chase</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 2 <i>(Continued)</i></b>
+                            <ul class='bullet-list'>
+                                <li>Christian Kirk</li>
+                                <li>Tyler Lockett</li>
+                                <li>Terry McLaurin</li>
+                                <li>Brandon Aiyuk</li>
+                                <li>D.K. Metcalf</li>
+                                <li>Mike Evans</li>
+                                <li>Chris Godwin</li>
+                                <li>Tee Higgins</li>
+                                <li>Michael Pittman Jr.</li>
+                                <li>Garrett Wilson</li>
+                                <li>Chris Olave</li>
+                                <li>Zay Jones</li>
+                                <li>Diontae Johnson</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="blog-p-tag">
+                        For the most part, these tiers seem pretty reflective of expectations.
+                        There are some players who are in far lower tiers, respective to their quality, but
+                        this is largely due to injuries.
+                    </p>
+                    <p class="blog-p-tag">
+                        Players like Kupp, Chase, Deebo, Keenan Allen and Mike Williams drop a bit further that you would expect in these
+                        rankings, but each of these guys had injury issues last year. Mike and Deebo played the most of these four,
+                        with 13 games each.
+                    </p>
+                    <p class="blog-p-tag">
+                        Marquise Brown, Hopkins, DJ Moore are some other names in Cluster 0 that also deserve a mention for finishing in a tier lower
+                        than you might expect. The first two were capped to 10 games or less due to injury issues and suspensions, respectively.
+                        Moore simply had abysmal quarterback play in Carolina last season.
+                    </p>
+                    <p class="blog-p-tag">
+                        Outside of these fallers, the one, perhaps surprising, riser would be Zay Jones in my eyes. He had a career year last season, which led to
+                        near WR2 production. I don't think there was a strong inclination to buy and capitablize on this performance, as Ridley was coming back for the Jags.
+                    </p>
+                    <p class="blog-p-tag">
+                        While the rest of the clusters are about what you'd expect, there still is intrigue in each of them.
+                    </p>
+                    <p class="blog-p-tag">
+                        In cluster 0 and 2, there is a lot of young talent.
+                        London, Pickens, Watson, Olave, and Wilson headline the young group of talented receivers. I would buy any where I can, as I believe they will all get better.
+                        London, Pickens and Watson are probably the best value buys for me at the moment, as they don't quite have the value or hype of Olave or Wilson, but I think they
+                        have shown flashes of playing at an elite level.
+                    </p>
+                    <p class="blog-p-tag">
+                        Additionally, you have proven, young, studs like Amon-Ra, the Slim Reaper, and Waddle who could all break into Cluster 1, sooner or later (it seems the Sun God is definitely taking 
+                        the sooner approach with his 2023 season thus far).
+                    </p>
+                </div>        
+
+                <div>
+                    <h3 class='h3-blog'>WRs as Four Tiers</h3>
+                    <p class='blog-p-tag'>
+                        Moving onto viewing the position group with four tiers:
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Fantasy/Analysis/interactive/WR/clustering-4.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        A breakdown of the clusters:
+                        <ul class='bullet-list'>
+                            <li><b>Cluster 0 (Red):</b> Middle of the pack wide receivers with a high amount of targets and receptions, but lower receiving touchdowns and yards comapred to the other middle group (Cluster 1).</li>
+                            <li><b>Cluster 1 (Green):</b> The other middle of the pack group group. This group excels where Cluster 0 falls short, and vice versa.</li>
+                            <li><b>Cluster 2 (Purple):</b> The worst cluster of the bunch, but still useful to a dynasty roster.</li>
+                            <li><b>Cluster 3 (Blue):</b> The elite wide receivers. This tier stands out in pretty much every regard.</li>
+                        </ul>
+                    </p>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>Chris Godwin</li>
+                                <li>Michael Pittman Jr.</li>
+                                <li>Garrett Wilson</li>
+                                <li>Diontae Johnson</li>
+                            </ul>
+        
+                            <b>Cluster 1 (Green)</b>
+                            <ul class='bullet-list'>
+                                <li>Jaylen Waddle</li>
+                                <li>DeVonta Smith</li>
+                                <li>Amari Cooper</li>
+                                <li>Ja'Marr Chase</li>
+                                <li>Christian Kirk</li>
+                                <li>Tyler Lockett</li>
+                                <li>Terry McLaurin</li>
+                                <li>Brandon Aiyuk</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 1 <i>(Continued)</i></b>
+                            <ul class='bullet-list'>
+                                <li>D.K. Metcalf</li>
+                                <li>Mike Evans</li>
+                                <li>Tee Higgins</li>
+                                <li>D.J. Moore</li>
+                                <li>Chris Olave</li>
+                                <li>Zay Jones</li>
+                            </ul>
+
+                            <b>Cluster 2 (Purple)</b>
+                            <ul class='bullet-list'>
+                                <li>Jerry Jeudy</li>
+                                <li>Cooper Kupp</li>
+                                <li>JuJu Smith-Schuster</li>
+                                <li>Jakobi Meyers</li>
+                                <li>Adam Thielen</li>
+                                <li>Drake London</li>
+                                <li>Mike Williams</li>
+                                <li>Curtis Samuel</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 2 <i>(Continued)</i></b>
+                            <ul class='bullet-list'>
+                                <li>Allen Lazard</li>
+                                <li>Gabriel Davis</li>
+                                <li>Josh Palmer</li>
+                                <li>Deebo Samuel</li>
+                                <li>Donovan Peoples-Jones</li>
+                                <li>Tyler Boyd</li>
+                                <li>George Pickens</li>
+                                <li>Christian Watson</li>
+                                <li>Keenan Allen</li>
+                                <li>Courtland Sutton</li>
+                                <li>Marquise Brown</li>
+                                <li>K.J. Osborn</li>
+                                <li>Mack Hollins</li>
+                                <li>DeAndre Hopkins</li>
+                                <li>Parris Campbell</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 3 (Blue)</b>
+                            <ul class='bullet-list'>
+                                <li>Justin Jefferson</li>
+                                <li>Tyreek Hill</li>
+                                <li>Davante Adams</li>
+                                <li>Stefon Diggs</li>
+                                <li>CeeDee Lamb</li>
+                                <li>A.J. Brown</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="blog-p-tag">
+                        Nothing changes in our elite group, which is represented by Cluster 3 in this graph.
+                    </p>
+                    <p class="blog-p-tag">
+                        Additionally, the worst of the group has remained the same, despite adding the extra tier.
+                    </p>
+                    <p class="blog-p-tag">
+                        So, the difference here is that we have split our middle of the pack wide receivers into two groups:
+                        <ul class="bullet-list">
+                            <li>Those that get high targets and receptions but are not as strong at getting into the endzone or getting yardage (Cluster 0).</li>
+                            <li>Those that are strong at getting into the endzone or getting yardage but don't get targeted or catch as much (Cluster 1).</li>
+                        </ul>
+                    </p>
+                    <p class="blog-p-tag">
+                        I would say that it is cool to see Garret Wilson and Amon-Ra in the target hog cluster, as I think both of those guys can add more yardage and touchdowns to
+                        their game. Amon-Ra is already showcasing that this year, and I think Wilson could do the same once he gets a competent quarterback.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class='h3-blog'>WRs as Five Tiers</h3>
+                    <p class='blog-p-tag'>
+                        Taking a look at the landscape with five tiers now:
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Fantasy/Analysis/interactive/WR/clustering-5.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        A brief description of each cluster:
+                        <ul class='bullet-list'>
+                            <li><b>Cluster 0 (Orange):</b> The worst of the five tiers, but still servicable players.</li>
+                            <li><b>Cluster 1 (Purple):</b> Middle of the pack in all four categories.</li>
+                            <li><b>Cluster 2 (Blue):</b> Jefferson and Tyreek: basically the very best at everything, except for touchdowns.</li>
+                            <li><b>Cluster 3 (Red):</b> Those in the tier just behind Jefferson and Tyreek. Only better than them at receiving touchdowns.</li>
+                            <li><b>Cluster 4 (Green):</b> Middle of the pack group that is slighly worse at yardage and touchdowns than Cluster 1, but better at targets and receptions.</li>
+                        </ul>
+                    </p>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Orange)</b>
+                            <ul class='bullet-list'>
+                                <li>Jerry Jeudy</li>
+                                <li>Cooper Kupp</li>
+                                <li>JuJu Smith-Schuster</li>
+                                <li>Jakobi Meyers</li>
+                                <li>Adam Thielen</li>
+                                <li>Drake London</li>
+                                <li>Mike Williams</li>
+                                <li>Curtis Samuel</li>
+                                <li>Allen Lazard</li>
+                                <li>Gabriel Davis</li>
+                                <li>Josh Palmer</li>
+                                <li>Deebo Samuel</li>
+                            </ul>
+                        </div>
+                                    
+                        <div>
+                            <b>Cluster 0 <i>(Continued)</i></b>
+                            <ul class='bullet-list'>
+                                <li>Donovan Peoples-Jones</li>
+                                <li>Tyler Boyd</li>
+                                <li>George Pickens</li>
+                                <li>Christian Watson</li>
+                                <li>Keenan Allen</li>
+                                <li>Courtland Sutton</li>
+                                <li>Marquise Brown</li>
+                                <li>K.J. Osborn</li>
+                                <li>Mack Hollins</li>
+                                <li>DeAndre Hopkins</li>
+                                <li>Parris Campbell</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 1 (Purple)</b>
+                            <ul class='bullet-list'>
+                                <li>Jaylen Waddle</li>
+                                <li>DeVonta Smith</li>
+                                <li>Amari Cooper</li>
+                                <li>Ja'Marr Chase</li>
+                                <li>Christian Kirk</li>
+                                <li>Tyler Lockett</li>
+                                <li>Terry McLaurin</li>
+                                <li>Brandon Aiyuk</li>
+                                <li>Mike Evans</li>
+                                <li>Tee Higgins</li>
+                                <li>D.J. Moore</li>
+                            </ul>
+        
+                            <b>Cluster 2 (Blue)</b>
+                            <ul class='bullet-list'>
+                                <li>Justin Jefferson</li>
+                                <li>Tyreek Hill</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 3 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Davante Adams</li>
+                                <li>Stefon Diggs</li>
+                                <li>CeeDee Lamb</li>
+                                <li>A.J. Brown</li>
+                            </ul>
+        
+                            <b>Cluster 4 (Green)</b>
+                            <ul class='bullet-list'>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>D.K. Metcalf</li>
+                                <li>Chris Godwin</li>
+                                <li>Michael Pittman Jr.</li>
+                                <li>Garrett Wilson</li>
+                                <li>Chris Olave</li>
+                                <li>Zay Jones</li>
+                                <li>Diontae Johnson</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="blog-p-tag">
+                        For the most part, things stay the same. There's some yo-yoing going on in this tier shift between the middle of the pack groups,
+                        but all of the players in the middle groups have remained the same. Furthermore, the worst cluster is also the same as before.
+                    </p>
+                    <p class="blog-p-tag">
+                        The big change here is the split of the elite tier into Cluster 2 and Cluster 3. Cluster 2 is better than Cluster 3 at everything
+                        except getting into the endzone. That being said, you still want Jefferson and Hill over the guys in Cluster 3.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class='h3-blog'>WRs as Six Tiers</h3>
+                    <p class='blog-p-tag'>
+                        Moving onto analysis for six tiers:
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Fantasy/Analysis/interactive/WR/clustering-6.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        The breakdown of the clusters:
+                        <ul class='bullet-list'>
+                            <li><b>Cluster 0 (Orange):</b> One of two lower packs. Bottom or near the bottom at everything, except touchdowns - middle of the pack there.</li>
+                            <li><b>Cluster 1 (Red):</b> The second best tier. Behind Cluster 5 at everything except touchdowns. This cluster is the best at getting into the endzone.</li>
+                            <li><b>Cluster 2 (Green):</b> One of two middling tiers. This group is the target hog version (i.e. better at targets and receptions) of the middle groups.</li>
+                            <li><b>Cluster 3 (Purple):</b> The other middling tier, the complement to Cluster 2.</li>
+                            <li><b>Cluster 4 (Teal):</b> The other lower pack, in fact, probably the worst tier. Still have some WR3s in here.</li>
+                            <li><b>Cluster 5 (Blue):</b> The best at everything except getting into the endzone, but still solid in that regard.</li>
+                        </ul>
+                    </p>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Orange)</b>
+                            <ul class='bullet-list'>
+                                <li>Jerry Jeudy</li>
+                                <li>Cooper Kupp</li>
+                                <li>D.J. Moore</li>
+                                <li>Jakobi Meyers</li>
+                                <li>Adam Thielen</li>
+                                <li>Allen Lazard</li>
+                                <li>Gabriel Davis</li>
+                                <li>Tyler Boyd</li>
+                                <li>Christian Watson</li>
+                                <li>K.J. Osborn</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 1 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Davante Adams</li>
+                                <li>Stefon Diggs</li>
+                                <li>CeeDee Lamb</li>
+                                <li>A.J. Brown</li>
+                            </ul>
+        
+                            <b>Cluster 2 (Green)</b>
+                            <ul class='bullet-list'>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>D.K. Metcalf</li>
+                                <li>Chris Godwin</li>
+                                <li>Michael Pittman Jr.</li>
+                                <li>Garrett Wilson</li>
+                                <li>Zay Jones</li>
+                                <li>Diontae Johnson</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 3 (Purple)</b>
+                            <ul class='bullet-list'>
+                                <li>Jaylen Waddle</li>
+                                <li>DeVonta Smith</li>
+                                <li>Amari Cooper</li>
+                                <li>Ja'Marr Chase</li>
+                                <li>Christian Kirk</li>
+                                <li>Tyler Lockett</li>
+                                <li>Terry McLaurin</li>
+                                <li>Brandon Aiyuk</li>
+                                <li>Mike Evans</li>
+                                <li>Tee Higgins</li>
+                            </ul>
+        
+                            <b>Cluster 4 (Teal)</b>
+                            <ul class='bullet-list'>
+                                <li>Chris Olave</li>
+                                <li>JuJu Smith-Schuster</li>
+                                <li>Drake London</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 4 <i>(Continued)</i></b>
+                            <ul class='bullet-list'>
+                                <li>Mike Williams</li>
+                                <li>Curtis Samuel</li>
+                                <li>Josh Palmer</li>
+                                <li>Deebo Samuel</li>
+                                <li>Donovan Peoples-Jones</li>
+                                <li>George Pickens</li>
+                                <li>Keenan Allen</li>
+                                <li>Courtland Sutton</li>
+                                <li>Marquise Brown</li>
+                                <li>Mack Hollins</li>
+                                <li>DeAndre Hopkins</li>
+                                <li>Parris Campbell</li>
+                            </ul>
+        
+                            <b>Cluster 5 (Blue)</b>
+                            <ul class='bullet-list'>
+                                <li>Justin Jefferson</li>
+                                <li>Tyreek Hill</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="blog-p-tag">
+                        The change with six tiers comes from the worst cluster in the previous graph being split into two: Cluster 0 and Cluster 4.
+                        Essentially, the split occurs from the disparity in touchdown numbers between the two groups, as the rest of their stats are 
+                        quite similar. Everyone in Cluster 0 had at least five touchdowns last season, whereas everyone in Cluster 4 had four or less
+                        touchdowns. The rest of the picture stays more or less the same.
+                    </p>
+                    <p class="blog-p-tag">
+                        Now, from an individual perspective, there are a few points I'd like to mention. First, Olave and London being in Cluster 4 is not
+                        that bad. That's still WR3 territory. Sure, you would want more production in the endzone, but the targets and yardage numbers are 
+                        extremely encourging.
+                    </p>
+                    <p class="blog-p-tag">
+                        Olave had 72 receptions on 119 targets for 1042 yards last season. That's a really strong rookie season, especially
+                        since Andy Dalton started 14 games. Now, is Derek Carr better for Olave? That's tough to say - it seemed so, until Kamara
+                        came back from his suspension. That being said, Olave is young and is producing even more this year - breaking into WR2 territory - 
+                        so I do like his future, and would pay up for him. That being said, we might not see him reach his ceiling until the Saints get a better
+                        quarterback, or are more willing to throw it deep with Carr.
+                    </p>
+                    <p class="blog-p-tag">
+                        The story is quite similar for London. He had a wonderful rookie season - 72 receptions on 117 targets for 866 yards - despite awful quarterback
+                        play from Mariota and Ridder. London will probably end up with similar numbers to last season, which isn't ideal, but between Ridder and Heinicke, the 
+                        quarterback play hasn't improved. In fact, it's probably worse this year, as Mariota had a QBR of 57.7 in 2022 and Ridder has a QBR of 39.4 through his nine
+                        games this year. This makes London a great buy for me, because his value is severely deflated from horrible quarterback play, and there's not much room 
+                        for the quarterbacks in Atlanta to get worse.
+                    </p>
+                    <p class="blog-p-tag">
+                        Outside of those two young bucks, CeeDee Lamb being in Cluster 1 with Adams, Diggs, and Brown is very encourging to me. I believe that, in addition to his performances
+                        this year (top 5 wide receiver in PPR and half-PPR formats), CeeDee has solidified himself in that group of top receivers below Chase and Jefferson.
+                    </p>
+                    <p class="blog-p-tag">
+                        In terms of vets that offer good value for their production, I would look to Lockett, Evans, and Cooper from Cluster 3 and Godwin and Diontae in Cluster 2.
+                        All of them continue to provide, at least, WR3 production when healthy. Note, the highest valued player out of this group of vets 
+                        on KTC (as of 10/20/22) is Evans, at WR32. That's really good value for any of them.
+                    </p>
+                    <p class="blog-p-tag">
+                        I think a lot more can be said, with how deep and exciting the wide receiver position is, but I'll leave it at that for the six tier analysis. 
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class='h3-blog'>WRs as Seven Tiers</h3>
+                    <p class='blog-p-tag'>
+                        Our final tier evaluation for season totals:
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Fantasy/Analysis/interactive/WR/clustering-7.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        The clusters broken down:
+                        <ul class='bullet-list'>
+                            <li><b>Cluster 0 (Purple):</b> Middle of the pack group that produces well all around.</li>
+                            <li><b>Cluster 1 (Orange):</b> A worse version of Cluster 0 in every facet we are using for this excercise.</li>
+                            <li><b>Cluster 2 (Red):</b> The second best cluster, beats Cluster 5 only on touchdowns.</li>
+                            <li><b>Cluster 3 (Teal):</b> One of two poor groups. Bottom or nearly so by every metric.</li>
+                            <li><b>Cluster 4 (Green):</b> Middle of the pack group if you average out their stats. Better than most clusters at being targeted and catching the ball. Slightly worse than Cluster 0 when it comes to yardage and touchdowns.</li>
+                            <li><b>Cluster 5 (Blue):</b> Jefferson and Hill. This cluster leads all other clusters on every metric above, except touchdowns. Only behind Cluster 2 in that regard.</li>
+                            <li><b>Cluster 6 (Pink):</b> Gabe Davis and Christian Watson. Comparable to Cluster 3, with the exception receiving touchdowns. Davis and Watson are middle on the pack with their touchdown numbers.</li>
+                        </ul>
+                    </p>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Purple)</b>
+                            <ul class='bullet-list'>
+                                <li>Jaylen Waddle</li>
+                                <li>DeVonta Smith</li>
+                                <li>Amari Cooper</li>
+                                <li>Ja'Marr Chase</li>
+                                <li>Christian Kirk</li>
+                                <li>Tyler Lockett</li>
+                                <li>Brandon Aiyuk</li>
+                                <li>D.K. Metcalf</li>
+                                <li>Mike Evans</li>
+                            </ul>
+
+                            <b>Cluster 1 (Orange)</b>
+                            <ul class='bullet-list'>
+                                <li>Terry McLaurin</li>
+                                <li>Tee Higgins</li>
+                                <li>Jerry Jeudy</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 1 <i>(Continued)</i></b>
+                            <ul class='bullet-list'>
+                                <li>Cooper Kupp</li>
+                                <li>D.J. Moore</li>
+                                <li>Chris Olave</li>
+                                <li>Zay Jones</li>
+                                <li>JuJu Smith-Schuster</li>
+                                <li>Jakobi Meyers</li>
+                                <li>Adam Thielen</li>
+                                <li>Drake London</li>
+                            </ul>
+        
+                            <b>Cluster 2 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Davante Adams</li>
+                                <li>Stefon Diggs</li>
+                                <li>CeeDee Lamb</li>
+                                <li>A.J. Brown</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 3 (Teal)</b>
+                            <ul class='bullet-list'>
+                                <li>Mike Williams</li>
+                                <li>Curtis Samuel</li>
+                                <li>Allen Lazard</li>
+                                <li>Josh Palmer</li>
+                                <li>Deebo Samuel</li>
+                                <li>Donovan Peoples-Jones</li>
+                                <li>Tyler Boyd</li>
+                                <li>George Pickens</li>
+                                <li>Keenan Allen</li>
+                                <li>Courtland Sutton</li>
+                                <li>Marquise Brown</li>
+                                <li>K.J. Osborn</li>
+                                <li>Mack Hollins</li>
+                                <li>DeAndre Hopkins</li>
+                                <li>Parris Campbell</li>
+                            </ul>
+                        </div>
+        
+                        <div>
+                            <b>Cluster 4 (Green)</b>
+                            <ul class='bullet-list'>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>Chris Godwin</li>
+                                <li>Michael Pittman Jr.</li>
+                                <li>Garrett Wilson</li>
+                                <li>Diontae Johnson</li>
+                            </ul>
+        
+                            <b>Cluster 5 (Blue)</b>
+                            <ul class='bullet-list'>
+                                <li>Justin Jefferson</li>
+                                <li>Tyreek Hill</li>
+                            </ul>
+        
+                            <b>Cluster 6 (Pink)</b>
+                            <ul class='bullet-list'>
+                                <li>Gabriel Davis</li>
+                                <li>Christian Watson</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="blog-p-tag">
+                        Some shifts do occur in this final tiering, but here are some final points:
+                        <ul class='bullet-list'>
+                            <li>Good to see both young players and vets in clusters 0, 1 and 4. Solid options for both rebuilders and contenders there, at reasonable prices.</li>
+                            <li>
+                                Intersting to see Davis and Watson together, but that seems largely due to Watson's injuries. Watson is a good investment for rebuilders in my eyes. He's flashed, but 
+                                injuries and some quarterback concerns in 2023 have dampered his value. Davis is a solid boom-bust option, which I would argue differs from a healthy Watson.
+                            </li>
+                            <li>
+                                Very promising for Garrett Wilson's stock to see him in a cluster with quality target hogs. A lot of talent in that group, and he may very well end up being the best player
+                                in that cluster very soon.
+                            </li>
+                            <li>Hill and Jefferson have quite the gap on the players in Cluster 2. I would love to have either on my team, even if it means over paying.</li>
+                            <li>
+                                The same can be said for the four in Cluster 2, all of them are great wide receiver with strong production. This cluster is close to elite, 
+                                but probably a bit cheaper (keeping in mind comparable options, i.e. vets to vets and young studs to young studs) in comparison to the players in Cluster 5.
+                            </li>
+                        </ul>
+                    </p>
+                </div>        
+            </div>
+
+
+            <h2 class="h2-blog">Tiers (Per Game)</h2>
+            <p class="blog-p-tag">
+                We will now evaluate the wide receiver position in 2022, using the stats from the previous section,
+                but now on a per game basis.
+            </p>
+            <p class="blog-p-tag">
+                For reference, the per game stats we will be looking at:
+                "Receiving Yards Per Game", "Receptions Per Game", "Receiving TDs Per Game", and "Targets Per Game".
+            </p>
+
+            <div>
+                <div>
+                    <h3 class='h3-blog'>WRs as Three Tiers</h3>
+                    <p class='blog-p-tag'>
+                        Starting off with looking at the per game numbers with three tiers:
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Fantasy/Analysis/interactive/WR/clustering-3-per-game.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        The breakdown of the tiers:
+                        <ul class='bullet-list'>
+                            <li><b>Cluster 0 (Green):</b> The worst of the bunch, bottom on all of the stats above.</li>
+                            <li><b>Cluster 1 (Blue):</b> The best of the bunch, top on all of the stats above.</li>
+                            <li><b>Cluster 2 (Red):</b> Squeezed between the two clusters above.</li>
+                        </ul>
+                    </p>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Green)</b>
+                            <ul class='bullet-list'>
+                                <li>D.J. Moore</li>
+                                <li>JuJu Smith-Schuster</li>
+                                <li>Adam Thielen</li>
+                                <li>Drake London</li>
+                                <li>Curtis Samuel</li>
+                                <li>Allen Lazard</li>
+                                <li>Gabriel Davis</li>
+                                <li>Josh Palmer</li>
+                                <li>Deebo Samuel</li>
+                                <li>Donovan Peoples-Jones</li>
+                                <li>Tyler Boyd</li>
+                                <li>George Pickens</li>
+                                <li>Christian Watson</li>
+                                <li>Courtland Sutton</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 0 <i>(Continued)</i></b>
+                            <ul class='bullet-list'>
+                                <li>K.J. Osborn</li>
+                                <li>Mack Hollins</li>
+                                <li>Parris Campbell</li>
+                            </ul>
+    
+                            <b>Cluster 1 (Blue)</b>
+                            <ul class='bullet-list'>
+                                <li>Justin Jefferson</li>
+                                <li>Tyreek Hill</li>
+                                <li>Davante Adams</li>
+                                <li>Stefon Diggs</li>
+                                <li>CeeDee Lamb</li>
+                                <li>A.J. Brown</li>
+                                <li>Ja'Marr Chase</li>
+                                <li>Cooper Kupp</li>
+                                <li>DeAndre Hopkins</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 2 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>Jaylen Waddle</li>
+                                <li>DeVonta Smith</li>
+                                <li>Amari Cooper</li>
+                                <li>Christian Kirk</li>
+                                <li>Tyler Lockett</li>
+                                <li>Terry McLaurin</li>
+                                <li>Brandon Aiyuk</li>
+                                <li>D.K. Metcalf</li>
+                                <li>Mike Evans</li>
+                                <li>Chris Godwin</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 2 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Tee Higgins</li>
+                                <li>Michael Pittman Jr.</li>
+                                <li>Garrett Wilson</li>
+                                <li>Jerry Jeudy</li>
+                                <li>Chris Olave</li>
+                                <li>Zay Jones</li>
+                                <li>Diontae Johnson</li>
+                                <li>Jakobi Meyers</li>
+                                <li>Mike Williams</li>
+                                <li>Keenan Allen</li>
+                                <li>Marquise Brown</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="blog-p-tag">
+                        I think the clusters above are about what I would have expected from 2022. 
+                        There are a few minor surprises, but my expectations mostly held water.  
+                    </p>
+                    <p class="blog-p-tag">
+                        A few highlights from splitting wide receivers into three tiers based on the per game numbers:
+                        <ul class="bullet-list">
+                            <li>
+                                DJ Moore is a little lower than I would have thought. He really suffered last season from the quarterback play, and posted 
+                                his worst year since his rookies season. Moore has turned things around in Chicago this season, and is on pace to have his best
+                                fantasy season. I'm unsure about him going into next year, as I would suspect the Bears draft at least MHJ, if not a quarterback too.
+                                Murky situation for 2024, as of now.
+                            </li>
+                            <li>
+                                Hopkins was amazing in the nine games he played last year, finishing in the elite Cluster 1. You have to wonder how much of his struggles
+                                this year are offense and quarterback related, given how he's played much better under Levis. Could be worth the risk for the remainder of 
+                                this season and going into 2024, as he is worth about a 2025 late second on KTC (as of 10/21/23).
+                            </li>
+                            <li>
+                                Zay Jones had the best season of his career last year, which was awesome if you had him, but Jones was a sell high for me. Ridley coming back
+                                has hurt his production, but the injuries have really derailed Jones this year. That being said, he's still a critical piece for opening up the
+                                Jags offense, just not really an important fantasy piece anymore.
+                            </li>
+                            <li>
+                                It's good to see Chase in that top tier on a per game basis. Injuries derailed his totals last year.
+                            </li>
+                        </ul> 
+                    </p>
+                </div>
+    
+                <div>
+                    <h3 class='h3-blog'>WRs as Four Tiers</h3>
+                    <p class='blog-p-tag'>
+                        Seeing how things shake up with four tiers:
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Fantasy/Analysis/interactive/WR/clustering-4-per-game.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        A summary of the groups above:
+                        <ul class='bullet-list'>
+                            <li><b>Cluster 0 (Red):</b> The second best group, particularly good at targets and receptions (target hogs).</li>
+                            <li><b>Cluster 1 (Purple):</b> The worst group in each of the statistical categories above.</li>
+                            <li><b>Cluster 2 (Blue):</b> The best cluster by all the metrics.</li>
+                            <li><b>Cluster 3 (Green):</b> Worse at Cluster 0 on verything except touchdowns.</li>
+                        </ul>
+                    </p>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>Chris Godwin</li>
+                                <li>Michael Pittman Jr.</li>
+                                <li>Garrett Wilson</li>
+                                <li>Diontae Johnson</li>
+                                <li>Keenan Allen</li>
+                                <li>Marquise Brown</li>
+                                <li>DeAndre Hopkins</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 1 (Purple)</b>
+                            <ul class='bullet-list'>
+                                <li>JuJu Smith-Schuster</li>
+                                <li>Adam Thielen</li>
+                                <li>Drake London</li>
+                                <li>Curtis Samuel</li>
+                                <li>Josh Palmer</li>
+                                <li>Deebo Samuel</li>
+                                <li>Donovan Peoples-Jones</li>
+                                <li>Tyler Boyd</li>
+                                <li>George Pickens</li>
+                                <li>Christian Watson</li>
+                                <li>Courtland Sutton</li>
+                                <li>K.J. Osborn</li>
+                                <li>Mack Hollins</li>
+                                <li>Parris Campbell</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 2 (Blue)</b>
+                            <ul class='bullet-list'>
+                                <li>Justin Jefferson</li>
+                                <li>Tyreek Hill</li>
+                                <li>Davante Adams</li>
+                                <li>Stefon Diggs</li>
+                                <li>CeeDee Lamb</li>
+                                <li>A.J. Brown</li>
+                                <li>Ja'Marr Chase</li>
+                                <li>Cooper Kupp</li>
+                            </ul>
+    
+                            <b>Cluster 3 (Green)</b>
+                            <ul class='bullet-list'>
+                                <li>Jaylen Waddle</li>
+                                <li>DeVonta Smith</li>
+                                <li>Amari Cooper</li>
+                                <li>Christian Kirk</li>
+                                <li>Tyler Lockett</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 3 <i>(Continued)</i></b>
+                            <ul class='bullet-list'>
+                                <li>Terry McLaurin</li>
+                                <li>Brandon Aiyuk</li>
+                                <li>D.K. Metcalf</li>
+                                <li>Mike Evans</li>
+                                <li>Tee Higgins</li>
+                                <li>Jerry Jeudy</li>
+                                <li>D.J. Moore</li>
+                                <li>Chris Olave</li>
+                                <li>Zay Jones</li>
+                                <li>Jakobi Meyers</li>
+                                <li>Mike Williams</li>
+                                <li>Allen Lazard</li>
+                                <li>Gabriel Davis</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="blog-p-tag">
+                        There isn't too much movement with four tiers on a per game basis, but I will say it is good to see
+                        DJ Moore in a higher quality cluster (see Cluster 3). 
+                    </p>
+                    <p class="blog-p-tag">
+                        I also find it a bit more fitting for Hopkins to be in Cluster 0, as he does not have the per game touchdown numbers
+                        to stick with Cluster 2. Hopkins scored a touchdown once every three games, or about 0.333 touchdowns per game.
+                        Whereas the worst touchdown producer in Cluster 0, Hill, scored 0.412 touchdowns a game - which is about a one touchdown difference every ten games.
+                    </p>
+                </div>
+    
+                <div>
+                    <h3 class='h3-blog'>WRs as Five Tiers</h3>
+                    <p class='blog-p-tag'>
+                        Looking at the per game landscape with five tiers:
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Fantasy/Analysis/interactive/WR/clustering-5-per-game.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        Our tier summary:
+                        <ul class='bullet-list'>
+                            <li><b>Cluster 0 (Purple):</b> Clearly better than Cluster 3 (the worst group) at everything except scoring. Also clearly behind Cluster 2 (the second best group) in everything.</li>
+                            <li><b>Cluster 1 (Blue):</b> The best cluster at everything above.</li>
+                            <li><b>Cluster 2 (Red):</b> Close to Cluster 1 in receptions and targets per game. Needs some catching up in regards to yards and touchdowns per game.</li>
+                            <li><b>Cluster 3 (Orange):</b> The worst cluster at everything above.</li>
+                            <li><b>Cluster 4 (Green):</b> A higher scoring and yardage group than Cluster 0. Still behind clusters 1 and 2.</li>
+                        </ul>
+                    </p>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Purple)</b>
+                            <ul class='bullet-list'>
+                                <li>Zay Jones</li>
+                                <li>JuJu Smith-Schuster</li>
+                                <li>Diontae Johnson</li>
+                                <li>Drake London</li>
+                                <li>Josh Palmer</li>
+                                <li>Deebo Samuel</li>
+                                <li>Courtland Sutton</li>
+                            </ul>
+    
+                            <b>Cluster 1 (Blue)</b>
+                            <ul class='bullet-list'>
+                                <li>Justin Jefferson</li>
+                                <li>Tyreek Hill</li>
+                                <li>Davante Adams</li>
+                                <li>Stefon Diggs</li>
+                                <li>CeeDee Lamb</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 1 <i>(Continued)</i></b>
+                            <ul class='bullet-list'>
+                                <li>A.J. Brown</li>
+                                <li>Ja'Marr Chase</li>
+                                <li>Cooper Kupp</li>
+                            </ul>
+
+                            <b>Cluster 2 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>DeVonta Smith</li>
+                                <li>D.K. Metcalf</li>
+                                <li>Mike Evans</li>
+                                <li>Chris Godwin</li>
+                                <li>Michael Pittman Jr.</li>
+                                <li>Garrett Wilson</li>
+                                <li>Chris Olave</li>
+                                <li>Keenan Allen</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 2 <i>(Continued)</i></b>
+                            <ul class='bullet-list'>
+                                <li>Marquise Brown</li>
+                                <li>DeAndre Hopkins</li>
+                            </ul>
+
+                            <b>Cluster 3 (Orange)</b>
+                            <ul class='bullet-list'>
+                                <li>Adam Thielen</li>
+                                <li>Curtis Samuel</li>
+                                <li>Donovan Peoples-Jones</li>
+                                <li>Tyler Boyd</li>
+                                <li>George Pickens</li>
+                                <li>Christian Watson</li>
+                                <li>K.J. Osborn</li>
+                                <li>Mack Hollins</li>
+                                <li>Parris Campbell</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 4 (Green)</b>
+                            <ul class='bullet-list'>
+                                <li>Jaylen Waddle</li>
+                                <li>Amari Cooper</li>
+                                <li>Christian Kirk</li>
+                                <li>Tyler Lockett</li>
+                                <li>Terry McLaurin</li>
+                                <li>Brandon Aiyuk</li>
+                                <li>Tee Higgins</li>
+                                <li>Jerry Jeudy</li>
+                                <li>D.J. Moore</li>
+                                <li>Jakobi Meyers</li>
+                                <li>Mike Williams</li>
+                                <li>Allen Lazard</li>
+                                <li>Gabriel Davis</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="blog-p-tag">
+                        There's a little more distinction between players here, but nothing too crazy for my taste.
+                    </p>
+                    <p class="blog-p-tag">
+                        Some observations:
+                        <ul class="bullet-list">
+                            <li>
+                                A little disheartening to see Dionate Johnson and Drake London in Cluster 0,
+                                but I still see both as talented receivers that are in a poor quarterback situation.
+                                Time to buy low?
+                            </li>
+                            <li>
+                                Deebo was off the boil last year, and he likely will never be the 2021 version of himself again.
+                                That being said, Purdy has taken a step this year, and for someone who still has a very high ceiling, I
+                                don't mind paying for his current value (wr27 on KTC as of 10/21/23).
+                            </li>
+                            <li>
+                                It's tough to see young bucks like Pickens and Watson in Cluster 3, but both have flashed, and I still think
+                                they are good value for their price.
+                            </li>
+                            <li>
+                                That elite tier, Cluster 1, has plenty of names to buy as a rebuilder or contender. The wide receiver position offers
+                                a lot to like.
+                            </li>
+                        </ul>
+                    </p>
+                </div>
+    
+                <div>
+                    <h3 class='h3-blog'>WRs as Six Tiers</h3>
+                    <p class='blog-p-tag'>
+                        Adding another tier when looking at the per game numbers:
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Fantasy/Analysis/interactive/WR/clustering-6-per-game.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        The breakdown:
+                        <ul class='bullet-list'>
+                            <li><b>Cluster 0 (Orange):</b> The second worst cluster, but decently separated from Cluster 3 (the worst one). Low numbers all around.</li>
+                            <li><b>Cluster 1 (Blue):</b> The best cluster in pretty much every stat above.</li>
+                            <li><b>Cluster 2 (Purple):</b> Probably the third best cluster, but just slight better than Cluster 4. Only behind Cluster 4 when it comes to getting into the endzone.</li>
+                            <li><b>Cluster 3 (Teal):</b> The worst cluster in every aspect of the per game numbers.</li>
+                            <li><b>Cluster 4 (Green):</b> A better version of Cluster 0 - more yards and touchdowns per game, but pretty middling overall.</li>
+                            <li><b>Cluster 5 (Red):</b> Close to, but just below Cluster 1 in production with each of the four stats we are comparing.</li>
+                        </ul>
+                    </p>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Orange)</b>
+                            <ul class='bullet-list'>
+                                <li>Zay Jones</li>
+                                <li>JuJu Smith-Schuster</li>
+                                <li>Diontae Johnson</li>
+                                <li>Drake London</li>
+                                <li>Josh Palmer</li>
+                                <li>Deebo Samuel</li>
+                                <li>Courtland Sutton</li>
+                            </ul>
+    
+                            <b>Cluster 1 (Blue)</b>
+                            <ul class='bullet-list'>
+                                <li>Justin Jefferson</li>
+                                <li>Davante Adams</li>
+                                <li>Stefon Diggs</li>
+                                <li>A.J. Brown</li>
+                                <li>Ja'Marr Chase</li>
+                                <li>Cooper Kupp</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 2 (Purple)</b>
+                            <ul class='bullet-list'>
+                                <li>DeVonta Smith</li>
+                                <li>Terry McLaurin</li>
+                                <li>D.K. Metcalf</li>
+                                <li>Mike Evans</li>
+                                <li>Michael Pittman Jr.</li>
+                                <li>Garrett Wilson</li>
+                                <li>Chris Olave</li>
+                                <li>Mike Williams</li>
+                                <li>Marquise Brown</li>
+                            </ul>
+    
+                            <b>Cluster 3 (Teal)</b>
+                            <ul class='bullet-list'>
+                                <li>Adam Thielen</li>
+                                <li>Curtis Samuel</li>
+                                <li>Donovan Peoples-Jones</li>
+                                <li>Tyler Boyd</li>
+                                <li>George Pickens</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 3 <i>(Continued)</i></b>
+                            <ul class='bullet-list'>
+                                <li>Christian Watson</li>
+                                <li>K.J. Osborn</li>
+                                <li>Mack Hollins</li>
+                                <li>Parris Campbell</li>
+                            </ul>
+
+                            <b>Cluster 4 (Green)</b>
+                            <ul class='bullet-list'>
+                                <li>Jaylen Waddle</li>
+                                <li>Amari Cooper</li>
+                                <li>Christian Kirk</li>
+                                <li>Tyler Lockett</li>
+                                <li>Brandon Aiyuk</li>
+                                <li>Tee Higgins</li>
+                                <li>Jerry Jeudy</li>
+                                <li>D.J. Moore</li>
+                                <li>Jakobi Meyers</li>
+                                <li>Allen Lazard</li>
+                                <li>Gabriel Davis</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 5 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Tyreek Hill</li>
+                                <li>CeeDee Lamb</li>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>Chris Godwin</li>
+                                <li>Keenan Allen</li>
+                                <li>DeAndre Hopkins</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="blog-p-tag">
+                        Biggest change here, and most interesting part of the six tiers,
+                        is that both Hill and Lamb drop into the second best tier: Cluster 5.
+                    </p>
+                    <p class="blog-p-tag">
+                        I am quite shocked to see Hill drop out of that elite tier in Cluster 1, a little bit less so for Lamb.
+                    </p>
+                    <p class="blog-p-tag">
+                        Based on the numbers, it seems like Hill falls out due to his lack of touchdowns per game. As, with the exception of
+                        Jefferson, everyone in Cluster 1 has at least .064 touchdowns per game, or about two touchdowns every three game.
+                    </p>
+                    <p class="blog-p-tag">
+                        Lamb drops out of this tier because everything outside of his touchdown numbers would be an anomaly compared to the boys
+                        in Cluster 1.
+                    </p>
+                </div>
+    
+                <div>
+                    <h3 class='h3-blog'>WRs as Seven Tiers</h3>
+                    <p class='blog-p-tag'>
+                        Our final tier analysis:
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Fantasy/Analysis/interactive/WR/clustering-7-per-game.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        The final cluster breakdown:
+                        <ul class='bullet-list'>
+                            <li><b>Cluster 0 (Green):</b> A really strong cluster. Likely the third best one, falling behind Cluster 3. Yards and touchdowns per game hold this cluster back a bit.</li>
+                            <li><b>Cluster 1 (Pink):</b> The worst cluster of the bunch. Bottom at everything, except scoring, where they are towards the bottom still.</li>
+                            <li><b>Cluster 2 (Purple):</b> A middling group that is quite better than Cluster 1 in all regards.</li>
+                            <li><b>Cluster 3 (Red):</b> Probably the second best cluster. Behind Cluster 5 at everything excpet toudchowns.</li>
+                            <li><b>Cluster 4 (Orange):</b> A better version of Cluster 2 in all aspects, except scoring.</li>
+                            <li><b>Cluster 5 (Blue):</b> Probably the best cluster of the bunch, leading in all stats except for touchdowns per game. However, this cluster is second overall on that stat.</li>
+                            <li><b>Cluster 6 (Teal):</b> A marginally better group than Cluster 1. Would be close to Cluster 2 if the toudchowns per game were better.</li>
+                        </ul>
+                    </p>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Green)</b>
+                                <ul class='bullet-list'>
+                                <li>CeeDee Lamb</li>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>Chris Godwin</li>
+                                <li>Keenan Allen</li>
+                                <li>DeAndre Hopkins</li>
+                            </ul>
+    
+                            <b>Cluster 1 (Pink)</b>
+                                <ul class='bullet-list'>
+                                <li>Adam Thielen</li>
+                                <li>Curtis Samuel</li>
+                                <li>Donovan Peoples-Jones</li>
+                                <li>Tyler Boyd</li>
+                                <li>George Pickens</li>
+                                <li>Christian Watson</li>
+                                <li>K.J. Osborn</li>
+                                <li>Mack Hollins</li>
+                                <li>Parris Campbell</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 2 (Purple)</b>
+                                <ul class='bullet-list'>
+                                <li>Jaylen Waddle</li>
+                                <li>Amari Cooper</li>
+                                <li>Christian Kirk</li>
+                                <li>Tyler Lockett</li>
+                                <li>Brandon Aiyuk</li>
+                                <li>Tee Higgins</li>
+                                <li>Jerry Jeudy</li>
+                                <li>D.J. Moore</li>
+                                <li>Jakobi Meyers</li>
+                                <li>Allen Lazard</li>
+                                <li>Gabriel Davis</li>
+                            </ul>
+    
+                            <b>Cluster 3 (Red)</b>
+                                <ul class='bullet-list'>
+                                <li>Davante Adams</li>
+                                <li>Stefon Diggs</li>
+                                <li>A.J. Brown</li>
+                                <li>Ja'Marr Chase</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 4 (Orange)</b>
+                                <ul class='bullet-list'>
+                                <li>DeVonta Smith</li>
+                                <li>Terry McLaurin</li>
+                                <li>D.K. Metcalf</li>
+                                <li>Mike Evans</li>
+                                <li>Michael Pittman Jr.</li>
+                                <li>Garrett Wilson</li>
+                                <li>Chris Olave</li>
+                                <li>Zay Jones</li>
+                                <li>Mike Williams</li>
+                                <li>Marquise Brown</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 5 (Blue)</b>
+                                <ul class='bullet-list'>
+                                <li>Justin Jefferson</li>
+                                <li>Tyreek Hill</li>
+                                <li>Cooper Kupp</li>
+                            </ul>
+    
+                            <b>Cluster 6 (Teal)</b>
+                                <ul class='bullet-list'>
+                                <li>JuJu Smith-Schuster</li>
+                                <li>Diontae Johnson</li>
+                                <li>Drake London</li>
+                                <li>Josh Palmer</li>
+                                <li>Deebo Samuel</li>
+                                <li>Courtland Sutton</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="blog-p-tag">
+                        Some quick and final observations to end the piece:
+                        <ul class="bullet-list">
+                            <li>
+                                Hill rejoins Jefferson and Kupp in that elite tier. Kupp is a murky buy low in my opinion.
+                                Kupp can clearly still produce if he and Stafford can stay healthy.
+                            </li>
+                            <li>
+                                That second tier, represented by Cluster 5, is full of elite receivers, but I would be a bit disappointed
+                                if I was a Chase owner.
+                            </li>
+                            <li>
+                                Cluster 0 also has some great producing players, at much more reasonable prices.
+                            </li>
+                            <li>
+                                Can't go too wrong with a receiver from Cluster 2 or Cluster 4 either, a lot of solid production in both of those groups.
+                            </li>
+                        </ul>
+                    </p>
+                </div>
+            </div>    
+
+
+            <h2 class="h2-blog">Summary</h2>
+            <p class="blog-p-tag">
+                That will do it for the analysis in this one!
+            </p>
+            <p class="blog-p-tag">
+                As always, my recap/takeaways:
+            </p>
+            <ul class="bullet-list">
+                <li>We are in a golden age of wide receiver talent!</li>
+                <li>London is a great buy low. Has been a WR3 with some of the worst quarterback play in the NFL. It can only go up from here (I hope).</li>
+                <li>Add Christian Watson to the list of buy lows. He flashed quite some ability in 2022, but injuries and quarterback concerns have depressed his value.</li>
+                <li>There's a lot of good young (Wilson, Olave, Pickens, Watson, London, etc.) and old talent (Hopkins, Evans, Allen, etc.) for both rebuilders and contenders to buy.</li>
+                <li>Plenty of studs at varying ages prices as well: Chase, Jefferson, Lamb, Brown, Adams, Diggs, Hill, etc.</li>
+                <li>
+                    Maybe Chase shouldn't be in the same tier as Jefferson? Yes, he has one of the most insane ceilings in fantasy, but his consistency is not quite at the same 
+                    level as that of Jefferson. It seems Burrow is a big factor in keeping these two close in value, but does Dobbs change that?
+                </li>
+            </ul>
+            <p class="blog-p-tag">
+                Thanks for reading!
+            </p>
+            <p class="blog-p-tag">
+                Cheers, <br />
+                Alex
+            </p>
+        </div>
+    </div>
+</body>
+<script>
+    $("#common-header").load("../header.html");
+</script>
