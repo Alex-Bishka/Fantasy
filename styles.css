@@ -223,7 +223,8 @@ p {
 
 table {
     width: 100%;
-    border-collapse: collapse;
+    position: relative;
+    border-collapse: separate;
     max-width: 78vw; /* This should be greater than the table-scroll width to enable horizontal scrolling */
 }
 
@@ -232,6 +233,13 @@ th, td {
     padding: 8px;
     text-align: left;
     white-space: nowrap;
+}
+
+th:first-child, td:first-child {
+    position: sticky;
+    left: 0;
+    background-color: white; /* Or any color that matches your design */
+    z-index: 1; /* To ensure it stays on top while scrolling */
 }
 
 th {
