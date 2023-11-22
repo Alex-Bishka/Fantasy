@@ -103,11 +103,10 @@ def create_position_groups(
 def create_positional_df(players) -> pd.DataFrame:
     """
     """
-    columns = list(players[0]["seasonal_df"].keys())
-
     list_of_seasonal_dicts = list()
     for player in players:
         list_of_seasonal_dicts.append(player["seasonal_df"])
     
     df = pd.DataFrame(list_of_seasonal_dicts)
+    df = df.round(3)
     return df
