@@ -209,7 +209,7 @@ function populateColumnCheckboxes(headers) {
     container.innerHTML = ''; // Clear previous checkboxes
 
     headers.forEach(header => {
-        if (header.length) {
+        if (header.length && header != "name") {
             // Create checkbox for each header
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
