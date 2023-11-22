@@ -248,6 +248,7 @@ document.getElementById('applyColumnsBtn').addEventListener('click', () => {
 
 function renderTableBasedOnSelection() {
     selectedColumns = Array.from(document.querySelectorAll('#checkboxContainer input[type="checkbox"]:checked')).map(cb => cb.value);
+    selectedColumns.unshift("name")     // name is not part of the checkbox
 
     // Call renderTable with selected columns
     renderTable(globalCsvData, selectedColumns);
