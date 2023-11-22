@@ -150,7 +150,7 @@ function searchData() {
     const tr = table.getElementsByTagName('tr');
 
     for (let i = 0; i < tr.length; i++) {
-        let td = tr[i].getElementsByTagName('td')[1]; // Change the index if you want to search in another column
+        let td = tr[i].getElementsByTagName('td')[0]; // Change the index if you want to search in another column
         if (td) {
             let txtValue = td.textContent || td.innerText;
             if (txtValue.toUpperCase().indexOf(filter) > -1) {
