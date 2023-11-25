@@ -26,3 +26,16 @@ jobs:
 
     - name: Run the script
       run: python .github/scripts/update_stats.py
+
+    - name: Commit files
+      run: |
+        git config --local user.email "abishka@g.hmc.edu"
+        git config --local user.name "Alex-Bishka"
+        git add -A
+        git commit -m "Weekly update to CSV files via GitHub Action"
+
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
