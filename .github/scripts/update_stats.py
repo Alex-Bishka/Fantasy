@@ -61,3 +61,6 @@ def update_csvs() -> None:
     df_to_save_rb.to_csv(f"FantasyData/advanced-stats/RB/{current_year}.csv")
     df_to_save_wr.to_csv(f"FantasyData/advanced-stats/WR/{current_year}.csv")
     df_to_save_te.to_csv(f"FantasyData/advanced-stats/TE/{current_year}.csv")
+
+
+update_csvs()
