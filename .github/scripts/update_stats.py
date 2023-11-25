@@ -57,7 +57,7 @@ def update_csvs() -> None:
     df_to_save_te = clean_df_for_csv(df=df_te, player_map=player_map)
 
     # saving dfs to csv
-    save_dir = os.path.join(script_directory, '..', '..', '..', 'Analysis', 'FantasyData', 'advanced-stats')
+    save_dir = os.path.join(script_directory, '..', '..', 'Analysis', 'FantasyData', 'advanced-stats')
     df_to_save_qb.to_csv(f"{save_dir}/QB/{current_year}.csv")
     df_to_save_rb.to_csv(f"{save_dir}/RB/{current_year}.csv")
     df_to_save_wr.to_csv(f"{save_dir}/WR/{current_year}.csv")
