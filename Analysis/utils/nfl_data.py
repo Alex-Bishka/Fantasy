@@ -110,3 +110,20 @@ def create_positional_df(players) -> pd.DataFrame:
     df = pd.DataFrame(list_of_seasonal_dicts)
     df = df.round(3)
     return df
+
+
+def clean_df_for_csv(df, player_map):
+    """"""
+    df["name"] = df["player_id"].map(lambda x: player_map[x]['name'])
+    df.drop(columns=["player_id", "Index", "season", "season_type"], inplace=True)
+    
+    df["total_epa"] = df["passing_epa"] + df["rushing_epa"]
+    
+    ignore_cols = ["name", "season", "season_type", "games", "target_share", "air_yards_share"
+                  "tgt_sh", "ay_sh", "yac_sh", "ry_sh", "rtd_sh", "rfd_sh", "rtdfd_sh", "ppr_sh"]
+    for col in df.columns.to_list():
+        if col not in ignore_cols and "per game" not in col:
+            df[f"{col} per game"] = df[col] / df["games"]
+            
+    df = df[['name'] + [col for col in df.columns if col != "name"]]
+    return df
