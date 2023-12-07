@@ -6,3 +6,5 @@ CSVRankings
 plotly
 temp.html
 pca/
+nfldata/
+*.pkl
