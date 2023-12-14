@@ -1,0 +1,503 @@
+<head>
+    <title>QB Stability (Per Game)</title>
+    <link rel="stylesheet" href="/Fantasy/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/Fantasy/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        // google analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>Quarterback Sticky Per Game Stats</h1>
+
+
+            <h2>TL;DR</h2>
+            <p class="blog-p-tag">
+                <ul class="bullet-list">
+                    <li>Passing stats on a per game basis, year-over-year, are sticky when examining unfiltered data, but less so, when compared to the season totals year-over-year.</li>
+                    <li>Passing yards, attempts and completions are sticky year-to-year on a per game basis, for starting quarterbacks. The correlations are actually stronger than the year-to-year equivalent.</li>
+                    <li>Passing touchdowns per game are much more variable than yards, attempts and completions season over season. The correlation for touchdowns per game is even weaker than the season total version.</li>
+                    <li>The correlation numbers for per game passing yards, attempts, and completions are stronger for young quarterbacks than all starters, and old quarterbacks. In fact, the young bucks even have a decent correlation (0.55) for per game fantasy performance, year-to-year.</li>
+                    <li>Quarterbacks get more aggresive year-over-year, especially younger ones. aggression is negatively, albeit weakly so, correlated to fantasy performance.</li>
+                    <li>The four best stats for quarterback fantasy performance are: passing yards, average max air distance, completions and passing attempts. All of these stats have moderate correlation with each other on a year-to-year basis - meaning they are (somewhat) reliable stats. These predictors are even stronger for young quarterbacks.</li>
+                </ul>
+            </p>
+
+            <h2 class="h2-blog">Overview</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Welcome back to another sticky stat piece!
+                </p>
+                <p class="blog-p-tag">
+                    This time, I'll be exploring the correlation of per game passing stats year-over-year. To be more explicit,
+                    I will be comparing the per game numbers in season Y (e.g. 2012) to season Y + 1 (e.g. 2013).
+                    The exploration will start with the unfiltered passing data from 2012-2022 and continue with various filters applied upon the data set.
+                </p>
+                <p class="blog-p-tag">
+                    Beyond general exploration, the intention of this analysis is to see if there are per game stats
+                    that strongly correlate on a year-to-year basis, such that they can be used as predictors
+                    for fantasy football performance. 
+                </p>
+                <p class="blog-p-tag">
+                    I highly recommend checking out <a href="https://alex-bishka.github.io/Fantasy/Blogs/qbs-sticky-season-totals">part one</a>
+                    of the series to understand more of the motivation and background behind this analysis.
+                    Furthermore, it covers year-over-year season total correlation numbers for passing stats.
+                </p>
+                <p class="blog-p-tag">
+                    For those purely interested in the graphs and heat maps, I suggest seeing the comprehensive <a href="https://alex-bishka.github.io/Fantasy/Blogs/qbs-sticky-per-game#appendix-0">appendix</a> of the blog.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">A Cursory Glance</h2>
+            <div>
+                <p class="blog-p-tag">
+                    I started by taking a look at all of the unfiltered passing data on a per game basis from 2012-2022.
+                    This yielded the following correlation heat map:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 900px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/per-game/unfiltered.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    While the correlations are not quite as strong as the <a href="https://alex-bishka.github.io/Fantasy/Analysis/interactive/QB/stability-passing/unfiltered.html">year-over-year season totals</a>, we do see strong correlation across the board.
+                    The only real exception is with EPA, which still has moderate correlation year-to-year.
+                </p>
+                <p class="blog-p-tag">
+                    To help visualize the strength of the correlations from the heat map, a scatter plot of the strongest correlation statistic from the year-to-year stats, passing yards per game vs. passing yards per game of the previous season:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/per-game/unfiltered-scatter-passing_yards_per_game.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Similar to completions vs completions last for season totals (a strong correlation stat from the season total analysis),
+                    the scatter plot above shows us that the unfiltered data incorporates of noise, in regards to finding value from starting quarterbacks,
+                    and more importantly, starting fantasy quarterbacks.
+                </p>
+                <p class="blog-p-tag">
+                    So, while passing stats are generally very sticky on a per game basis, they are not as sticky as their year-to-year correlations
+                    on a season basis. An additional observation: the most predictable stats are still passing yards, passing attempts and completions, with
+                    passing touchdowns being more reactive from year-to-year.
+                </p>
+                <p class="blog-p-tag">
+                    Again, we will have to dig deeper to find something closer to the truth.
+                </p>
+            </div>
+
+            <h2 class="h2-blog">Starters Only</h2>
+            <div>
+                <p class="blog-p-tag">
+                    In order to make the data set more relevant, we apply a filter on it: starters only.
+                    Starters are defined by players who have played in at least 12 games in consecutive years.
+                </p>
+                <p class="blog-p-tag">
+                    This filter yields the following correlation heat map:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 900px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/per-game/12-games.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    This is surprising... the correlations across the board are suspiciously strong, outrageously so, especially with the numbers we have seen so far.
+                </p>
+                <p class="blog-p-tag">
+                    That being said, the pattern of passing yards, completions and attempts having the strongest correlation continues to hold, moreover touchdowns year-to-year 
+                    continue to have a weaker correlation compared to those three stats.
+                </p>
+                <p class="blog-p-tag">
+                    Let's take a look at the strongest correlation, passing attempts per game vs. passing attempts per game in the previous season, to investigate further:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/per-game/12-games-scatter-passing_attempts_per_game.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Ah, there is the potential misrepresentation: Taysom Hill and some trick plays seep into this filter. 
+                </p>
+                <p class="blog-p-tag">
+                    Let's apply an additional filter: at least 150 yards passing per game in consecutive seasons.
+                </p>
+                <p class="blog-p-tag">
+                    The new, more selective filter produces the following heat map:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 900px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/per-game/starters.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    This is more in line with the rest of the analysis we have done so far. This heat map very much resembles the
+                    <a href="https://alex-bishka.github.io/Fantasy/Analysis/interactive/QB/stability-passing/starters.html">season total</a> one for starters.
+                </p>
+                <p class="blog-p-tag">
+                    Interestingly enough, the correlations for passing yards, attempts, and completions are a bit stronger on a per game basis season over season.
+                    However, the touchdowns on a per game basis, year after year, are slightly weaker.
+                </p>
+                <p class="blog-p-tag">
+                    This seems to suggest the pattern that quarterbacks improve passing yards, attempts, and completions at a higher rate on a per game basis than on
+                    a season basis, from year-to-year. Additionally, touchdown numbers are marginally harder to replicate on a per game basis year-over-year.
+                </p>
+                <p class="blog-p-tag">
+                    What to make of this? While I do find the above to be a bit strange, the water holds that passings stats are pretty sticky - bar touchdowns - for quarterbacks.
+                </p>
+                <p class="blog-p-tag">
+                    My explaination for touchdowns going down on a per game basis comes down to the number of games starters play from year-to-year.
+                    A starter can improve their touchdown numbers from season to season by playing more games,
+                    but the rate at which they throw touchdowns is slightly less likely to improve season to season.
+                </p>
+                <p class="blog-p-tag">
+                    For example, player X may throw 40 touchdowns in 15 games in year one, but then 42 touchdowns in 16 games in year two.
+                    The season total improves from 40 to 42 for X, but the per game numbers decline from 2.67 touchdowns per game to 2.63 touchdowns per game.
+                </p>
+                <p class="blog-p-tag">
+                    To wrap up this section, I will leave you with the scatter plot of the strongrest correlation from above, completions per game vs. completions per game in the 
+                    previous season:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/per-game/starters-scatter-completions_per_game.html"></iframe>
+                </div>
+            </div>
+
+
+            <h2 class="h2-blog">Young vs. Old Starters</h2>
+            <div>
+                <p class="blog-p-tag">
+                    As a continuation from the <a>Diving Deeper section</a> in the first part of the quarterback passing stability analysis,
+                    I will look into starting quarterbacks by age.
+                </p>
+                <p class="blog-p-tag">
+                    Specifically, another filter will be added to our most stringent one from the previous section: young or old.
+                    Young is defined as quarterbacks who are thirty in season Y + 1 (i.e. the current season). Old is defined as quarterbacks who
+                    are thirty in season Y (i.e the previous season).
+                </p>
+                <p class="blog-p-tag">
+                    The following heat map is for our young bucks:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 900px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/per-game/young.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    And this heat map is for the savvy vets:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 900px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/per-game/old.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Once again, there is a difference between young and old starters.
+                    The young quarterbacks have correlations of 0.56, 0.63, and 0.68 for passing yards, attempts and completions, respectively.
+                    Whereas, for the same stats, old quarterbacks have correlations of 0.52, 0.48, and 0.51.
+                </p>
+                <p class="blog-p-tag">
+                    Note, for futher comparison, all starters have correlations of 0.61, 0.61 and 0.66 for passing yards, attempts and completions.
+                    So, the year-to-year, average per game, performance of quarterback is slightly more predictable, and positive, for these bread and butter quarterback stats.
+                </p>
+                <p class="blog-p-tag">
+                    Another interesting observation: old quarterbacks are better than young ones in the passing touchdowns department (0.29 vs 0.25, respectively).
+                    Starters, on the all, have a correlation of 0.34 for average passing touchdowns per game, year-to-year. In all cases, this is pretty weak correlation, which, again,
+                    gives merit to the idea that touchdowns are a much more fluky stat.
+                </p>
+                <p class="blog-p-tag">
+                    Lastly, young quarterbacks have a moderate - almost strong - correlation in their per game fantasy numbers (0.55), year-over-year.
+                    This is better than old quarterbacks (0.27) and all starters (0.45).
+                </p>
+                <p class="blog-p-tag">
+                    This analysis seems to corroborate the ideas from part 1: quarterbacks continue to, reliably, improve up until about 30 years of age.
+                    The important thing here is that the improvement of their overall game also relates to their improvement from a fantasy perspective.
+                </p>
+                <p class="blog-p-tag">
+                    Again, I find it hard to draw strong conclusions from just these correlation pieces, but it does seem that the best point to make profit
+                    off of a quarterback is around the time they turn 30.
+                </p>
+            </div>
+
+            <h2 class="h2-blog">Further Exploration</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Upon further exploration, I had a few more findings that felt worth sharing.
+                </p>
+                <p class="blog-p-tag">
+                    Before continuing, I do want to preface that this section is on data from 2016-2022, as that's when advanced
+                    stat tracking starts in my data set. Moreover, the strongest filter applied in the <a href="https://alex-bishka.github.io/Fantasy/Blogs/qbs-sticky-per-game#starters-only-0">Starters Only</a>
+                    section is used here too.
+                </p>
+                <p class="blog-p-tag">
+                    First, the two advanced stats with highest correlation year-over-year, are disappointing as indicators for fantasy points
+                    on a per game basis.
+                </p>
+                <p class="blog-p-tag">
+                    The heat map for average time to throw (ignore the mean - it is a redudant label from massaging the data):
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 900px; height: 700px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/per-game/avg-time-to-throw-v-fantasy-points.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    0.7 is really strong correlation, indicating great year-over-year reliability, but all variations of the comparison of this stat to fantasy points on a per
+                    game basis are below 0.35 correlation. That's not reliable at all, unfortunately.
+                </p>
+                <p class="blog-p-tag">
+                    The other advanced stat that correlates quite strongly from season-to-season is aggressiveness
+                    (a PFF stat measuring how aggresive a quarterback is):
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 900px; height: 700px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/per-game/aggro-v-fantasy-points.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    A similarly unfortunate story occurs here: the stat correlates strongly with itself on a year-to-year basis (0.63), but quite poorly with any variation of a fantasy
+                    point per game stat (all correlations are below 0 - that's poor).
+                </p>
+                <p class="blog-p-tag">
+                    One interesting thing I want to note from the second heat map. It indicates that starting quarterbacks have a pattern of getting more and more aggresive.
+                    However, the increased per game aggression leads to lower fantasy points on a per game basis.
+                </p>
+                <p class="blog-p-tag">
+                    There's more - fascinatingly enough, young quarterbacks become more and more aggressive, quite reliably (0.72); however, the punishment on a fantasy basis
+                    is not particularly strong:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 900px; height: 700px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/per-game/young-aggro.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Weirdly enough, old quarterbacks, whose progression of aggression slows down, are far more hampered - in a fantasy sense - by their aggression:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 900px; height: 700px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/per-game/old-aggro.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Does this fit with the other idea from this exploration 
+                    that quarterback value depreciates over time, with the cliff being around 30?
+                </p>
+                <p class="blog-p-tag">
+                    Maybe to improve quarterbacks must become more aggressive - something along the lines of attempting harder passes leads to more reward.
+                    However, at a certain point (~30) the level of aggression cannot be improved upon much, but it the slight increases continue to harm fantasy points.
+                    Furthermore, there is less return after a certain amount of aggression.
+                    The combination of a lack of consistent improvement in the passing game from increased aggression and continued increases in aggression lead to
+                    more negative fantasy lines. Essentially, there seems to be a point where the level of aggression cannot redeem itself, and it appears to be around 30.
+                </p>
+                <p class="blog-p-tag">
+                    It is just speculation on my part, but perhaps we have a narrative... It's possible this is just coincidence, but I'm finding the
+                    repeating pattern of 30 serving as the breaking point is becoming harder to ignore. 30 might very well be the cliff before losing out on selling
+                    a quarterback for their maximum production value.
+                </p>
+                <p class="blog-p-tag">
+                    From a different perspective, it might also be the age of mastery for the position - meaning that
+                    the abilities are about as good as they will ever become by now, and what remains of the career, is in most cases, determined largely by luck (situation, 
+                    supporting cast, coaching, etc.).
+                </p>
+                <p class="blog-p-tag">
+                    The last thought I want to part with comes from the two correlation heat maps below.
+                </p>
+                <p class="blog-p-tag">
+                    The first displays the only stats that, at minimum, have a a moderate correlation with
+                    fantasy points or fantasy points per game:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 900px; height: 700px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/per-game/best-stat-corr-fantasy.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    In other words, all of the above stats compared to either fantasy points or fantasy points per game are at least okay indicators
+                    of fantasy points and/or fantasy points per game.
+                </p>
+                <p class="blog-p-tag">
+                    The best part is that each of these stats - passing yards, average max air distance, completions, and passing attempts are all somewhat predicatable,
+                    as they each have moderate correlations on their year-to-year values:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 900px; height: 700px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/per-game/reminder.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    What's even cooler is that the law of 30 applies again!
+                </p>
+                <p class="blog-p-tag">
+                    The same two correlation heat maps for young quarterbacks:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 550px; height: 350px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/per-game/young-best-stat-corr-fantasy.html"></iframe>
+                    <iframe style="width: 550px; height: 350px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/per-game/young-reminder.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Now for the old heads:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 550px; height: 350px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/per-game/old-best-stat-corr-fantasy.html"></iframe>
+                    <iframe style="width: 550px; height: 350px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/per-game/old-reminder.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    All four of these stats are decent predictors for fantasy points and/or fantasy points per game, for both young and old quarterbacks.
+                </p>
+                <p class="blog-p-tag">
+                    Of the four, passing yards are by far the most reliable predictor for fantasy points/fantasy points per game for both old and young quarterbacks. However, the only reliable stat 
+                    year-over-year for old quarterbacks is average max air distance. 
+                    Passing yards, average max air distance, completions and pass attempts are pretty solid indicators of fantasy relevance for quarterbacks under 30,
+                    while being somewhat-to-quite predicatable metrics.
+                </p>
+                <p class="blog-p-tag">
+                    It's not the holy grail I desire from the results of my analysis, but that's not a bad starting point for indicators of quarterback fantasy success.
+                </p>
+            </div>
+
+            <h2 class="h2-blog">Summary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    That's all for this analysis!
+                </p>
+                <p class="blog-p-tag">
+                    Here's the recap one more time:
+                </p>
+                <ul class="bullet-list">
+                    <li>Passing stats on a per game basis, year-over-year, are sticky when examining unfiltered data, but less so, when compared to the season totals year-over-year.</li>
+                    <li>Passing yards, attempts and completions are sticky year-to-year on a per game basis, for starting quarterbacks. The correlations are actually stronger than the year-to-year equivalent.</li>
+                    <li>Passing touchdowns per game are much more variable than yards, attempts and completions season over season. The correlation for touchdowns per game is even weaker than the season total version.</li>
+                    <li>The correlation numbers for per game passing yards, attempts, and completions are stronger for young quarterbacks than all starters, and old quarterbacks. In fact, the young bucks even have a decent correlation (0.55) for per game fantasy performance, year-to-year.</li>
+                    <li>Quarterbacks get more aggresive year-over-year, especially younger ones. aggression is negatively, albeit weakly so, correlated to fantasy performance.</li>
+                    <li>The four best stats for quarterback fantasy performance are: passing yards, average max air distance, completions and passing attempts. All of these stats have moderate correlation with each other on a year-to-year basis - meaning they are (somewhat) reliable stats. These predictors are even stronger for young quarterbacks.</li>
+                </ul>
+                <p class="blog-p-tag">
+                    Thanks for reading!
+                </p>
+                <p class="blog-p-tag">
+                    Cheers, <br />
+                    Alex
+                </p>
+            </div>
+
+            <h2 class="h2-blog">Appendix</h2>
+            <div>
+                <p class="blog-p-tag">
+                    For those who want the full details on the all per game stats I looked at from season, please enjoy the
+                    massive heat maps below.
+                </p>
+                <p class="blog-p-tag">
+                    I do not have much more analyis to add from my side, as I feel I've covered what is contained in that heat map pretty well.
+                    However, I figured I would provide it for data junkies and the sake of being comprehensive. Enjoy!
+                </p>
+                <h3 class="h3-blog">Unfiltered (year-over-year)</h3>
+                <div>
+                    <p class="blog-p-tag">
+                        All of the unfiltered data from 2016 - 2022 in a correlation heat map for year-over-year comparisons:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 1100px; height: 1050px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/per-game/combined-all.html"></iframe>
+                    </div>
+                </div>
+                <h3 class="h3-blog">Unfiltered (all)</h3>
+                <div>
+                    <p class="blog-p-tag">
+                        All of the unfiltered data from 2016 - 2022 in a correlation heat map:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 1100px; height: 1050px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/per-game/all.html"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    $("#common-header").load("../header.html");
+</script>
