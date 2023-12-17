@@ -43,7 +43,7 @@ def create_correlation_matrix(df, x=[], y=[], all_vars=False):
     return correlation_matrix, x, y
 
 
-def plot_correlation_matrix(corr_mat, x, y, title=""):
+def plot_correlation_matrix(corr_mat, x, y, path=""):
     """
     Helper function to create the heat map for the correlation matrix
     so that we can visualize it in a pretty way.
@@ -55,9 +55,7 @@ def plot_correlation_matrix(corr_mat, x, y, title=""):
                     y = y,
                 )
 
-    if title:
-        save_path = f"../../interactive/QB/stability-passing/{title}"
-        save_path += ".html"
-        fig.write_html(save_path)
+    if path:
+        fig.write_html(f"{path}.html")
 
     fig.show()
