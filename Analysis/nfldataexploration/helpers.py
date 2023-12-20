@@ -2,30 +2,50 @@ import pandas as pd
 import plotly.express as px
 
 
-def create_correlation_matrix(df, x=[], y=[], all_vars=False):
+def filter_df(df, query, x, y, base_path="", title="temp"):
+    # create filtered df
+    df_filter = df.copy()    
+    if query:
+        df_filter = df_filter.query(query)
+    
+    # create and show corr_mat
+    corr_mat, x, y = create_correlation_matrix(df_filter, x, y)  
+    
+    if title == "temp" or len(title) == 0 or len(base_path) == 0:
+        plot_correlation_matrix(corr_mat, x, y)
+    else:
+        plot_correlation_matrix(corr_mat, x, y, path=f"{base_path}/{title}")
+    
+    # visualize highest correlation pairing
+    series = corr_mat.max().iloc[0:]
+    temp_arr = list(series)
+    
+    max_series_value = series.max()
+    i = temp_arr.index(max_series_value)
+    col = list(corr_mat.columns)[i]
+    print(col)
+    col_prev = f"{col}_last"
+    
+    fig = px.scatter(df_filter, x=col_prev, y=col,
+                 hover_data=["rusher", "season", "age"]
+                )
+    if title and title != "temp" and base_path:
+        fig_name = f"{title}-scatter-{col}"
+        path = f"{base_path}/{fig_name}.html"
+        print(f"\nSave path: {fig_name}\n")
+        fig.write_html(path)
+    fig.show()
+    
+    return df_filter
+
+def create_correlation_matrix(df, x, y):
     """
     Helper function to create the correlation matrix between the stats
     from the current and previous season.
 
-    Can use the interesting stats or all of the stats to create the correlation
-    matrix, by flipping the boolean 'all_vars'.
-
     The df passed in comes from the parsed and cleaned play by play, seasonal,
     and roster dfs from the nfl data package.
     """
-    if (len(x) == 0) or (len(y) == 0):
-        if all_vars:
-            x = ['passing_yards', 'passing_attempts', 'yards_per_pass', 'total_epa',
-                'passing_touchdowns', 'completions', 'games', 'age', 'fantasy_points']
-            y = ['passing_yards_last', 'passing_attempts_last', 'yards_per_pass_last',
-                'total_epa_last', 'passing_touchdowns_last', 'completions_last', 
-                'games_last', 'age_last', 'fantasy_points_last'] 
-        else:
-            x = ['passing_yards', 'passing_attempts', 'total_epa', 'passing_touchdowns',
-                'completions']
-            y = ['passing_yards_last', 'passing_attempts_last', 'total_epa_last',
-                'passing_touchdowns_last', 'completions_last']
-
     # Define current year and last year stats
     current_year_stats = df[x]
     last_year_stats = df[y]
@@ -43,7 +63,7 @@ def create_correlation_matrix(df, x=[], y=[], all_vars=False):
     return correlation_matrix, x, y
 
 
-def plot_correlation_matrix(corr_mat, x, y, title=""):
+def plot_correlation_matrix(corr_mat, x, y, path=""):
     """
     Helper function to create the heat map for the correlation matrix
     so that we can visualize it in a pretty way.
@@ -55,9 +75,7 @@ def plot_correlation_matrix(corr_mat, x, y, title=""):
                     y = y,
                 )
 
-    if title:
-        save_path = f"../../interactive/QB/stability-passing/{title}"
-        save_path += ".html"
-        fig.write_html(save_path)
+    if path:
+        fig.write_html(f"{path}.html")
 
     fig.show()
