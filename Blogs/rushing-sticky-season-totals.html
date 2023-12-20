@@ -1,0 +1,702 @@
+<head>
+    <title>Rushing Stability</title>
+    <link rel="stylesheet" href="/Fantasy/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/Fantasy/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        // google analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>Rushing Sticky Stats</h1>
+
+
+            <h2>TL;DR</h2>
+            <p class="blog-p-tag">
+                <ul class="bullet-list">
+                    <li>Rushing stats are generally predictable and reliable, albeit less so than passing stats.</li>
+                    <li>Rushing touchdowns are a much more variable stat than passing touchdowns, across the board.</li>
+                    <li>Yards per carry is a very noisy stat.</li>
+                    <li>
+                        Running backs have much less predictablity compared to quarterbacks, both generally and at a starter level.
+                        Applying filters to running backs to get only fantasy relevant players produces ugly predictors - it results in all noise.
+                    </li>
+                    <li>Bellcows still do exist, but good luck finding them with the noisy running back landscape.</li>
+                    <li>Rushing quarterbacks have some quite predictable rushing stats: rushing yardage and carries.</li>
+                    <li>Rushing touchdowns for rushing quarterbacks are far less predictable than for passing touchdowns.</li>
+                    <li>There isn't a rushing stat that is reliable, year-over-year, that also serves as a decent predictor for the fantasy production of backs.</li>
+                    <li>While rushing quarterbacks have more reliable year-over-year rushing stats, the same stats do not serve as very reliable predictors for fantasy production.</li>
+                </ul>
+            </p>
+
+
+            <h2 class="h2-blog">Overview</h2>
+            <div>
+                <p class="blog-p-tag">
+                    In the following analysis I look into how <a href="javascript:void(0);" onclick="scrollToParagraph('sticky-definition')">sticky</a>
+                    rushing stats are, primarily focusing on season totals.
+                </p>
+                <p class="blog-p-tag">
+                    The optimistic goal is to find stats that serve as strong and consistent predictors for rushing success, for both quarterbacks
+                    and running backs. Practically speaking, I shall be surveying the landscape of rushing numbers in hopes of discovering patterns (or lack thereof).
+                </p>
+                <p class="blog-p-tag">
+                    This investigation is a continuation upon research into how replicable (fantasy relevant) football stats
+                    are year-over-year. In order to grasp the bigger picture better, I encourage you to checkout
+                    <a href="https://alex-bishka.github.io/Fantasy/Blogs/qbs-sticky-season-totals">part one</a> and
+                    <a href="https://alex-bishka.github.io/Fantasy/Blogs/qbs-sticky-per-game">part two</a>, each an examination of quarterback related stats.
+                </p>
+                <p class="blog-p-tag">
+                    One last note, before diving in, the data to make the correlation heat maps and scatter plots is from 2012-2022, unless stated otherwise.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">A Cursory Glance</h2>
+            <div>
+                <div>
+                    <p class="blog-p-tag">
+                        To get a sense of what the data looks like, we start without any restrictions on the data set.
+                    </p>
+                    <p class="blog-p-tag">
+                        This yields the following correlation heat map:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe id="unfiltered-rushing-data-heat-map" style="width: 900px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/unfiltered-simple.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        From an unfiltered, general perspective, there is less to rely upon with rushing numbers compared to
+                        <a href="https://alex-bishka.github.io/Fantasy/Analysis/interactive/QB/stability-passing/unfiltered.html">passing stats</a>.
+                    </p>
+                    <p class="blog-p-tag">
+                        That being said, there still is some strong year-to-year correlation with rushing yards (0.74), carries (0.76), and fantasy points (0.74).
+                        Touchdowns are far less reliable, with a year-over-year correlation of 0.60. This matches the expectation: rushing touchdowns are
+                        a rather fluky stat.
+                    </p>
+                    <p class="blog-p-tag">
+                        To get a better sense of the data we are working with, the following scatter plot shows the strongest year-to-year correlation from the previous
+                        heat map - carries vs. carries_last:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/unfiltered-simple-scatter-carries.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        There is a lot of noise towards the bottom left of the graph. Most of those data points offer little value, in terms of helping us find
+                        stats to serve as strong predictors of fantasy performance.
+                    </p>
+                    <p class="blog-p-tag">
+                        We will need to apply a filter to obtain information more relevant to fantasy
+                        production. However, it is nice to know that, generally speaking, rushing numbers are not totally random - in fact, the fantasy relevant ones,
+                        are somewhat-to-very (positively) predictable.  
+                    </p>
+                </div>
+
+                <h3 class="h3-blog">Running Backs</h3>
+                <div>
+                    <p class="blog-p-tag">
+                        Our first filter will be to look exclusively at the running back position.
+                    </p>
+                    <p class="blog-p-tag">
+                        The following heat map displays the season-to-season correlation numbers:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 900px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/simple-rb.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        While correlations from year-to-year are definitely weaker, there is more cross-correlation amongs stats. To me, this shows that running back
+                        numbers across the board are moderately predictable, and having just one (outisde of yards-per-carry) can paint the majority of the picture.
+                    </p>
+                    <p class="blog-p-tag">
+                        I want to highlight that rushing touchdowns, year-over-year, have a correlation of 0.53. Not random, but also not a strong predictor either.
+                        This is far worse from the general data set for passing touchdowns (the correlation was 0.74). The numbers continue to reflect the story line
+                        I have been told.
+                    </p>
+                    <p class="blog-p-tag">
+                        Before applying another filter, here is the scater plot of the strongest correlation from the heat map - carries vs. carries_last:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/simple-rb-scatter-carries.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        We still have a lot of noise for trying to decipher the data for fantasy relevant players. That being said, I want to repeat that it is
+                        a good thing that the general numbers are not nonsensical.
+                    </p>
+                    <p class="blog-p-tag">
+                        The next filter we apply is a proxy for starting running backs, or at least backs in a committee. Backs in the following analysis must have had at least 100
+                        carries in back to back seasons: 
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 900px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/simple-rb-starting.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        Well... there goes any sense of predictablility. 
+                    </p>
+                    <p class="blog-p-tag">
+                        To see what we're working, this is the scatter plot of the strongest correlation from that heat map - carries vs. carries_last:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/simple-rb-starting-scatter-carries.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        The data is definitely all over the place. Not ideal in regards to finding a pattern amongst starting or fantasy relevant backs.
+                    </p>
+                    <p class="blog-p-tag">
+                        What happens if we strengthen our filter to 200 carries in consecutive years?
+                    </p>
+                    <p class="blog-p-tag">
+                        The bellcow heat map ends up looking like so:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 900px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/simple-rb-bellcow.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        Outside of touchdowns, pretty much every correlation across the board is worse. I guess there's a little safety in knowing that your bellcow back probably won't regress much
+                        when it comes to scoring touchdowns? The sample size is 77 players too, so I would not discount these results.
+                    </p>
+                    <p class="blog-p-tag">
+                        Before moving on to quarterbacks, I want to leave off on this:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 1000px; height: 600px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/rushing-per-year-bar.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        The bar graph above shows the number of bellcows each season from 2013-2022. Again, I define a bellcow as a running back with more than 200
+                        carries in consecutive seasons. So, the 11 players that appear on the first bar also had over 200 carries in 2012.
+                    </p>
+                    <p class="blog-p-tag">
+                        I find this graph to be interesting, as it seems to me that the death of the bell cow has been exaggerated.
+                        From 2013-2017 there were 42 running back seasons that qualified as "bellcow workload". This number has diminished from 2018-2022 to 35 such "bellcow workload" seasons. 
+                    </p>
+                    <p class="blog-p-tag">
+                        Bellcows might not be easy to predict, but they aren't quite dead yet!
+                    </p>
+                </div>
+
+                <h3 class="h3-blog">Quarterbacks</h3>
+                <div>
+                    <p class="blog-p-tag">
+                        Onto quarterbacks, we start with the general data at the position:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 900px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/simple-qb.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        The rushing stats are not quite as predictable across the board for quarterbacks, compared to
+                        <a href="http://alex-bishka.github.io/Fantasy/Analysis/interactive/RB/stability-rushing/season/simple-rb.html">running backs</a>.
+                        However, quarterbacks seem to be quite reliable in the rushing yardage department, with a super strong correlation of 0.77.
+                        This is only slightly less than the correlation for passing yards year-over-year (which was 0.79), from the unfiltered data set.
+                    <p class="blog-p-tag">
+                        Quarterbacks also have a stronger correlation with carries and fantasy points season-to-season, at 0.79 and 0.70, respectively.
+                        Unfortunately, rushing touchdowns year-over-year a moderate correlation of 0.49, which is weaker than the correlation for passing
+                        touchdowns year-over-year (0.74).
+                    </p>
+                    <p class="blog-p-tag">
+                        Despite being less predictable than passing stats, this trend for the position is quite surprising to me, as I was under the impression
+                        rushing stats for quarterbacks would be at least as fluky as running backs.
+                    </p>
+                    <p class="blog-p-tag">
+                        We do need to dive deeper, as this heat map takes into account all quarterback data points from 2012-2022, as seen from the scatter plot of the strongest
+                        correlation stat from the heat map, carries vs. carries_last:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/simple-qb-scatter-carries.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        Again, quite a bit of noise when trying to evaluate the data from a fantasy perspective. Far too many non-rushing quarterbacks are included in the data set.
+                    </p>
+                    <p class="blog-p-tag">
+                        This is what the heat map looks like for rushing quarterbacks (I define a quarterback to be rushing when they have more than 20 carries in consecutive
+                        seasons):
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 900px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/simple-qb-rushing.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        The correlations do weaken, but rushing yards and carries are still quite reliable stats. In fact, they are more reliable than
+                        the correlations for passing yards (0.57) and passing attempts (0.58) for
+                        <a href="https://alex-bishka.github.io/Fantasy/Analysis/interactive/QB/stability-passing/starters.html">starting quarterbacks</a>
+                        during this same time period.
+                    </p>
+                    <p class="blog-p-tag">
+                        While this might not be the most apt comparison, I still find it somewhat eye-opening.
+                    </p>
+                    <p class="blog-p-tag">
+                        I believe this should be taken with a grain of salt, as the average rushing yardage per season for the rushing quarterbacks above
+                        is 264.67. Meanwhile, the average passing yardage for starting quarterbacks per season, during that same time frame, is 4010.67. 
+                    </p>
+                    <p class="blog-p-tag">
+                        What does that mean?
+                    </p>
+                    <p class="blog-p-tag">
+                        Well, while rushing quarterbacks likely improve their rushing yardage at a better rate than starting quarterbacks improve
+                        their passing yardage, the fantasy gains from the rushing side are probably not as valuable as from the passsing side.
+                    </p>
+                    <p class="blog-p-tag">
+                        It still is exciting to see that rushing numbers are replicable when additional filters are applied.
+                        Rushing quarterbacks, with the evidence we have so far, can repeat their success on a yearly basis.
+                    </p>
+                    <p class="blog-p-tag">
+                        Note, the sample size is still decent enough with this definition for rushing quarterbacks, as we have 43 such qualifying seasons.
+                    </p>
+                    <p class="blog-p-tag">
+                        I would like to also point out that fantasy points only have a moderate correlation (0.49) and rushing touchdowns are essentially noise (0.15).
+                    </p>
+                </div>
+            </div>
+
+
+            <h2 class="h2-blog">Digging Deeper</h2>
+            <div>
+                <p class="blog-p-tag">
+                    In this section, we go further into the rushing stats behind both the running back and quarterback position.
+                </p>
+
+                <h3 class="h3-blog">Running Backs</h3>
+                <div>
+                    <p class="blog-p-tag">
+                        One motif that appeared in the quarterback passing stability analysis was the difference in correlation values
+                        between <a href="https://alex-bishka.github.io/Fantasy/Analysis/interactive/QB/stability-passing/starters-young.html">young</a> and
+                        <a href="https://alex-bishka.github.io/Fantasy/Analysis/interactive/QB/stability-passing/starters-old.html">old</a> quarterbacks.
+                    </p>
+                    <p class="blog-p-tag">
+                        Unfortunately, no such pattern appeared in this case, for backs that had consecutive seasons of over 100 carries.
+                    </p>
+                    <p class="blog-p-tag">
+                        Young - 26 and under for current season - is on the left,
+                        and old - 26 and over for the previous season - is on the right:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 550px; height: 450px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/simple-rb-starting-young.html"></iframe>
+                        <iframe style="width: 550px; height: 450px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/simple-rb-starting-old.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        The same applies when using 28 as a threshold too (young on the left and old on the right again):
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 550px; height: 450px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/simple-rb-starting-young-2.html"></iframe>
+                        <iframe style="width: 550px; height: 450px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/simple-rb-starting-old-2.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        Not really much predictablity to go off. Running back appears to be a very noisy position, with little consistency from year-to-year, when it comes
+                        to fantasy relevancy.
+                    </p>
+                    <p class="blog-p-tag">
+                        The only heat map I was able to create with some strong correlations in regards to rushing yards and fantasy points had the following filter:
+                        over 200 carries in consecutive seasons and 28 years old in the previous season.
+                    </p>
+                    <p class="blog-p-tag">
+                        The resulting heat map:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 900px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/special.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        That's a super strong correlation for rushing yards, at 0.83, and pretty strong for fantasy points at 0.68. Maybe we finally have something?
+                    </p>
+                    <p class="blog-p-tag">
+                        Looking futher, in the scatter plot for rushing yards vs. rushing yards last, we see that our sample size is, unfortunately, quite limited:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 1000px; height: 600px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/special-scatter-rushing_yards.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        Only ten such seasons fulfill the criteria from the filter applied. Moreover, only five backs make up the list:
+                        <ul class="bullet-list">
+                            <li>Frank Gore (x5 - what a beast)</li>
+                            <li>Adrian Peterson (x1)</li>
+                            <li>Jonathan Stewart (x1)</li>
+                            <li>Matt Forte (x2)</li>
+                            <li>LeSean McCoy (x1)</li>
+                        </ul>
+                    </p>
+                    <p class="blog-p-tag">
+                        I guess I could see Henry staying relevant and making this list if he continues to get 200 carries a season, which may happen for another year or two.
+                        Otherwise, it's not a super helpful heat map and correlation find - these players all had really solid-to-fantastic careers.
+                    </p>
+                    <p class="blog-p-tag">
+                        From a basic stat perspective, predicting running back (fantasy) success appears to be pretty futile. 
+                    </p>
+                </div>
+
+                <h3 class="h3-blog">Quarterbacks</h3>
+                <div>
+                    <p class="blog-p-tag">
+                        If we apply an even stronger filter to what a rushing quarterback is - more than 40 carries in consecutive seasons - we see
+                        that rushing correlations weaken considerably, but there still exists a moderate correlation for rushing yards (0.43) and carries 
+                        (0.47) from season-to-season:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 900px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/qb-40-carries.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        The sample size for this applied filter is 20 such seasons, so this subset of the data is probably just large enough to have some semblance of reliability.
+                    </p>
+                    <p class="blog-p-tag">
+                        Here's the scatter plot for the strongest correlation in the heat map above, rushing yards vs. rushing yards last:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 1000px; height: 600px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/qb-40-carries-scatter-rushing_yards.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        I want to note that the oldest a quarterback was in the current season of the data points above, was 26.
+                        Time will tell in his new era of quarterback play if rushing is sustainable into late age.
+                    </p>
+                    <p class="blog-p-tag">
+                        Aside from potential longevitiy concerns, it is good to know that there exists some consistency in the realm of rushing quarterbacks, even if it is a bit weaker than passing 
+                        stats for <a href="https://alex-bishka.github.io/Fantasy/Analysis/interactive/QB/stability-passing/starters.html">starting quarterbacks</a>.
+                    </p>
+                </div>
+            </div>
+
+
+            <h2 class="h2-blog">Other Findings</h2>
+            <div>
+                <p class="blog-p-tag">
+                    While probably not that useful for fantasy predictions, another interesting stat I noticed is that rushing quarterbacks (quarterbacks 
+                    with more than 20 carries in consecutive seasons) have a higher rate of a 
+                    <a href="javascript:void(0);" onclick="scrollToParagraph('successful-play-definition')">successful play</a>
+                    compared to bellcow running backs (backs with more than 200 carries in consecutive seasons).
+                </p>
+                <p class="blog-p-tag">
+                    Rushing quarterbacks were had a successful play rate of 55.47%, whereas bellcows had a successful play rate of 39.37%.
+                </p>
+                <p class="blog-p-tag">
+                    Combine that with the fact that rushing quarterbacks average 5.24 yards a carry, compared to 4.30 for bellcows, and I can see why everyone wants
+                    a rushing quarterback. Additionally, I figure this adds to the narrative that the bellcow is dead.
+                </p>
+                <p class="blog-p-tag">
+                    Two final graphs for you, showing the same correlations on running back data (from 2016-2022) with different filters.
+                    The first shows a correlation heat map of backs with over 100 carries in consecutive seasons:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1000px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/advanced-100.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    The second shows a correlation heat map of backs with over 200 carries in consecutive seasons:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1000px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/advanced-200.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    In both cases, the standout correlations are
+                    <a href="javascript:void(0);" onclick="scrollToParagraph('avg_time_to_los_mean-definition', 250)">avg_time_to_los_mean</a> vs. avg_time_to_los_mean_last (0.59 and 0.59) and 
+                    <a href="javascript:void(0);" onclick="scrollToParagraph('rush_yards_over_expected_sum-definition', 250)">rush_yards_over_expected_sum</a> vs. rush_yards_over_expected_sum (0.48 and 0.55).
+                    Neither are particularly strong correlations, but it is intersting to see that good backs improve upon exceeding expectations
+                    in the running game, and that good backs take longer and longer to get to the line of scrimmage. 
+                </p>
+                <p class="blog-p-tag">
+                    For more information on the advanced stats in the heat map above, I recommend checking out this
+                    <a href="https://cran.r-project.org/web/packages/nflreadr/vignettes/dictionary_nextgen_stats.html">data dictionary</a>.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Fantasy Relevance?</h2>
+            <div>
+                <p class="blog-p-tag">
+                    With all of this digging for stats that are predictable year-over-year, how does this relate back to fantasy?
+                </p>
+                <p class="blog-p-tag">
+                    Well, ideally, we want to find stats that are predictable and positvely so (sticky stats) from year-to-year, that
+                    also contribute (significantly) to fantasy production.
+                </p>
+                <p class="blog-p-tag">
+                    For example, we saw that rushing yards vs. rushing yards last had a correlation of 0.74, when looking at the
+                    <a href="javascript:void(0);" onclick="scrollToParagraph('unfiltered-rushing-data-heat-map')">unfiltered rushing data</a>.
+                    Now, if rushing yards correlates strongly with fantasy production, this would mean that rushing yardage would be a pretty good indicator of fantasy performance.
+                </p>
+                <p class="blog-p-tag">
+                    Well, ideally, we want to find stats that are predictable and positively so (sticky stats) from year-to-year, that
+                    also contribute (significantly) to fantasy production.
+                </p>
+                <p class="blog-p-tag">
+                    The heat maps below show the correlation between fantasy points (current and previous season) and rushing stats that had at least 
+                    a moderate correlation (at least 0.40) with themselves on a year-to-year basis.
+                </p>
+                <p class="blog-p-tag">
+                    The first one is generated from using the unfilitered data set of rushing stats from 2012-2022:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1000px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/fantasy-relevance-unfiltered.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    I find it strange that fumbles might end up being the best predictor for fantasy points, from a rushing perspective.
+                    I believe these strange results are coming from the grouping of running backs and quarterbacks.
+                </p>
+                
+                <h3 class="h3-blog">Running Backs</h3>
+                <div>
+                    <p class="blog-p-tag">
+                        Filtering the data for only running backs yields the following graph:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 1000px; height: 600px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/fantasy-relevance-unfiltered-rb.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        There are far more stats that have at least moderate year-to-year correlation and also correlate well with fantasy points in eiher the current
+                        or previous season. The three strongest predictors, and they are very strong, appear to be rushing yards, successful plays, and carries (curret or previous seasons).
+                    </p>
+                    <p class="blog-p-tag">
+                        Furthermore, each stat has a decently strong correlation with itself, year-over-year. 0.64 for rushing yards, 0.65 for carries, and 0.65 for successful plays.
+                        Exciting to see that rushing stats for all running backs are predictable.
+                    </p>
+                    <p class="blog-p-tag">
+                        What becomes disappointing, is that there is no stat that has at least a moderate correlation (0.40) with itself on a year-to-year basis and
+                        a moderate correlation with fantasy points simultaneously. It seems fair to expect backs to improve over time, but once they receive a fantasy relevant
+                        workload (over 100 carries), all bets are off. This is a point I intend to revisit later, with other statistical techniques, to see if there
+                        might be something useful lurking under the surface. 
+                    </p>
+                </div>
+
+                <h3 class="h3-blog">Quarterbacks</h3>
+                <div>
+                    <p class="blog-p-tag">
+                        Let's take a look at only quarterbacks now:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 600px; height: 400px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/fantasy-relevance-unfiltered-qb.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        None of these predictors are particularly strong. Perhaps the situation will improve as we remove the noise from quarterbacks who do not rush much.
+                    </p>
+                    <p class="blog-p-tag">
+                        Applying a filter of over 20 carries to quarterbacks:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 600px; height: 400px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/fantasy-relevance-unfiltered-qb-20.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        It's a little better, but still not spectacular. Finally, the filter of over 40 carries applied to quarterbacks:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 600px; height: 400px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/fantasy-relevance-unfiltered-qb-40.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        This is the best yet! The correlations for fantasy points and successful plays, as well as fantasy points and carries is moderate-to-strong.
+                        Additionally, carries has an okay year-to-year correlation with itself of 0.47. The same correlation for successful plays is 0.43. Not great,
+                        not bad.
+                    </p>
+                    <p class="blog-p-tag">
+                        I would say that on this evidence, in context with the rest of this research, rushing numbers for quarterbacks are sustainable year-over-year and
+                        for fantasy success. However, <a href="https://alex-bishka.github.io/Fantasy/Blogs/qbs-sticky-per-game#further-exploration-0">passing stats</a>
+                        are still more reliable on a year-to-year basis, and as indicators of fantasy success.
+                    </p>
+                </div>
+            </div>
+
+
+            <h2 class="h2-blog">Summary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    On that note, I'll wrap up the analysis with the main takeaways:
+                </p>
+                <ul class="bullet-list">
+                    <li>Rushing stats are generally predictable and reliable, albeit less so than passing stats.</li>
+                    <li>Rushing touchdowns are a much more variable stat than passing touchdowns, across the board.</li>
+                    <li>Yards per carry is a very noisy stat.</li>
+                    <li>
+                        Running backs have much less predictablity compared to quarterbacks, both generally and at a starter level.
+                        Applying filters to running backs to get only fantasy relevant players produces ugly predictors - it results in all noise.
+                    </li>
+                    <li>Bellcows still do exist, but good luck finding them with the noisy running back landscape.</li>
+                    <li>Rushing quarterbacks have some quite predictable rushing stats: rushing yardage and carries.</li>
+                    <li>Rushing touchdowns for rushing quarterbacks are far less predictable than for passing touchdowns.</li>
+                    <li>There isn't a rushing stat that is reliable, year-over-year, that also serves as a decent predictor for the fantasy production of backs.</li>
+                    <li>While rushing quarterbacks have more reliable year-over-year rushing stats, the same stats do not serve as very reliable predictors for fantasy production.</li>
+                </ul>
+                <p class="blog-p-tag">
+                    Thanks for reading!
+                </p>
+                <p class="blog-p-tag">
+                    Cheers, <br />
+                    Alex
+                </p>
+            </div>
+            
+
+            <h2 class="h2-blog">Glossary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Term definitons below:
+                </p>
+                <ul class="bullet-list">
+                    <li id="sticky-definition"><b>Sticky:</b> in reference to a statistic, a sticky stat is one that is predictable, and likely in a positive fashion.</li>
+                    <li id="successful-play-definition"><b>Successful play:</b> a play is considered successful if the EPA (see below) is positive.</li>
+                    <li id="epa-definition"><b>Expected Points Added (EPA):</b> a metric that measures the difference between a team's expected points from before the snap to after the play. It captures the idea that every play on a drive contributes to a score.</li>
+                    <li id="avg_time_to_los_mean-definition"><b>Average Time to Line of Scrimmage:</b> The time it takes for the rusher to get to the line of scrimmage.</li>
+                    <li id="rush_yards_over_expected_sum-definition"><b>Rush Yards Over Expected:</b> The yardage gained by a rusher compared to the expected gain.</li>
+                </ul>
+                <p class="blog-p-tag">
+                    For more defintions and data tables, please check out this set of <a href="https://cran.r-project.org/web/packages/nflreadr/vignettes/">data dictionary definitons</a>.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Appendix</h2>
+            <div>
+                <h3 class="h3-blog">Unfiltered Simple</h3>
+                <div>
+                    <p class="blog-p-tag">
+                        Unfiltered data from 2012-2022, on correlation year-to-year on simple stats:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 1000px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/unfiltered-all-simple.html"></iframe>
+                    </div>
+                </div>
+
+                <h3 class="h3-blog">Unfiltered Advanced</h3>
+                <div>
+                    <p class="blog-p-tag">
+                        Unfiltered data from 2016-2022, on correlation year-to-year on simple and advanced stats:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 1000px; height: 900px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/all-advanced-year-over-year.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        I would recommend taking advantage of the interactiveness of the graph, in order to explore this heat map.
+                    </p>
+                </div>
+
+                <h3 class="h3-blog">Unfiltered All</h3>
+                <div>
+                    <p class="blog-p-tag">
+                        Unfiltered data from 2016-2022, on all stats - correlations amongst current and previous season stats:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 1100px; height: 1000px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/season/unfiltered-all.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        Like above, I would take advantage of the interactiveness of the graph, in order to explore this heat map.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function scrollToParagraph(paragraphId, headerOffset=100) {
+        let element = document.getElementById(paragraphId);
+        // let headerOffset = 100;  // Change this value according to your needs
+        let elementPosition = element.getBoundingClientRect().top;
+        let offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+        });
+    }
+</script>
+<script>
+    $("#common-header").load("../header.html");
+</script>
