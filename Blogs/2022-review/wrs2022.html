@@ -1,0 +1,471 @@
+<head>
+    <title>WRs in 2022</title>
+    <link rel="stylesheet" href="/Fantasy/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/Fantasy/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>WRs in 2022</h1>
+
+            <h2>TL;DR</h2>
+            <p class="blog-p-tag">
+                <ul class="bullet-list">
+                    <li>The young wide receiver talent in the league is very deep. I would recommend stacking up where possible, especially at or below their value. Especially since guys who flashed like Watson and Dotson don't even show up in my analysis (for data usage reasons stated below).</li>
+                    <li>Olave might be a better wide receiver than Wilson, or at least more productive. Time will tell on these two great young bucks, but as of now the numbers seem to favor Olave.</li>
+                    <li>Amon-Ra St. Brown is probably better than Olave and Wilson for now, might be useful to know as a value purchase.</li>
+                    <li>DJ Moore terrifies me in a potentially worse passing offense. I would steer clear of him, or sell for decent value if you can.</li>
+                    <li>Plenty of great vets to be had for contenders at reasonable prices: Godwin, Evans, Mclaurin, Lockett, etc.</li>
+                </ul>
+            </p>
+
+            <h2 class="h2-blog">Overview</h2>
+            <p class="blog-p-tag">
+                Similar to my <a href="https://alex-bishka.github.io/Fantasy/Blogs/qbs2022">analysis of quarterbacks in 2022</a>, I will dive into the performances of wide receivers in the 2022 season.
+                My goal is the same as before: to try to identify value, tiers and surprises in the data such that I can adapt my expectations to reflect numbers instead of just feelings and tape analysis.
+            </p>
+
+            <p class="blog-p-tag">
+                A disclaimer about the data I will be looking over in this post:
+                <ul class="bullet-list">
+                <li>I don't take into account anything related to two point conversions, partly due to
+                    the randomness and small sample size but mostly because it was difficult to incorporate into the data I
+                    fetched</li>
+                <li>The top 40 WRs I analyze are by the top 40 fantasy point totals, this is done for
+                    simplicity and reusability of graphing code</li>
+                </ul>
+            </p>
+
+            <h2 class="h2-blog">Fantasy Points (Standard)</h2>
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/WR/Total Fantasy Points.png">
+                <img class="multi-img" src="/Fantasy/Analysis/images/WR/Fantasy Points Per Game.png">
+            </div>
+            <p class="blog-p-tag">
+                Similar to quarterbacks, that first tier of WRs has a more variability in it compared to the second tier; however, it is far more pronounced in the case of WRs.
+                155 total points would qualify you as a WR1 last year, 124 total points for WR2, and 109 for WR3. The difference between the first two tiers is 31 points and the difference
+                between the latter two tiers is 15 points.
+            </p>
+            <p class="blog-p-tag">
+                Meanwhile, the overall WR1, Justin Jefferson, had 241 total points last year.
+                Diggs, the WR5 had 209 total points last year. The difference from the barrier to entry as a WR1 to Diggs is 54 total points. The difference from the entry point of WR3 to that of WR1
+                is 46 points. 
+            </p>
+            <p class="blog-p-tag">
+                This, once again, exhibits the importance of that elite tier in fantasy. Every position has it, and any team that has a player in that elite tier is going to have a 
+                positional advantage, and building positional advantages are what allow you to outscore your opponents on a weekly basis.
+            </p>
+            <p class="blog-p-tag">
+                If we look at the points per game numbers, the difference between the worst WR1 and the worst WR2 is 1.33, which is smaller than the difference between that of the worst WR2 and worst WR3, which was 1.71.
+            </p>
+                
+            <p class="blog-p-tag">
+                This may lead you to think, well Alex, clearly positional advantage was exaggerated by season totals, I just need guys who are good enough, like borderline WR1 players to beat my opponents. To which I respond,
+                that elite tier of WR1s - which we will say starts with AJ Brown at 12.47 points per game - outscores the worst WR1 by 2.6 points per game. It's not quite the difference between the best WR3 and worst WR1 - 3.01 points per game - 
+                but it still provides you with such a dominate postional advantage.
+            </p>
+                
+            <p class="blog-p-tag">
+                That makes a pretty big difference between having a guy who is just a WR1
+                and having a guy that is an elite WR1. The Amon-Ras, Waddles and Locketts of the world are solid, but you really want the Hills, Adams, and Jeffersons of the world when building an elite wide receiver room.
+            </p>
+
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/WR/Total Fantasy Points-by-Fantasy Points Per Game.png">
+            </div>
+            <p class="blog-p-tag">
+                I think this graph does an even better job at highlighting how big those gaps are between the elite WRs and the rest. Lower WR1s, WR2s, and even some WR3s really clump together on a points per game basis. With the middle point of the spectrum
+                being around Lockett-Ra.
+            </p>
+
+            <h2 class="h2-blog">Highlights Thus Far</h2>
+            <p class="blog-p-tag">
+                I am going to provide a little bit of value commentary here, but take this with a grain of salt since we have only seen the numbers in standard scoring. The next sections use PPR
+                scoring, and I would recommend skipping to the more detailed analysis of WRs there. I did want to at least provide some coverage for standard scoring, so this will be it.
+            </p>
+            <p class="blog-p-tag">
+                Getting that out of the way, here's what I'm noticing from an individual level:
+                <ul class="bullet-list">
+                    <li>Deebo, Allen, and Kupp were all suffering from injury last year but all of them crush there total points rankings when looking at points per game</li>
+                    <li>Garret Wilson had less than 8 points per game last year, whereas Olave had 8.4 - perhaps Olave is a step above Wilson?</li>
+                    <li>Kupp, Adams, and Jefferson are absolutely monstrous, but Hill is not far from them and could sneak into their company on a points per game basis, provided Tua can stay healthy and grow in that offense</li>
+                    <li>Smith had a lot of hype in the offseason, and many Eagles fans I talk to seem to think he could surpass Brown, but the numbers don't seem to favor this take, unless a drastic change is going to happen in that offense this year</li>
+                    <li>Evans and Lockett are great buys for contenders as they perform like WR1s on a points per game basis and could probably each be had for an early second or late first</li>
+                    <li>Pickens surprise me with how low he is on this list, the dude has great tape, but his numbers are on the low side - could be a good buy window as the offense should take another step and he has another year to come back from his ACL injury</li>
+                    <li>If Pickens was surprising, then London is shocking, as he was only above DPJ in points per game <b>YIKES</b> - that being said another buy window could open up as the talent is there</li>
+                    <li>Sell Kirk if you still can, Ridley is going to reduce his numbers</li>
+                </ul>
+            </p>
+
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/WR/Total Fantasy Points-by-Fantasy Points Per Game-v2.png">
+                <img class="multi-img" src="/Fantasy/Analysis/images/QB/Total Fantasy Points-by-Fantasy Points Per Game-v2.png">
+            </div>
+            <p class="blog-p-tag">
+                I wanted to point out these graphs before looking at wide receivers in PPR scoring. The trend line in both is set to go from the origin (0, 0) to (max(fantasy points), max(points per game)).
+                Players above the line overperform in season totals and under perform in points per game, and vice versa for players below the line.
+            </p>
+            <p class="blog-p-tag">
+                What is interesting to me here is that wide receivers seem to
+                have their season totals reflect there points per game totals much more favorably than quarterbacks do. To clarify, it appears that wide receivers rarely overperform in their season totals compared 
+                to their points per game, and when they do it is a small overperformance. In fact, it appears that wide receivers tend to overperform on their points per game and underperform on their yearly totals.
+            </p>
+            <p class="blog-p-tag">
+                Quarterbacks, on the other hand, seem to overperform in their total points relative to their points per game, at least to a higher degree than wide receivers do.
+            </p>
+            <p class="blog-p-tag">
+                What does this mean? I'm not quite sure, but I believe it may be indicative of injuries happening more pervasively to star players at the wide receiver position compared to the quarterback position.
+                Regardless of the explanation, I thought this was something interesting that I saw in the data.
+            </p>
+
+            <h2 class="h2-blog">Fantasy Points (PPR)</h2>
+            <p class="blog-p-tag">
+                The moment many of you have been awaiting: analysis in the PPR scoring format. Let's dive in!
+            </p>
+
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/WR/Total Fantasy Points PPR.png">
+                <img class="multi-img" src="/Fantasy/Analysis/images/WR/Fantasy Points Per Game PPR.png">
+            </div>
+            <p class="blog-p-tag">
+                We do have similarities to standard scoring, in regards to positional advantages. The difference between the worst WR1 and worst WR2 is 42.8 points and the difference between the worst WR2 and WR3 
+                is 29.79 points. Note that PPR exaggerates these differences, which were 31 and 15 points in standard scoring, respectively.
+            </p>
+            <p class="blog-p-tag">
+                Additionally, the difference between the worst wide receiver in that elite tier - again the cutoff is AJ Brown, who had 299.6 total points - compared to the worst wide receiver one is 57.7 points.
+                The difference in standard was 54 points - it is interesting that the elite WR is not able to distinguish themselves more in PPR, but I suspect this is likely because of the already increased difference
+                between WR1s and WR2s. More specifically, the bottom tier of the WR1 class is also bumped up about the same from PPR scoring. 
+            </p>
+            <p class="blog-p-tag">
+                Furthermore, the pattern where the gap between WR1s and WR2s gets smaller than the gap between WR2s and WR3s appears again on a points per game basis, even though the opposite occurs in total points. 
+            </p>
+            <p class="blog-p-tag">
+                The difference gap between the worst WR1 and WR2 is 1.77 points per game, whereas the difference between the worst WR2 and WR3 is 2.7 points per game. That being said, our elite tier of WR1s on a points per game basis
+                starts with Davante Adams, who has 19.73 points per game. The difference between him and the worst WR1 is 4.75 points per game. This is larger than the difference between the worst WR1 and the worst WR3, which is 4.47.
+            </p>
+            <p class="blog-p-tag">
+                Yet again, we see that that elite tier of WRs offers such an advantage on a per game basis. High-end WR2s and low-end WR1s are pretty comparable on a per game basis, but having this elite tier truly allows you to blow others 
+                out of the water.
+            </p>
+            <p class="blog-p-tag">
+                Outside of the impressiveness of the distance that elite tier of WRs has on everyone else, two players caught my eyes for the wrong reasons: DJ Moore and Garret Wilson. I was not expecting both to be in WR3 territory in terms of 
+                points per game. Moore had 11.71 and Wilson had 12.68 points per game, while the threshold to break into WR2 territory is 13.21 points per game.
+            </p>
+            <p class="blog-p-tag">
+                Now the theory here is that Moore's numbers should improve with Fields <s>likely being his best quarterback to date</s>, that being said it seems he needs to increase his production about 20 yards a game, minimum, to be solidly in
+                WR2 territory. That scares me quite a bit due to concerns with Fields, and the fact there's so many talented dudes at the wide receiver position that Moore might be stuck in the WR3 territory on a points per game basis.
+            </p>
+            <p class="blog-p-tag">
+                Regarding Wilson, <a href="https://www.nfl.com/news/jets-qb-aaron-rodgers-suffered-torn-achilles-will-miss-remainder-of-season">it sucks that Rodgers is done for the year</a>. He was a strong candidate to make a big leap with a competent quarterback.
+                So much for that, as it looks like he will be stuck with Zach Wilson for a while. If anything, now is a great buy window for him, because I suspect his numbers will regress with, what should now be even worse quarterback play.
+            </p>
+            <p class="blog-p-tag">
+                I want to point out that Olave stands out to me (again in PPR), as he has better numbers than Wilson - setting the bar for the WR2 tier at 13.21 points per game. He should have a better quarterback as well in Derek Carr, so it will be interesting to see
+                how much he can improve. Olave might no longer be cheaper than Wilson, due to the Rodgers injury and the fact that he posted over 300 yards on 32 targets in his first three games, but I would still go after him if you could grab him for about two first
+                round picks (both being around middle of the pack value).
+            </p>
+            <p class="blog-p-tag">
+                Lastly, contenders should look into acquiring Evans, Godwin and Lockett, as each of them were producing around that low-end WR1 territory at 14.98 points per game, and each of them tend to be undervalued due to their age. On KTC, they rank as WR33, WR32, and
+                WR48 respectively (as of 9/27/23). There's a lot of value to be had there, especially for Godwin, since he's still under the age of 30.
+            </p>
+
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/WR/Total Fantasy Points PPR-by-Fantasy Points Per Game PPR.png">
+            </div>
+            <p class="blog-p-tag">
+                Here is the other representation that highlights the distance - on a points per game level - between the elite wide receivers and everyone else. Additionally, the clustering of low-end WR1s and high-end WR2s appears again, with the rest 
+                being pretty close to each other. Although, the clustering is less dense than in standard scoring.
+            </p>
+
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/WR/Total Fantasy Points PPR-by-Fantasy Points Per Game PPR-v2.png">
+            </div>
+            <p class="blog-p-tag">
+                The phenomenon of wide receivers' total points performance versus points per game performance appears to maintain itself across PPR scoring.
+            </p>
+
+            <h2 class="h2-blog">Receiving Yards</h2>
+            <p class="blog-p-tag">
+                Let's go ahead and look at the receiving yard numbers.
+            </p>
+
+            <p class="blog-p-tag">
+                <i>
+                    Note that for the rest of this exploration our colored tiers will be determined based on PPR scoring, since that tends to be a more popular scoring system these days. 
+                </i>
+            </p>
+            
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/WR/Total Receiving Yards.png">
+                <img class="multi-img" src="/Fantasy/Analysis/images/WR/Receiving Yards Per Game.png">
+            </div>
+            <p class="blog-p-tag">
+                Our pattern on fantasy numbers appears to have repeated itself here. The difference between the WR1 and WR2 threshold is larger - at 199 yards - than that between WR2 and WR3 - 156 yards.
+                However, the trend flips when looking at the numbers at a receiving yards per game perspective: the difference between the WR1 and WR2 threshold is 10.64 yards per game, while it is 11.64 yard per game for the
+                WR2 and WR3 threshold. 
+            </p>
+            <p class="blog-p-tag">
+                However, if we look at that elite tier, we again see the value in having a positional advantage.
+            </p>
+                
+            <p class="blog-p-tag">
+                Regarding the total numbers, Waddle starts our elite tier at 1356 total receiving yards. That's 232 receiving yards more than the threshold for being a WR1!
+            </p>
+                
+            <p class="blog-p-tag">
+                Regarding the per game numbers, our elite tier starts with Chase, who had 87.16
+                receiving yards per game. That is 16.81 yards per game more than the threshold for being a WR1!
+            </p>
+
+            <p class="blog-p-tag">
+                Other interesting things to note here:
+                <ul class="bullet-list">
+                  <li>Scary Terry is a beast! His 1191 receiving yards make him a strong WR2 and borderline WR1. Really hope he gets legitimate quarterback one day.</li>
+                  <li>Mike Evans sneaks into WR1 territory yet again, on both a total and per game basis - big buy for contenders</li>
+                  <li>Olave, who had 69.46 yards per game, is really close to breaking into WR1 territory (70.35 yards per game). He keeps surpassing Wilson...</li>
+                  <li>Wilson has 64.88 yards per game and 1103 total yards. He's also close to WR1 territory, but people value him higher than Olave and I think it's really close, if not the other way around based on these numbers. Either way, I'd try and acquire either, as they both seem special.</li>
+                  <li>London and Pickens are pretty far behind, but still had rookie years to be exicted about with 866 and 801 yards, respectively. Both to me are screaming buys, as they have flashed so much talent, but are currently somewhat limited by QB and/or offense situations.</li>
+                  <li>DJ Moore continues to terrify me the more I look into these numbers. He only had 888 total receiving yards and 52.23 yards per game. Both stats are pretty firmly in WR3 territory, and I'm not sure Fields is an upgrade... <b>YIKES!</b></li>
+                  <li>Amon-Ra is king of the young WRs? He had 72.56 yards per game and 1161 total receiving yards, which was better than Olave and Wilson, but I do think Olave and Wilson could be had at better value.</li>
+                </ul>
+            </p>
+
+            <h2 class="h2-blog">Rushing Yards</h2>
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/WR/Total Rushing Yards.png">
+                <img class="multi-img" src="/Fantasy/Analysis/images/WR/Rushing Yards Per Game.png">
+            </div>
+            <p class="blog-p-tag">
+                Rushing yards don't make a big difference yet for wide receivers. This could change with the way the NFL is going, but outside of a couple of guys, there
+                aren't really any who get enough production in the run game to deem this as a game changer, with the view point of how you evaluate a wide receiver.
+            </p>
+                
+            <p class="blog-p-tag">
+                Outside of Deebo, Curtis Samuel, Amon-Ra and Kupp it doesn't impact the position yet. Even then, it only really boosts Deebo and Curtis, marginally.
+            </p>
+
+            <h2 class="h2-blog">Total Yards</h2>
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/WR/Total Yards.png">
+                <img class="multi-img" src="/Fantasy/Analysis/images/WR/Total Yards Per Game.png">
+            </div>
+            <p class="blog-p-tag">
+                Factoring in rushing yards doesn't really change the picture from the receiving yards analysis. It does boost, surprise, surprise, the four guys we mentioned already, a little bit.
+                That being said, the situation remains largely unchanged.
+            </p>
+
+            <h2 class="h2-blog">Other Receiving Stats</h2>
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/WR/Fantasy Points Per Game PPR-by-Yards Per Catch.png">
+            </div>
+            <p class="blog-p-tag">
+                Yards per catch seems to have little to no correlation with how many points a player scores per game, which was a bit surprising. Perhaps YAC would be a better indicator of performance,
+                but I unfortunately do not have that data. That is something I will look into adding, and perhaps I will add an addendum of follow up post to this analysis if something interesting pops up there.
+            </p>
+
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/WR/Total Fantasy Points PPR-by-Targets Per Game.png">
+                <img class="multi-img" src="/Fantasy/Analysis/images/WR/Fantasy Points Per Game PPR-by-Receptions Per Game.png">
+            </div>
+            <p class="blog-p-tag">
+                What I take away from these two graphs is this: a top wide receiver needs volume, both potential (targets) and realized (catches). It seems that a minimum of 8 targets a game and/or 6 catches a game.
+            </p>
+
+            <p class="blog-p-tag">
+                In fact if we take a look at this graph, the 8 targets to 6 catches is the golden minimum ratio. If your guy has those stats, that's a guarantee for WR1 or WR2 territory:
+            </p>
+
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/WR/Targets Per Game-by-Receptions Per Game.png">
+            </div>
+            <p class="blog-p-tag">
+                Outside of that observation, my concerns for Moore, London and Pickens are highlighted here. Both Pickens and Moore have less than 4 catches a game, 3.05 and 3.70, respectively.
+                London is a bit better at 4.23 catches a game, but all three are a ways away from that golden ratio. Additionally, they all have less than 7 targets a game, (Pickens has less than 5)!
+                Outside of Waddle, every WR1 has at least 7 targets a game.
+            </p>
+
+            <p class="blog-p-tag">
+                That being said, a wide receiver can still be
+                in WR1 or WR2 territory without hitting that ratio, but the picture becomes much more muddled.
+            </p>
+                
+            <p class="blog-p-tag">
+                It is worth noting that AJ Brown is the only elite wide receiver below that ratio, with 8.52 targets a game
+                and 5.17 catches a game.
+            </p>
+            <p class="blog-p-tag">
+                I think these numbers really solidify Moore as someone I would want to move off of. I don't see him being capable of doing much better than this with the Bears. London and Pickens remain as buys
+                to me. London is just in an offense that is deathly allergic to passing and Pickens still offers a lot to like, but I do think this shows that Pickens will probably never hit that elite ceiling.
+            </p>
+                
+            <p class="blog-p-tag">
+                The jump in targets and catches would have to be massive for him to approach the elite wide receiver tier.
+                Additionally, Pickens is more of a big play guy, so that goes against him there.
+                All that being said, I am still really high on Pickens. His film pops, and his numbers are good on the all.
+            </p>
+            <p class="blog-p-tag">
+                Lastly, if you are a contender, <b>BUY GODWIN!</b> Godwin is incredibly undervalued for the amount of volume he gets, and he produces as well!
+                9.46 targets a game and 6.93 receptions a game, the season after an ACL tear is unbelievable. That's almost 7 free points a game in PPR.
+                Moreover, I can see his numbers getting better as Baker is a projected upgrade for me.
+            </p>
+
+            <h2 class="h2-blog">Touchdowns</h2>
+            <p class="blog-p-tag">
+                I'm not going to go super deep into touchdown analysis for wide receivers as it tends to be pretty variable from year to year. That being said, I still think it is worth a look.
+            </p>
+
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/WR/Total Receiving Touchdowns.png">
+                <img class="multi-img" src="/Fantasy/Analysis/images/WR/Receiving Touchdowns Per Game.png">
+            </div>
+            <p class="blog-p-tag">
+                What I would highlight from this is that you will almost definitely need around 6 touchdowns from your wide receiver if you want them to be a WR1 or WR2.
+                Additionally, I would expect some positive regression for Godwin (3 touchdowns last year) and some of the younger guys like Wilson or Pickens (4 touchdowns each).
+            </p>
+            <p class="blog-p-tag">
+                I would also be somewhat skeptical of the top three maintaining their pace for this upcoming season, Adams, Diggs and Brown had 14, 11, and 11 touchdowns, respectively.
+            </p>
+
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/WR/Total Rushing Touchdowns.png">
+                <img class="multi-img" src="/Fantasy/Analysis/images/WR/Rushing Touchdowns Per Game.png">
+            </div>
+            <p class="blog-p-tag">
+                Again, rushing is not a major factor for how we should value wide receivers. Outside of Deebo, rushing touchdowns are exceedingly scarce amongst wide receivers.
+                This is something to monitor for the future of the NFL, but I don't think we are not quite at the age of the dual threat wide receiver.
+            </p>
+
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/WR/Total Touchdowns.png">
+                <img class="multi-img" src="/Fantasy/Analysis/images/WR/Total Touchdowns Per Game.png">
+            </div>
+            <p class="blog-p-tag">
+                With rushing touchdowns not really changing the picture, there isn't much more to add here. One interesting thing is that it does slightly raise the threshold to be a WR1
+                in regards to touchdown threat, bumping the threshold from 7 touchdowns to 8 touchdowns. 
+            </p>
+
+            <h2 class="h2-blog">Summary</h2>
+            <p class="blog-p-tag">
+                Thank you to those who made it this far! I'll go ahead and wrap up my thoughts and also jot down some points for what you would want in your wide receivers.
+                These will be pretty similar to the TL;DR section, so feel free to skip the following takewaways and see to WR1 criteria.
+                <ul class="bullet-list">
+                  <li>Really strong group of young wide receivers - buy just about any of the big names (Olave, Wilson, London, etc.) that you can from the 2022 class.
+                    Pickens and London have the largest concerns, but their production was still great, so I would grab both wherever I can, but I believe Pickens probably won't ever be an elite
+                    producer at the position group.
+                  </li>
+                  <li>Olave might be a better wide receiver than Wilson, or at least more productive.</li>
+                  <li>Amon-Ra St. Brown is probably better than Olave and Wilson for now, might be useful to know as a value purchase.</li>
+                  <li>DJ Moore terrifies me in a potentially worse passing offense.</li>
+                  <li>Plenty of great vets to be had for contenders at reasonable prices: Godwin, Evans, Mclaurin, Lockett, etc.</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                There is not much to dislike from the wide receiver crop. There's a lot of talent around and a lot of positives from many different players. Outside of D.J. Moore, I don't really see
+                a reason to shy away from any wide receiver at roughly their current value. I do think it might be time to start considering selling off guys like Kupp, Adams, and Hill as they may start
+                to get replaced by this new age of amazing wide receivers sooner rather than later. That being said, you have to keep them if you are a contender.
+            </p>
+            <p class="blog-p-tag">
+                Criteria you are looking for in a potential WR1:
+                <ul class="bullet-list">
+                  <li>1100+ receiving yards or about 70+ receiving yards a game</li>
+                  <li>6+ total touchdowns</li>
+                  <li>A target to catch ratio of at least 8 targets to 6 catches</li>
+                  <li>Yards per catch isn't something to fuss about</li>
+                  <li>Rushing yardage and touchdowns don't matter that much for a positional advantage yet, but nice to have</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                That's the end of this post! Looking forward to writing the next one!
+            </p>
+            <p class="blog-p-tag">
+                Cheers, <br/>
+                Alex!
+            </p>
+        </div>
+</body>
+<script>
+    $("#common-header").load("/Fantasy/header.html");;
+</script>
