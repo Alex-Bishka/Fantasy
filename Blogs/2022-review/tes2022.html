@@ -1,0 +1,1086 @@
+<head>
+    <title>TEs in 2022</title>
+    <link rel="stylesheet" href="/Fantasy/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/Fantasy/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<html>
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>TEs in 2022</h1>
+
+            <h2>TL;DR</h2>
+            <p class="blog-p-tag">
+                <ul class="bullet-list">
+                    <li>It's Kelce's world and we are all living in it!</li>
+                    <li>Kittle is in his own tier, below Kelce, above the rest</li>
+                    <li>Ertz has surprising value for his production</li>
+                    <li>Goedert is the next best TE after Kelce, Kittle, and the Hock, Andrews, Ertz tier</li>
+                    <li>I want out on Kmet</li>
+                </ul>
+            </p>
+
+            <h2 class="h2-blog">Overview</h2>
+            <p class="blog-p-tag">
+                This post continues my 2022 player performance review by position group. This edition focuses on tight ends. Again, I hope to explore stats from last season to try and find valuable insights about player value.
+            </p>
+            <p class="blog-p-tag">
+                To see my previous work on quarterbacks, check out this <a href="https://alex-bishka.github.io/Fantasy/Blogs/qbs2022">page</a>. Check this <a href="https://alex-bishka.github.io/Fantasy/Blogs/wrs2022">page</a> out for my analysis on wide receivers.
+            </p>
+            <p class="blog-p-tag">
+                A disclaimer about the data I will be looking over in this post:
+                <ul class="bullet-list">
+                <li>I don't take into account anything related to two point conversions, partly due to
+                    the randomness and small sample size but mostly because it was difficult to incorporate into the data I
+                    fetched</li>
+                <li>The top 24 TEs I analyze are by the top 24 fantasy point totals, this is done for
+                    simplicity and reusability of graphing code</li>
+                </ul>
+            </p>
+
+            <h2 class="h2-blog">Fantasy Points (Standard)</h2>
+            <p class="blog-p-tag">
+                Let us start, as always, by taking a gander at fantasy points over the course of a season and on a points per game basis.
+            </p>
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/TE/Total Fantasy Points.png">
+                <img class="multi-img" src="/Fantasy/Analysis/images/TE/Fantasy Points Per Game.png">
+            </div>
+            <p class="blog-p-tag">
+                My takeaway from these two graphs is that Kelce is positional dominance personified. There is no one close to him, at all! Kelce had 206 total points in standard last year, while second place Kittle had 141 total points.
+                <b>That is a 65 point difference!</b>
+            </p>
+            <p class="blog-p-tag">
+                On a per game basis, Kittle does close the gap a little bit. Kelce had 12.11 points per game. Kittle had 9.4 points per game. That is a difference of 2.71 points per game.
+            </p>
+            <p class="blog-p-tag">
+                Mind you, there's a big gap here between both of these guys and the TE1 threshold, which was Juwan Johnson, with 5.81 points per game.
+                Kelce outscores this threshold by 6.3 points per game. Kittle outscores the TE1 threshold by 3.59 points per game. 
+            </p>
+            <p class="blog-p-tag">
+                Surprise, surprise, tight end is a desolate wasteland.
+            </p>
+            <p class="blog-p-tag">
+                I would also say that based on these numbers, Andrews and Hockenson don't really justify their value. Andrews scored 7.86 points per game last year, while Hockenson scored even less with 7.58 points per game. For what you have to pay to get these guys, I'm not sure their price matches the positional advantage they offer, which is lower than I expected.
+            </p>
+            <p class="blog-p-tag">
+                One last thing I want to note before moving onto evaluating fantasy points in PPR: Ertz seems to produce above his value. He had 6.9 points per game last year and he is currently (10/3/23) valued as TE31 on KTC. That is some serious value, compared to Hock and Andrews, who are TE3 and TE4, respectively.
+            </p>
+            
+            <h2 class="h2-blog">Fantasy Points (PPR)</h2>
+            <p class="blog-p-tag">
+                Let us continue examining fantasy points, this time in PPR scoring.
+            </p>
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/TE/Total Fantasy Points PPR.png">
+                <img class="multi-img" src="/Fantasy/Analysis/images/TE/Fantasy Points Per Game PPR.png">
+            </div>
+            <p class="blog-p-tag">
+                Overall, the trends stay pretty similar in PPR. Kelce is still in a world of his own, although he has increased the distance between himself and the rest. He outscores the TE2 on the season, Hock, by 100.9 points. Kelce also outscores the TE2 on a per game basis, Kittle, by 5.24 points per game.
+                Kelce also outscores the TE1 threshold by 9.55 points per game!
+            </p>
+            <p class="blog-p-tag">
+                <b>ELITE!</b>
+            </p>
+            <p class="blog-p-tag">
+                Additionally, Kittle keeps his rank of TE2 on a per game basis at 13.36 points per game. Hockenson and Andrews do close the gap here, scoring 12.67 and 12.7 points per game, respectively. Again, are they worth their value? I'm not so sure... but they are most definitely better bang for your buck in PPR.
+            </p>
+            <p class="blog-p-tag">
+                Lastly, I want to point out Ertz again. He scored 11.55 points per game in 2022, good enough to be TE6 when looking at points scored per game. I think there is great value to be had there.
+            </p>
+
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/TE/Total Fantasy Points PPR-v2.png">
+            </div>
+            <p class="blog-p-tag">
+                Before moving onto receiving yards, I wanted to show this graph just to highlight the difference between Kelce and those other "good" tight ends. Wow...
+            </p>
+            
+            <h2 class="h2-blog">Receiving Yards</h2>
+            <p class="blog-p-tag">
+                Here is the graph for receiving yard totals in 2022:
+            </p>
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/TE/Total Receiving Yards.png">
+            </div>
+            <p class="blog-p-tag">
+                As we can see, it is more of the same from Kelce. He had 1338 receiving yards last season, and no one is even close to him.
+                Behind Kelce was Hock, who had 914 receiving yards. The gap between them is a staggering 424 yards!
+            </p>
+            <p class="blog-p-tag">
+                Outside of that, we see more of the same on the total numbers. There isn't really a player or group of players outside of Kelce that separates from the rest.
+            </p>
+
+            <p class="blog-p-tag">
+                One thing that is quite dismal: the threshold to be a TE1 is 552 yards. There aren't many tight ends with over 700 receiving yards.
+            </p>
+                
+            <p class="blog-p-tag">
+                The list:
+                <ul class="bullet-list">
+                    <li>Travis Kelce    - 1338</li>
+                    <li>T.J. Hockenson  - 914</li>
+                    <li>Mark Andrews    - 847</li>
+                    <li>Evan Engram     - 766</li>
+                    <li>George Kittle   - 765</li>
+                    <li>Pat Freiermuth  - 732</li>
+                    <li>Dallas Goedert  - 702</li>
+                </ul>
+            </p>
+                
+            <p class="blog-p-tag">
+                Kelce is the only one above 1000 receiving yards.
+            </p>
+
+
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/TE/Total Fantasy Points PPR-by-Total Receiving Yards.png">
+            </div>
+            <p class="blog-p-tag">
+                This chart above really showcases the distance between Kelce and everyone else.
+            </p>
+            <p class="blog-p-tag">
+                Additionally, we also see a second tier of tight ends that distinguishes itself from the rest of the pack in Hock, Kittle and Andrews (maybe even Engram?).
+            </p>
+
+
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/TE/Fantasy Points Per Game PPR-by-Receiving Yards Per Game.png">
+            </div>
+            <p class="blog-p-tag">
+                I think we see more of the same from this graph, but that tier below Kelce seems to be shaping up a little differently, if we look at per game production.
+                We still have Hock, Kittle, and Andrews, but Ertz and Goedert are sneaking into that tier, at least on a fantasy points per game basis. 
+            </p>
+            <p class="blog-p-tag">
+                Receiving yards per game based on the tiers, which are created via fantasy points per game numbers:
+            </p>
+
+            <p class="blog-p-tag">
+                <b>Tier 1:</b>
+                <ul class="bullet-list">
+                    <li>Travis Kelce    - 78.70</li>
+                </ul>
+            </p>
+
+            <p class="blog-p-tag">
+                <b>Tier 2a:</b>
+                <ul class="bullet-list">
+                    <li>Mark Andrews    - 56.46</li>
+                    <li>T.J. Hockenson  - 53.76</li>
+                    <li>George Kittle   - 51</li>
+                </ul>
+            </p>
+                    
+            <p class="blog-p-tag">
+                <b>Tier 2b/3:</b>
+                <ul class="bullet-list">
+                    <li>Dallas Goedert  - 58.5</li>
+                    <li>Zach Ertz       - 40.6</li>
+                </ul>
+            </p>
+            
+            <h2 class="h2-blog">Receiving Touchdowns</h2>
+            <p class="blog-p-tag">
+                Onward to receiving touchdown totals from last year:
+            </p>
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/TE/Total Receiving Touchdowns.png">
+            </div>
+            <p class="blog-p-tag">
+                This is really the only time someone is close to Kelce. Kittle had 11 receiving touchdowns, whereas Kelce had 12.
+            </p>
+            <p class="blog-p-tag">
+                Outside of that, touchdowns aren't super correlated to tight end fantasy success, but you probably want your guy to get at
+                least 4.
+            </p>
+
+
+            <h2 class="h2-blog">Other Receiving Stats</h2>
+            <p class="blog-p-tag">
+                Let's move onto some other receiving stats, starting with yards per catch:
+            </p>
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/TE/Yards Per Catch.png">
+                <img class="multi-img" src="/Fantasy/Analysis/images/TE/Fantasy Points Per Game PPR-by-Yards Per Catch.png">
+            </div>
+            <p class="blog-p-tag">
+                Similar to wide receivers, yards per catch doesn't seem to really correlate with fantasy performance.
+            </p>
+            <p class="blog-p-tag">
+                Although, all of Kelce, Kittle, Andrews, and Hock had more than 10 yards per catch, so perhaps there is a minimum threshold that correlates to fantasy performance, albeit a low one.
+            </p>
+
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/TE/Total Receiving Targets-by-Total Receiving Receptions.png">
+                <img class="multi-img" src="/Fantasy/Analysis/images/TE/Targets Per Game-by-Receptions Per Game.png">
+            </div>
+            <p class="blog-p-tag">
+                Similar to wide receivers, there is a strong correlation between a tight end's volume (perceived and realized) and their fantasy performance.
+            </p>
+            <p class="blog-p-tag">
+                Kelce's dominance stands out again: he is the only tight end who surpasses the golden 8 targets per game to 6 catches per game ratio (see my <a href="https://alex-bishka.github.io/Fantasy/Blogs/wrs2022">wide receiver post</a> for more on this).
+                He had 8.94 targets a game and 6.47 catches a game.
+            </p>
+            <p class="blog-p-tag">
+                The other thing that stood out to me here was how low Kmet's perceived (4.05 targets a game) and realized (2.94 catches a game) volume was. That's pretty unsustainable, and yet another Bear that terrifies me when I dive into the numbers.
+            </p>
+            <p class="blog-p-tag">
+                The last item I want to point out from here is how close Ertz is to Andrews and Hock on the per game numbers. Ertz had 6.9 targets a game and 4.7 catches a game.
+                Andrews had 7.53 targets a game and 4.86 catches a game. Hock had 7.58 targets a game and 5.05 catches a game.
+            </p>
+                
+            <p class="blog-p-tag">
+                The more I look into the per game numbers, the more of a steal Ertz appears to me.
+            </p>
+
+            
+            <h2 class="h2-blog">Tiers (Season Totals)</h2>
+            <p class="blog-p-tag">
+                If you've been following my work, you'll notice this section is new. I've spent some time upgrading my python code base and found clustering to be the next step in progressing my tooling.
+            </p>
+            <p class="blog-p-tag">
+                For those unfamiliar with clustering, it is a type of machine learning technique used to group similar data points together based on certain features, without having prior labels for the groups.
+            </p>
+            <p class="blog-p-tag">
+                To provide something more tangible, imagine you have a big box of various fruits mixed together: apples, bananas, and grapes.
+                Now, you're asked to sort these fruits into separate baskets without being told what the categories are.
+            </p>
+            <p class="blog-p-tag">
+                Clustering in machine learning is a bit like sorting these fruits.
+            </p>
+            <p class="blog-p-tag">
+                The specific version of clustering that I use is called K-Means clustering, which partitions the data into <i>k</i> clusters.
+                In reference to the fruit example, <i>k</i> would specify the number of baskets you would have to sort the fruit.
+            </p>
+            <p class="blog-p-tag">
+                As a result, I won't be commenting much on the actual numbers here, but rather the clusters, or tiers that are created, as the algorithm handles the comparision of numbers for us.
+            </p>
+            <p class="blog-p-tag">
+                For this set of graphs I used the following season totals for the data to create the clusters: "Receiving Yards", "Receptions", "Receiving TDs", and "Targets".
+            </p>
+
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/TE/clustering-3.png">
+            </div>
+            <p class="blog-p-tag">
+                This first graph has three clusters. The players in each cluster:
+            </p>
+            <div style="display: flex; justify-content: space-evenly;">
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 0 (blue):</b>
+                        <ul class="bullet-list">
+                            <li>Cole Kmet</li>
+                            <li>Taysom Hill</li>
+                            <li>Dawson Knox</li>
+                            <li>Juwan Johnson</li>
+                            <li>Noah Fant</li>
+                            <li>Jordan Akins</li>
+                            <li>Zach Ertz</li>
+                            <li>Robert Tonyan</li>
+                            <li>Hayden Hurst</li>
+                            <li>Hunter Henry</li>
+                            <li>Mike Gesicki</li>
+                            <li>Austin Hooper</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 1 (orange):</b>
+                        <ul class="bullet-list">
+                            <li>T.J. Hockenson</li>
+                            <li>George Kittle</li>
+                            <li>Mark Andrews</li>
+                            <li>Evan Engram</li>
+                            <li>Tyler Higbee</li>
+                            <li>Pat Freiermuth</li>
+                            <li>Dalton Schultz</li>
+                            <li>David Njoku</li>
+                            <li>Dallas Goedert</li>
+                            <li>Gerald Everett</li>
+                            <li>Tyler Conklin</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 2 (green):</b>
+                        <ul class="bullet-list">
+                            <li>Travis Kelce</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                Kelce really is in a league of his own! Also of note, Conklin is in that tier just below Kelce, which surprised me, as I would have expected him to be closer to the players in cluster 0.
+            </p>
+            
+
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/TE/clustering-4.png">
+            </div>
+            <p class="blog-p-tag">
+                At 4 clusters, things change a little bit. These are the updated tiers:
+            </p>
+            <div style="display: flex; justify-content: space-evenly;">
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 0 (blue):</b>
+                        <ul class="bullet-list">
+                            <li>Taysom Hill</li>
+                            
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 1 (orange):</b>
+                        <ul class="bullet-list">
+                            <li>Cole Kmet</li>
+                            <li>Dawson Knox</li>
+                            <li>Juwan Johnson</li>
+                            <li>Noah Fant</li>
+                            <li>Jordan Akins</li>
+                            <li>Zach Ertz</li>
+                            <li>Robert Tonyan</li>
+                            <li>Hayden Hurst</li>
+                            <li>Hunter Henry</li>
+                            <li>Mike Gesicki</li>
+                            <li>Austin Hooper</li>
+                            <li>Dalton Schultz</li>
+                            <li>David Njoku</li>
+                            <li>Dallas Goedert</li>
+                            <li>Gerald Everett</li>
+                            <li>Tyler Conklin</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 2 (green):</b>
+                        <ul class="bullet-list">
+                            <li>Travis Kelce</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 3 (red):</b>
+                        <ul class="bullet-list">
+                            <li>T.J. Hockenson</li>
+                            <li>George Kittle</li>
+                            <li>Mark Andrews</li>
+                            <li>Evan Engram</li>
+                            <li>Tyler Higbee</li>
+                            <li>Pat Freiermuth</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                Kelce remains king of the hill, but now we have a more clear tier just behind him in cluster 3.
+            </p>
+            <p class="blog-p-tag">
+                Also, Taysom Hill gets his own cluster.
+                This makes sense as his numbers aren't really similar to that of other tight ends, especially when considering that data we are using to make
+                these comparisions is on receiving stats.
+            </p>
+            <p class="blog-p-tag">
+                What I find to be interesting here is how large the 'bleh' section of tight ends becomes: cluster 1. It is quite large and full of tight ends I don't love, with the exception of Ertz (he shines in our per game review).
+            </p>
+            <p class="blog-p-tag">
+                Let's see if we can find more distinction between tight ends if we increase the number of clusters to 5:
+            </p>
+
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/TE/clustering-5.png">
+            </div>
+            <p class="blog-p-tag">
+                Here are the corresponding tiers:
+            </p>
+            <div style="display: flex; justify-content: space-evenly;">
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 0 (blue):</b>
+                        <ul class="bullet-list">
+                            <li>Cole Kmet</li>
+                            <li>Dawson Knox</li>
+                            <li>Juwan Johnson</li>
+                            <li>Noah Fant</li>
+                            <li>Jordan Akins</li>
+                            <li>Zach Ertz</li>
+                            <li>Robert Tonyan</li>
+                            <li>Hayden Hurst</li>
+                            <li>Hunter Henry</li>
+                            <li>Mike Gesicki</li>
+                            <li>Austin Hooper</li>
+                            <li>Dalton Schultz</li>
+                            <li>David Njoku</li>
+                            <li>Dallas Goedert</li>
+                            <li>Gerald Everett</li>
+                            <li>Tyler Conklin</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 1 (orange):</b>
+                        <ul class="bullet-list">
+                            <li>Travis Kelce</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 2 (green):</b>
+                        <ul class="bullet-list">
+                            <li>T.J. Hockenson</li>
+                            <li>Mark Andrews</li>
+                            <li>Evan Engram</li>
+                            <li>Tyler Higbee</li>
+                            <li>Pat Freiermuth</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 3 (red):</b>
+                        <ul class="bullet-list">
+                            <li>Taysom Hill</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 4 (purple):</b>
+                        <ul class="bullet-list">
+                            <li>George Kittle</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                This gets a bit more interesting.
+            </p>
+            <p class="blog-p-tag">
+                Kelce and Hill keep their own tiers, but now Kittle has his own tier.
+                It would seem that he is in a tier between Kelce and the other tight ends that are perceived as valuable - he is the Burrow of tight ends in this regard.
+                Note, this does seem to be largely due to Kittle's high number of receiving touchdowns.
+            </p>
+            <p class="blog-p-tag">
+                Additionally, our tier the next best and the rest got more nuanced. 
+                The tight ends that are more valuable shrunk to 5 players (see cluster 2 above).
+            </p>
+            <p class="blog-p-tag">
+                The desolate wasteland of tight ends (cluster 0 above) got much larger.  
+            </p>
+            <p class="blog-p-tag">
+                Let us increase the number of clusters once more and see what happens:
+            </p>
+
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/TE/clustering-6.png">
+            </div>
+            <p class="blog-p-tag">
+                Here are the 6 tiers:
+            </p>
+            <div style="display: flex; justify-content: space-evenly;">
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 0 (blue):</b>
+                        <ul class="bullet-list">
+                            <li>T.J. Hockenson</li>
+                            <li>Mark Andrews</li>
+                            <li>Evan Engram</li>
+                            <li>Tyler Higbee</li>
+                            <li>Pat Freiermuth</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 1 (orange):</b>
+                        <ul class="bullet-list">
+                            <li>Noah Fant</li>
+                            <li>Zach Ertz</li>
+                            <li>Robert Tonyan</li>
+                            <li>Hayden Hurst</li>
+                            <li>Hunter Henry</li>
+                            <li>Austin Hooper</li>
+                            <li>Dalton Schultz</li>
+                            <li>David Njoku</li>
+                            <li>Dallas Goedert</li>
+                            <li>Gerald Everett</li>
+                            <li>Tyler Conklin</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 2 (green):</b>
+                        <ul class="bullet-list">
+                            <li>Travis Kelce</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 3 (red):</b>
+                        <ul class="bullet-list">
+                            <li>Cole Kmet</li>
+                            <li>Dawson Knox</li>
+                            <li>Juwan Johnson</li>
+                            <li>Jordan Akins</li>
+                            <li>Mike Gesicki</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 4 (purple):</b>
+                        <ul class="bullet-list">
+                            <li>George Kittle</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 5 (brown):</b>
+                        <ul class="bullet-list">
+                            <li>Taysom Hill</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                This final graph gives us a bit more nuance into the wasteland section of the tight end position.
+            </p>
+            <p class="blog-p-tag">
+                The 'rest' in the previous graph was split into clusters 1 and 3 in this graph. 
+                Both clusters don't really have lovable players, but it does seem that players in cluster 3 are buoyed much more by receiving touchdowns than the other stats, while the oppositve is
+                true for those in cluster 1.
+            </p>
+            <p class="blog-p-tag">
+                As the doom and gloom Bears fan, I have to point out that Kmet is in that cluster (3) that is greatly helped by receiving touchdowns.
+                I don't see that being sustainable, especially with Fields being the quarterback. Yikes...
+            </p>
+
+            <h2 class="h2-blog">Tiers (Per Game)</h2>
+            <p class="blog-p-tag">
+                For this set of graphs I used the following per game numbers for the data to create the clusters: "Receiving Yards Per Game", "Receptions Per Game", "Receiving TDs Per Game", and "Targets Per Game".
+            </p>
+            <p class="blog-p-tag">
+                The graphs below are basically the per game versions of the ones above, with the inclusion of an extra graph with 7 clusters.
+            </p>
+            <p class="blog-p-tag">
+                We start by looking at the data with three clusters:
+            </p>
+
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/TE/clustering-3-v2.png">
+            </div>
+            <p class="blog-p-tag">
+                You must be sick of reading this by now, but Kelce is all by himself again:
+            </p>
+            <div style="display: flex; justify-content: space-evenly;">
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 0 (blue):</b>
+                        <ul class="bullet-list">
+                            <li>Cole Kmet</li>
+                            <li>Taysom Hill</li>
+                            <li>Dawson Knox</li>
+                            <li>Juwan Johnson</li>
+                            <li>Noah Fant</li>
+                            <li>Jordan Akins</li>
+                            <li>Robert Tonyan</li>
+                            <li>Hunter Henry</li>
+                            <li>Mike Gesicki</li>
+                            <li>Austin Hooper</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 1 (orange):</b>
+                        <ul class="bullet-list">
+                            <li>T.J. Hockenson</li>
+                            <li>George Kittle</li>
+                            <li>Mark Andrews</li>
+                            <li>Evan Engram</li>
+                            <li>Tyler Higbee</li>
+                            <li>Pat Freiermuth</li>
+                            <li>Dalton Schultz</li>
+                            <li>David Njoku</li>
+                            <li>Dallas Goedert</li>
+                            <li>Gerald Everett</li>
+                            <li>Tyler Conklin</li>
+                            <li>Zach Ertz</li>
+                            <li>Hayden Hurst</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 2 (green):</b>
+                        <ul class="bullet-list">
+                            <li>Travis Kelce</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                Actually everything is the same, relative to the season totals 3 cluster graph, except for Hurst and Ertz. On a per game basis they move out of the desolate wasteland tier (cluster 0 above) and into the potentially relevant tier (cluster 1 above).
+            </p>
+
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/TE/clustering-4-v2.png">
+            </div>
+            <p class="blog-p-tag">
+                Increasing the number of clusters to four yields the following results:
+            </p>
+            <div style="display: flex; justify-content: space-evenly;">
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 0 (blue):</b>
+                        <ul class="bullet-list">
+                            <li>Taysom Hill</li>
+                            
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 1 (orange):</b>
+                        <ul class="bullet-list">
+                            <li>T.J. Hockenson</li>
+                            <li>George Kittle</li>
+                            <li>Mark Andrews</li>
+                            <li>Evan Engram</li>
+                            <li>Tyler Higbee</li>
+                            <li>Pat Freiermuth</li>
+                            <li>Dalton Schultz</li>
+                            <li>David Njoku</li>
+                            <li>Dallas Goedert</li>
+                            <li>Gerald Everett</li>
+                            <li>Zach Ertz</li>
+                            <li>Hayden Hurst</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 2 (green):</b>
+                        <ul class="bullet-list">
+                            <li>Cole Kmet</li>
+                            <li>Dawson Knox</li>
+                            <li>Juwan Johnson</li>
+                            <li>Noah Fant</li>
+                            <li>Jordan Akins</li>
+                            <li>Robert Tonyan</li>
+                            <li>Hunter Henry</li>
+                            <li>Mike Gesicki</li>
+                            <li>Austin Hooper</li>
+                            <li>Tyler Conklin</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 3 (red):</b>
+                        <ul class="bullet-list">
+                            <li>Travis Kelce</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                Again, when we increase the number of clusters to 4, we see that Taysom Hill gets his own tier.
+                Also, Conklin is booted from that higher tier of tight ends (cluster 1 in this graph) to the landfill
+                section of the tight end position (cluster 2).
+            </p>
+            <p class="blog-p-tag">
+                Let's go ahead and increase the number of clusters again.
+            </p>
+
+
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/TE/clustering-5-v2.png">
+            </div>
+            <p class="blog-p-tag">
+                The corresponding tiers:
+            </p>
+            <div style="display: flex; justify-content: space-evenly;">
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 0 (blue):</b>
+                        <ul class="bullet-list">
+                            <li>Cole Kmet</li>
+                            <li>Dawson Knox</li>
+                            <li>Juwan Johnson</li>
+                            <li>Noah Fant</li>
+                            <li>Jordan Akins</li>
+                            <li>Robert Tonyan</li>
+                            <li>Hunter Henry</li>
+                            <li>Mike Gesicki</li>
+                            <li>Austin Hooper</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 1 (orange):</b>
+                        <ul class="bullet-list">
+                            <li>George Kittle</li>
+                            <li>T.J. Hockenson</li>
+                            <li>Mark Andrews</li>
+                            <li>Zach Ertz</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 2 (green):</b>
+                        <ul class="bullet-list">
+                            <li>Taysom Hill</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 3 (red):</b>
+                        <ul class="bullet-list">
+                            <li>Evan Engram</li>
+                            <li>Tyler Higbee</li>
+                            <li>Pat Freiermuth</li>
+                            <li>Dalton Schultz</li>
+                            <li>David Njoku</li>
+                            <li>Dallas Goedert</li>
+                            <li>Gerald Everett</li>
+                            <li>Hayden Hurst</li>
+                            <li>Tyler Conklin</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 4 (purple):</b>
+                        <ul class="bullet-list">
+                            <li>Travis Kelce</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                Now we start to get some more nuance. We still see Kelce and Taysom Hill in their own tiers, which makes sense because they are such outliers.
+            </p>
+            <p class="blog-p-tag">
+                However, Kittle is no longer in his own tier when we expand to 5 clusters. We instead get more distinction between clusters 0, 1, and 3.
+            </p>
+            <p class="blog-p-tag">
+                Cluster 1 has the names people would normally associate with just below Kelce: Andrews, Kittle and Hock. However, it also has a surprise member: Zach Ertz.
+                His per game numbers put him in that tier of tight ends just below Kelce. His value? Less than a dumpster on fire currently. Contenders, go buy yourself Ertz!
+            </p>
+            <p class="blog-p-tag">
+                It is worth mentioning that those in cluster 3 seem to be the tight ends that are borderline or mid-to-low TE1s. They are all worth rostering, even Conklin (surprised me).
+                Those salvageable in cluster 0 only redeem themselves via receiving touchdowns - not realiable.
+            </p>
+
+            <p class="blog-p-tag">
+                Let us move onto 6 clusters:
+            </p>
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/TE/clustering-6-v2.png">
+            </div>
+            <p class="blog-p-tag">
+                Taking a look at 6 clusters, we see the following tiers:
+            </p>
+            <div style="display: flex; justify-content: space-evenly;">
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 0 (blue):</b>
+                        <ul class="bullet-list">
+                            <li>Travis Kelce</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 1 (orange):</b>
+                        <ul class="bullet-list">
+                            <li>Evan Engram</li>
+                            <li>Tyler Higbee</li>
+                            <li>Pat Freiermuth</li>
+                            <li>Dalton Schultz</li>
+                            <li>David Njoku</li>
+                            <li>Gerald Everett</li>
+                            <li>Tyler Conklin</li>
+                            <li>Hayden Hurst</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 2 (green):</b>
+                        <ul class="bullet-list">
+                            <li>Cole Kmet</li>
+                            <li>Dawson Knox</li>
+                            <li>Juwan Johnson</li>
+                            <li>Jordan Akins</li>
+                            <li>Mike Gesicki</li>
+                            <li>Noah Fant</li>
+                            <li>Robert Tonyan</li>
+                            <li>Hunter Henry</li>
+                            <li>Austin Hooper</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 3 (red):</b>
+                        <ul class="bullet-list">
+                            <li>Zach Ertz</li>
+                            <li>Dallas Goedert</li>
+                            <li>T.J. Hockenson</li>
+                            <li>Mark Andrews</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 4 (purple):</b>
+                        <ul class="bullet-list">
+                            <li>Taysom Hill</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 5 (brown):</b>
+                        <ul class="bullet-list">
+                            <li>George Kittle</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                Two things change here: Kittle moves into his own group and the tier of the good, but not elite tight ends (cluster 3) replaces Kittle with Goedert.
+            </p>
+
+            <p class="blog-p-tag">
+                Moving onto our final graph, 7 clusters:
+            </p>
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/TE/clustering-7-v2.png">
+            </div>
+            <p class="blog-p-tag">
+                Here are the results:
+            </p>
+            <div style="display: flex; justify-content: space-evenly;">
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 0 (blue):</b>
+                        <ul class="bullet-list">
+                            <li>Mike Gesicki</li>
+                            <li>Noah Fant</li>
+                            <li>Robert Tonyan</li>
+                            <li>Hunter Henry</li>
+                            <li>Austin Hooper</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 1 (orange):</b>
+                        <ul class="bullet-list">
+                            <li>Evan Engram</li>
+                            <li>Tyler Higbee</li>
+                            <li>Pat Freiermuth</li>
+                            <li>Dalton Schultz</li>
+                            <li>David Njoku</li>
+                            <li>Gerald Everett</li>
+                            <li>Tyler Conklin</li>
+                            <li>Hayden Hurst</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 2 (green):</b>
+                        <ul class="bullet-list">
+                            <li>Travis Kelce</li>
+                        </ul>
+                    </p>
+                    <p class="blog-p-tag">
+                        <b>Cluster 3 (red):</b>
+                        <ul class="bullet-list">
+                            <li>George Kittle</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 4 (purple):</b>
+                        <ul class="bullet-list">
+                            <li>Cole Kmet</li>
+                            <li>Dawson Knox</li>
+                            <li>Juwan Johnson</li>
+                            <li>Jordan Akins</li>
+                        </ul>
+                    </p>
+                </div>
+                <div>
+                    <p class="blog-p-tag">
+                        <b>Cluster 5 (brown):</b>
+                        <ul class="bullet-list">
+                            <li>Zach Ertz</li>
+                            <li>Dallas Goedert</li>
+                            <li>T.J. Hockenson</li>
+                            <li>Mark Andrews</li>
+                        </ul>
+                    </p>
+                    <p class="blog-p-tag">
+                        <b>Cluster 6 (pink):</b>
+                        <ul class="bullet-list">
+                            <li>Taysom Hill</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                This last graph of tiers adds more nuance to the ugly tight ends.
+            </p>
+            <p class="blog-p-tag">
+                Our outliers - Hill, Kittle, and Kelce - remain the same, so does our good tier (cluster 5 above) and the meh tier (cluster 1 above).
+            </p>
+            <p class="blog-p-tag">
+                The tier from the previous cluster graph, that invokes the gag reflex, was split apart into clusters 0 and 4. The former is noticeably worse than the latter, 
+                with cluster 4 differentiating itself via receiving touchdown numbers.
+            </p>
+            <p class="blog-p-tag">
+                For my consolation, at least Kmet catches touchdowns.
+            </p>
+            <p class="blog-p-tag">
+                That wraps up my tier analysis, and this piece.
+            </p>
+
+            <h2 class="h2-blog">Summary</h2>
+            <p class="blog-p-tag">
+                Here's my quick recap:
+                <ul class="bullet-list">
+                    <li>It's Kelce's world and we are all living in it!</li>
+                    <li>Kittle in his own tier, below Kelce</li>
+                    <li>Ertz has surprising value for his production</li>
+                    <li>Goedert is the next best TE after Kelce, Kittle, Hock/Andrews/Ertz</li>
+                    <li>Kmet is a trap!</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                Criteria you are looking for in a potential (quality) TE1:
+                <ul class="bullet-list">
+                  <li>700+ receiving yards</li>
+                  <li>65+ receptions (close to at least 4 catches a game)</li>
+                  <li>80+ targets (close to at least 6)</li>
+                  <li>4+ touchdowns</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                Thanks to those that made it this far! Looking forward to writing the next one!
+            </p>
+
+
+            <p class="blog-p-tag">
+                Cheers, <br />
+                Alex
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+<script>
+    $("#common-header").load("/Fantasy/header.html");;
+</script>
