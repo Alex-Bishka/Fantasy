@@ -63,7 +63,7 @@ def create_correlation_matrix(df, x, y):
     return correlation_matrix, x, y
 
 
-def plot_correlation_matrix(corr_mat, x, y, path=""):
+def plot_correlation_matrix(corr_mat, x, y, path="", title=""):
     """
     Helper function to create the heat map for the correlation matrix
     so that we can visualize it in a pretty way.
@@ -75,6 +75,32 @@ def plot_correlation_matrix(corr_mat, x, y, path=""):
                     y = y,
                 )
 
+    # update layout
+    if title:
+        fig.update_layout(
+            title=title,
+        )
+
+    # save figure
+    if path:
+        fig.write_html(f"{path}.html")
+
+    fig.show()
+
+
+def plot_scatter(df, x, y, path="", fig_title="", hover_data=["rusher", "season", "age"]):
+    """"""
+    fig = px.scatter(df, x=x, y=y,
+            hover_data=hover_data
+        )
+    
+    # Update layout
+    if fig_title:
+        fig.update_layout(
+            title=fig_title,
+        )
+
+    # save figure
     if path:
         fig.write_html(f"{path}.html")
 
