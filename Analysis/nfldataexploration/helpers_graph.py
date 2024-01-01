@@ -75,12 +75,32 @@ def plot_correlation_matrix(corr_mat, x, y, path="", title=""):
                     y = y,
                 )
 
-    # Update layout
+    # update layout
     if title:
         fig.update_layout(
             title=title,
         )
 
+    # save figure
+    if path:
+        fig.write_html(f"{path}.html")
+
+    fig.show()
+
+
+def plot_scatter(df, x, y, path="", fig_title="", hover_data=["rusher", "season", "age"]):
+    """"""
+    fig = px.scatter(df, x=x, y=y,
+            hover_data=hover_data
+        )
+    
+    # Update layout
+    if fig_title:
+        fig.update_layout(
+            title=fig_title,
+        )
+
+    # save figure
     if path:
         fig.write_html(f"{path}.html")
 
