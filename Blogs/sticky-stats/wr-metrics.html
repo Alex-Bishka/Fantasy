@@ -1,0 +1,514 @@
+<head>
+    <title>WR Metrics</title>
+    <link rel="stylesheet" href="/Fantasy/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/Fantasy/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        // google analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>Wide Receiver Metrics</h1>
+
+
+            <h2>TL;DR</h2>
+            <p class="blog-p-tag">
+                <ul class="bullet-list">
+                    <li>Even though most <a href="/Fantasy/Analysis/interactive/WR/stability/season/Basic-Receiving-Stat-Correlations-(Games=10-and-Games-Last=10-and-Starter).html">wide receiver stats are sticky</a>, the position is difficult to predict accurately.</li>
+                    <li>Trinity score does an okay job at laying out wide receiver expectations, and is slightly worse as a basis for a predictive model.</li>
+                    <li>While there are many scores that perform better than trinity score, as a basis for a predictive model, it is hard to build something reliable.</li>
+                    <li>Some variation of the <i>yards after catch</i> stat is present in the
+                        <a href="javascript:void(0);" onclick="scrollToParagraph('better-metrics')">list of best alternative metrics</a>
+                        to trinity score.</li>
+                    <li>
+                        Predictive models seem to be much better at predicting the direction of change in fantasy points from year to year, than the exact number of fantasy points 
+                        in the next season.
+                    </li>
+                </ul>
+            </p>
+
+
+            <h2 class="h2-blog">Overview</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Welcome back all!
+                </p>
+                <p class="blog-p-tag">
+                    I hope the New Year has been treating everyone well so far!
+                </p>
+                <p class="blog-p-tag">
+                    For those who enjoyed the previous post exploring <a href="/Fantasy/Blogs/sticky-stats/wr-sticky-season-totals">wide receiver sticky stats</a>,
+                    this piece dives deeper into what wide receiver stats are useful for predictive modeling. 
+                </p>
+                <p class="blog-p-tag">
+                    The goal here is to use the information from the <a href="/Fantasy/Analysis/interactive/WR/stability/season/correlation-bar-advanced-stats-focused.html">strong correlations</a>
+                    found in the previous piece, to 1) find concrete and useful trends and 2) build usable predictive models.
+                </p>
+                <p class="blog-p-tag">
+                    I'll primarily be using data from 2012-2022 to examine trends.
+                    Furthermore, I'll be using the same data to build and test predictive models.
+                </p>
+                <p class="blog-p-tag">
+                    Without further ado, let's dive in!
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">A Cursory Glance</h2>
+            <div>
+                <p class="blog-p-tag">
+                    I want to begin by examining this idea of the "trinity" score. For those unfamiliar with what this metric is,
+                    I recommend checking out <a href="https://www.youtube.com/watch?v=_bvEd8iMQVo">this video</a>.
+                </p>
+                <p class="blog-p-tag">
+                    In short, trinity is a metric that is supposed to be predictable and indicative of fantasy performance. It consists
+                    of the three following stats: <i>target share</i>, <i>air yards share</i>, and <i>yards after the catch per reception</i>.
+                </p>
+                <p class="blog-p-tag">
+                    This is what the trinity score, its components, and fantasy points - all normalized - against age look like together on a graph:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/trinity-starters-by-age.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    For the most part, the components of the trinity score do a good job of mirroring fantasy production.
+                    Trinity itself also mirrors fantasy points quite well, even though it's spikes are more subdued.
+                </p>
+                <p class="blog-p-tag">
+                    The trouble maker here is <i>yards after the catch per reception</i>. This makes sense too, as <i>yards after the catch per reception</i>
+                    correlates quite poorly with fantasy points: 
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/trinity-corr-by-age.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    So the question I'm now wondering, is why does trinity score utilize <i>yards after the catch per reception</i>?
+                    It appears to be counter-productive as a predictor for how a wide receiver will grow in their career. Does it hold
+                    back how strong the correlation between trinity score and fantasy points is? Trinity score does have a 0.80 correlation
+                    with fantasy points which is quite strong...
+                </p>
+                <p class="blog-p-tag">
+                    Maybe it makes a bit more sense if you take a look at the picture by season instead of age:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/trinity-starters-by-season.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    In this situation, <i>yards after the catch per reception</i> is a far better indicator of fantasy performance from season-to-season
+                    at the wide receiver position.
+                </p>
+                <p class="blog-p-tag">
+                    In fact, it's the best metric when looking at the data from this perspective:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/trinity-corr-by-season.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    I would say this is useful in that it shows how trinity keeps up with fantasy production every year, but 
+                    I would be cautious to use this metric on how a wide receiver performs over the course of their career. 
+                </p>
+                <p class="blog-p-tag">
+                    I would say this is useful in that it shows how trinity keeps up with fantasy production every year, but 
+                    I would be cautious to use this metric on how a wide receiver performs over the course of their career. 
+                </p>
+                <p class="blog-p-tag">
+                    It's possible I'm missing something here, as I'm simply aggregating the three components to obtain the trinity value.
+                    However, any sort of linear combination would still yield similar results.
+                </p>
+                <p class="blog-p-tag">
+                    I believe what would be a more useful metric, is something that improves upon mirroring fantasy production by age, 
+                    as we care about how players will develop in there careers, more than fluctuations in the overall fantasy production
+                    of a position group (unless there are drastic changes there).
+                </p>
+                <p class="blog-p-tag">
+                    That being said, I do want to point out that the correlation of trinity score in previous season and fantasy
+                    points in the current season is close to being strong:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/trinity-fp-corr.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    That's a correlation value of about 0.586.
+                </p>
+                <p class="blog-p-tag">
+                    I want to emphasis that trinity score is a solid metric.
+                    The trinity value of a player matches their fantasy performance quite well, and the trinity value of a 
+                    previous season is not a bad estimate of fantasy performance in the current season. This means we
+                    can 1) expect patterns to hold as players age and 2) use the metric as a decent indicator of player's
+                    performance in the upcoming season.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">A Better Metric?</h2>
+            <div>
+                <p class="blog-p-tag">
+                    The question is, can we come up with a better metric than trinity score, specifically for predicting
+                    the career trajectory of a wide receiver?
+                </p>
+                <p class="blog-p-tag">
+                    My first attempt at this is to find the set of variables that has the strongest correlation to fantasy
+                    points. The assumption I'm making, for now, here is that since most wide receiver stats are sticky from season-to-season
+                    (i.e. strong correlation with themselves from year-to-year), we simply need to find the best set of variables
+                    to correlate with fantasy points.
+                </p>
+                <p class="blog-p-tag">
+                    Ideally, I would want to run this optimization in an exhuastive fashion. Regerttably, the number of permutations
+                    of stats that are fantasy relevant to the wide receiver position is a bit too large for my laptop - we are talking 
+                    tens to hundreds of millions of possibilities.
+                </p>
+                <p class="blog-p-tag">
+                    So, in an effort to intelligently explore the state space, I remove stats that fluctuate from year-to-year, like touchdowns
+                    and two-point conversion stats.
+                </p>
+                <p class="blog-p-tag">
+                    The highest correlation with fantasy football from the state space I explored was 0.623:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/new-metric-corr.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    This metric consists of <i>receiving yards</i>, <i>receiving yards after the catch</i>,
+                    <i>air yards share</i>, and <i>receiving yards per team pass attempt</i>, all normalized.
+                </p>
+                <p class="blog-p-tag">
+                    There were almost 30,000 permuations of wide receiver stats that had a correlation of at least 0.61 with fantasy 
+                    points, whereas trinity was at 0.586.
+                </p>
+                <p class="blog-p-tag">
+                    For those curious of how this particular new metric appears against age, when caluclated in the same year as fantasy points:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/new-metric-by-age.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Trinity is thrown on there for comparision. Both metrics become inaccurate at 31 on, but that's likely because there are only 47
+                    total seasons of wide receivers who have played at least 10 games in season X and X + 1, during this time period.
+                </p>
+                <p class="blog-p-tag">
+                    This alternative metric is visably closer to the career trajectory of a wide receiver than trinity score is.
+                </p>
+                <p class="blog-p-tag">
+                    The same comparision, but against season instead of age:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/new-metric-by-season.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Again, the new metric follows fantasy production much more closely than trinity score does.
+                    It seems that our assumption held pretty well.
+                </p>
+                <p class="blog-p-tag">
+                    So, while trinity score is a useful metric, and pretty easy to calculate, I would argue there are better options out there
+                    for creating a preidictive metric of wide receiver performance. This is one of many that is a stronger option, at least when 
+                    keeping things linear.
+                </p>
+                <p class="blog-p-tag">
+                    For some other options, I'll post the top ten metrics I found that had the best correlation with fantasy points in a season.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Predictive Modeling</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Now that we have this new metric, how does it compare to trinity when it comes to predictive modeling?
+                    You would expect that the new metric would perform better given the stronger correlation to fantasy points
+                    in the next season, but let's actually examine this.
+                </p>
+                <p class="blog-p-tag">
+                    We start by creating a
+                    <a href="javascript:void(0);" onclick="scrollToParagraph('multiple-linear-regression')">multiple linear regression (MLR)</a>
+                    model. This occurs in a pretty standard fashion, clean the 
+                    data, split it into test and train sets, fit the model to the training data, and then evaluate it's performance on
+                    the test set.
+                </p>
+                <p class="blog-p-tag">
+                    The results of the model can be seen below:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/new-metric-mlr.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    On first glance, the model appears to do quite poorly, especially on the more elite performers.
+                    However, if we instead think about the "success" of the model as guessing in the right direction,
+                    there is some light at the end of the tunnel.
+                </p>
+                <p class="blog-p-tag">
+                    The green dots on the scatter plot represent points that were predicted in the same direction as the actual 
+                    change in fantasy points. In other words, the model was correct at guessing an increase or decrease of a
+                    player's fantasy production, but, likely, incorrect at how much said change was.
+                </p>
+                <p class="blog-p-tag">
+                    Likewise, the red dots on the scatter plot represent points that were predicted in the wrong direction, compared
+                    to the actual direction of change in fantasy production.
+                </p>
+                <p class="blog-p-tag">
+                    When using these metrics, we see that the model has a success rate of about 63% on these 146 samples.
+                    I want to note that this particular model is worse at predicting higher end fantasy performers - as observed
+                    from the graph - with a success rate of 56.2% there (I define this as at least 101 actual fantasy points in a season).
+                    For those under the threshold, the accuracy was around 68.3%.
+                </p>
+                <p class="blog-p-tag">
+                    Based on the graph, a clear limitation of the model seems to be predictability range.
+                    The highest prediction is around 175 points. That's problematic and is something I need to look into
+                    further.
+                </p>
+                <p class="blog-p-tag">
+                    Now, if we compare this result to a model that uses trinity as the predictive metric instead, we get the following instead:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/trinity-mlr.html"></iframe>
+                </div>
+                
+                <p class="blog-p-tag">
+                    If you don't really see a noticeable difference, that's because there is not much change here.
+                    Distances from the expected values are larger and directional success is worse.
+                    So, yes, this version of the model is worse, but not by much.
+                </p>
+                <p class="blog-p-tag">
+                    Taking a look at our directional "success" stats, this model had an overall success rate of 61.6%.
+                    Again, the model is better at predicting the production of less relevant players, with a success rate of 63.4% (players
+                    who had under 101 actual fantasy points) and worse at predicting the production of more relevant players, with a success rate 
+                    of 59.4% (player who had at least 101 actual fantasy points).
+                </p>
+                <p class="blog-p-tag">
+                    So, our expectation has been met, at least when it comes to a linear regression model.
+                    Trinity score is a solid metric, and while not the best, it is not far from better metrics.
+                </p>
+                <p class="blog-p-tag">
+                    For those interested in other models, I also ran a
+                    <a href="javascript:void(0);" onclick="scrollToParagraph('random-forest-regressor')">random forest regressor</a>,
+                    <a href="javascript:void(0);" onclick="scrollToParagraph('gradient-booster')">gradient booster regressor</a> and
+                    <a href="javascript:void(0);" onclick="scrollToParagraph('multilayer-perceptron')">multilayer perceptron</a>.
+                </p>
+                <p class="blog-p-tag">
+                    I consistently had the next most success with the random forest regressor.
+                    For those interested in the performance of the random forest regressor model, please check out 
+                    the <a href="javascript:void(0);" onclick="scrollToParagraph('rfr-models')">relevant section</a> in the appendix,
+                    for both the new metric and trinity score based models.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Summary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Thanks to all who made it this far! The recap once more:
+                </p>
+                <ul class="bullet-list">
+                    <li>Even though most <a href="/Fantasy/Analysis/interactive/WR/stability/season/Basic-Receiving-Stat-Correlations-(Games=10-and-Games-Last=10-and-Starter).html">wide receiver stats are sticky</a>, the position is difficult to predict accurately.</li>
+                    <li>Trinity score does an okay job at laying out wide receiver expectations, and is slightly worse as a basis for a predictive model.</li>
+                    <li>While there are many scores that perform better than trinity score, as a basis for a predictive model, it is hard to build something reliable.</li>
+                    <li>Some variation of the <i>yards after catch</i> stat is present in the
+                        <a href="javascript:void(0);" onclick="scrollToParagraph('better-metrics')">list of best alternative metrics</a>
+                        to trinity score.</li>
+                    <li>
+                        Predictive models seem to be much better at predicting the direction of change in fantasy points from year to year, than the exact number of fantasy points 
+                        in the next season.
+                    </li>
+                </ul>
+                <p class="blog-p-tag">
+                    Again, thanks for reading!
+                </p>
+                <p class="blog-p-tag">
+                    Cheers, <br />
+                    Alex
+                </p>
+            </div>
+            
+
+            <h2 class="h2-blog">Glossary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Term definitions below:
+                </p>
+                <ul class="bullet-list">
+                    <li id="ay_sh"><b>ay_sh:</b> Air yards share.</li>
+                    <li id="tgt_sh"><b>tgt_sh:</b> Target share.</li>
+                    <li id="yac_per_reception"><b>Yards after catch (YAC) per reception:</b> Yards after catch divided by the number of receptions a receiver has.</li>
+                    <li id="multiple-linear-regression"><b>Multiple linear regression:</b> Linear regression with more than one variable. Think <i>y = ax + b</i> but now with more variables: <i>y = ax_0 + ax_1 + ax_2 + ... + b</i>.</li>
+                    <li id="random-forest-regressor"><b>Random forest regressor:</b> combines ensemble learning with decision trees to create multiple decision trees for the data. The output of the trees are averaged together for the final result. For more details, check out this <a href="https://towardsdatascience.com/random-forest-regression-5f605132d19d">blog post</a>.</li>
+                    <li id="gradient-booster"><b>Gradient booster regressor:</b> A technique that combines weak models to get better performance from the combination of the models. Great for data that has non-linear patterns. More details about the technique can be found in this <a href="https://towardsdatascience.com/all-you-need-to-know-about-gradient-boosting-algorithm-part-1-regression-2520a34a502">blog post</a>.</li>
+                    <li id="multilayer-perceptron"><b>Multilayer perceptron:</b> A simple neural network. Another great <a href="https://towardsdatascience.com/multilayer-perceptron-explained-with-a-real-life-example-and-python-code-sentiment-analysis-cb408ee93141">blog</a> explaining the details.</li>
+                </ul>
+            </div>
+
+
+            <h2 class="h2-blog">Appendix</h2>
+            <div>
+                <h3 class="h3-blog" id="better-metrics">Alternative Metrics</h3>
+                <div>
+                    <p class="blog-p-tag" style="margin-bottom: 0px;">
+                        These ten metrics had the highest correlation with fantasy points in the next season:
+                    </p>
+                    <div>
+                        <iframe style="width: 1150px; height: 900px;" src="/Fantasy/Analysis/interactive/WR/stability/season/top-ten-stats.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag" style="margin-bottom: 0px;">
+                        For stat defintions, please check out the <a href="/Fantasy/Blogs/sticky-stats/wr-sticky-season-totals#glossary-0">glossary section</a> on my previous post.
+                        Note that normalization is done via dividing all stats by their respective max value, and last refers
+                        to the value in the previous season.
+                    </p>
+                </div>
+
+                <h3 class="h3-blog" id="rfr-models">Random Forest Regressor Models</h3>
+                <div>
+                    <p class="blog-p-tag">
+                        The random forest regressor predictive models:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/new-metric-rfr.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        Directional success:
+                        <ul class="bullet-list">
+                            <li><b>Overall:</b> 60.3%</li>
+                            <li><b>Less relevant fantasy players:</b> 59.8%</li>
+                            <li><b>More relevant fantasy players:</b> 60.9%</li>
+                        </ul>
+                    </p>
+    
+                    <div class="iframe-container">
+                        <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/trinity-rfr.html"></iframe>
+                    </div>
+                    <p class="blog-p-tag">
+                        Directional success:
+                        <ul class="bullet-list">
+                            <li><b>Overall:</b> 56.8%</li>
+                            <li><b>Less relevant fantasy players:</b> 58.5%</li>
+                            <li><b>More relevant fantasy players:</b> 54.7%</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function scrollToParagraph(paragraphId, headerOffset=100) {
+        let element = document.getElementById(paragraphId);
+        // let headerOffset = 100;  // Change this value according to your needs
+        let elementPosition = element.getBoundingClientRect().top;
+        let offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+        });
+    }
+</script>
+<script>
+    $("#common-header").load("/Fantasy/header.html");;
+</script>
