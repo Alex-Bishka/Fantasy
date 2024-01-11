@@ -1,0 +1,464 @@
+<head>
+    <title>TE Sticky Stats</title>
+    <link rel="stylesheet" href="/Fantasy/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/Fantasy/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        // google analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>Tight End Sticky Stats</h1>
+
+
+            <h2>TL;DR</h2>
+            <p class="blog-p-tag">
+                <ul class="bullet-list">
+                    <li>Tight end stats appear to correlate quite well. This is especially true when looking at starters.</li>
+                    <li>
+                        Starting tight ends, on average, peak in fantasy production by 27.
+                        Unfortunately that correlation is not always positive.
+                    </li>
+                    <li>The lowest point of a starting tight end's career appears to be between the ages of 28-30.</li>
+                    <li>
+                        Those that remain starters after 30 have a decent production bump at 31.
+                        There are too few samples to examine beyond that age.
+                    </li>
+                    <li>Most starters are between the ages of 26-31.</li>
+                    <li>
+                        2023 was the best year of tight end fantasy production of all the years I looked into (2012-2023).
+                        This is a golden era of tight ends, and one that lacks a dominant player at the top.
+                    </li>
+                </ul>
+            </p>
+
+
+            <h2 class="h2-blog">Overview</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Welcome back to another <a href="TODO">sticky stat</a> analysis piece!
+                </p>
+                <p class="blog-p-tag">
+                    In this writing, I'll be wrapping up the sticky stat analysis for season totals by ending with
+                    tight ends.
+                </p>
+                <p class="blog-p-tag">
+                    Once again, the goal is to find out if the position group has any stats that are positively predictable
+                    that can also be used as indicators of fantasy performance.
+                </p>
+                <p class="blog-p-tag">
+                    The data used for the findings below is primarily from 2012-2022, unless otherwise stated.
+                </p>
+                <p class="blog-p-tag">
+                    For those interested in the rest of the sticky stat analysis pieces:
+                    <ul class="bullet-list">
+                        <li><a href="/Fantasy/Blogs/sticky-stats/qbs-sticky-season-totals">Quarterback Season Total Sticky Stats</a></li>
+                        <li><a href="/Fantasy/Blogs/sticky-stats/qbs-sticky-per-game">Quarterback Per Game Sticky Stats</a></li>
+                        <li><a href="/Fantasy/Blogs/sticky-stats/rushing-sticky-season-totals">Running Back Season Total Sticky Stats</a></li>
+                        <li><a href="/Fantasy/Blogs/sticky-stats/wr-sticky-season-totals">Wide Receiver Season Total Sticky Stats</a></li>
+                    </ul>
+                </p>
+                <p class="blog-p-tag">
+                    Without further ado, let's dive in!
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">A Cursory Glance</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Starting with a correlation heat map on the unfiltered tight end data:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 800px; height: 650px;" src="/Fantasy/Analysis/interactive/TE/stability/season/Basic-Receiving-Stat-Correlations.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    There is pretty good correlation across the board. This heat map is actually quite similar to the same one
+                    for <a href="/Fantasy/Analysis/interactive/WR/stability/season/Basic-Receiving-Stat-Correlations">wide receivers</a>,
+                    which bodes well for tight end predictability.
+                </p>
+                <p class="blog-p-tag">
+                    However, if we examine the scatter plot that highlights the strongest self correlating year-to-year stat, <i>receiving yards</i>
+                    vs. <i>receiving yards last</i>, we can see some noise:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 650px;" src="/Fantasy/Analysis/interactive/TE/stability/season/tight-end-basic-Receiving-Yards-vs.-Receiving-Yards-Last.html"></iframe>
+                </div>
+
+                <p class="blog-p-tag">
+                    Applying a filter (10 games played in each of season X and X - 1) to the data, to get a proxy of more fantasy relevant data, yields the following 
+                    correlation heat map:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 800px; height: 650px;" src="/Fantasy/Analysis/interactive/TE/stability/season/Basic-Receiving-Stat-Correlations-(10-Games-Current-and-10-games-Past-Season).html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Again, very encouraging how high the correlation values are. They are all strong, even if the values are on
+                    the weaker side of strong. Moreover, this heat map compares really well to the <a href="/Fantasy/Analysis/interactive/WR/stability/season/Basic-Receiving-Stat-Correlations-(Games=10-and-Games-Last=10).html">same one</a> applied to
+                    wide receivers. Tight end might actually be a somewhat predictable position.
+                </p>
+                <p class="blog-p-tag">
+                    Before we get ahead of ourselves, here's the scatter plot of <i>receiving yards</i> vs. <i>receiving yards last</i>, to display what 
+                    our filtered data looks like:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 650px;" src="/Fantasy/Analysis/interactive/TE/stability/season/tight-end-basic-10-games-Receiving-Yards-vs.-Receiving-Yards-Last.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    This filtered version of the data set is better, but it's still not a great representation of potentially fantasy relevant
+                    tight ends.
+                </p>
+
+                <p class="blog-p-tag">
+                    So, let's apply a stronger one. In addition to the previous filter, they must also be the starter in consecutive seasons:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 800px; height: 650px;" src="/Fantasy/Analysis/interactive/TE/stability/season/Basic-Receiving-Stat-Correlations-(10-Game-Threshold-and-Starter).html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Again, very encouraging signs, as most correlation values are quite strong. I also want to emphazise that
+                    this closely follows the
+                    <a href="/Fantasy/Analysis/interactive/WR/stability/season/Basic-Receiving-Stat-Correlations-(Games=10-and-Games-Last=10-and-Starter).html">same filter on wide receivers</a>.
+                </p>
+                <p class="blog-p-tag">
+                    However, we have to ask the question - what does our data set look like now?
+                </p>
+                <p class="blog-p-tag">
+                    Well, the strongest self correlating
+                    year-to-year stat, <i>receiving yards</i> vs. <i>receiving yards last</i> (again), has a scatter plot that looks
+                    like this:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 650px;" src="/Fantasy/Analysis/interactive/TE/stability/season/tight-end-basic-10-games-starter-Receiving-Yards-vs.-Receiving-Yards-Last.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    I would say this gives us a solid picture of the starting tight end landscape. Not all of it is fantasy relevant, but 
+                    tight ends who start are quite likely to improve from year-to-year, in a similar vain to wide receivers.
+                </p>
+                <p class="blog-p-tag">
+                    One final detail I want to point out: receiving touchdowns for tight ends are pretty erratic, similar to touchdowns for 
+                    the other position groups.
+                </p>
+                <p class="blog-p-tag">
+                    The following scatter plot shows <i>receiving touchdowns</i> vs. <i>receiving touchdowns last</i> for the strictest 
+                    filter:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 650px;" src="/Fantasy/Analysis/interactive/TE/stability/season/tight-end-basic-10-games-starter-Receiving-Tds-vs.-Receiving-Tds-Last.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    As expected, touchdowns are a fluky stat for tight ends.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Digging Deeper</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Taking a deeper dive at the correlations with basic stats, I noticed a bit of an age 'gap'.
+                    Note, this section continues with the strongest filter we applied in the previous section.
+                </p>
+                <p class="blog-p-tag">
+                    It appears that young (we define young as a player who is 28 or younger in season X) tight ends
+                    have inconsistent growth:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 800px; height: 650px;" src="/Fantasy/Analysis/interactive/TE/stability/season/Basic-Receiving-Stat-Correlations-(10-Game-+-Starter-Threshold-and-Young).html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    The correlations in the heat map above are weaker than all of the values in the heat maps from the
+                    previous section.
+                </p>
+
+                <p class="blog-p-tag">
+                    Now, if we take a look at old (we define old as a player who is 28 or older in season X - 1) tight ends,
+                    a different story occurs:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 800px; height: 650px;" src="/Fantasy/Analysis/interactive/TE/stability/season/Basic-Receiving-Stat-Correlations-(10-Game-+-Starter-Threshold-and-Old).html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    This set of tight ends has strong correlation values across the board. I would say this matches
+                    the idea that tight ends typcially take a few seasons to mature and are in their 
+                    prime around the age of 28. However, there is more to this story in the
+                    <a href="javascript:void(0);" onclick="scrollToParagraph('fantasy-relevance?-0', 10)">Fantasy Relevance?</a> section.
+                </p>
+
+                <p class="blog-p-tag">
+                    Before moving on, I wanted to point out what the average depth chart position was by age:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 600px;" src="/Fantasy/Analysis/interactive/TE/stability/season/depth-chart-v-age.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    It seems that we get the majority of our starting tight ends from 26-31. Again this backs the narrative
+                    that tight ends take some time to mature - but, again, there is some contradictory information in the next
+                    section.
+                </p>
+                <p class="blog-p-tag">
+                    The graph below shows the sample size of tight ends that we have by age:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 600px;" src="/Fantasy/Analysis/interactive/TE/stability/season/depth-chart-v-samples.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Tight ends don't really exist after the ages of 32, 33. 
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Fantasy Relevance?</h2>
+            <div>
+                <p class="blog-p-tag">
+                    After all this exploration, we have to ask ourselves: what matters in regards to fantasy production?
+                    Which stats, that are predictable year-to-year, are also good indicators of fantasy performance?
+                </p>
+                <p class="blog-p-tag">
+                    Well, the bar graph below highlights this information for our strictest filter,
+                    by displaying the correlation of stats (used in this research) to themselves and to fantasy points (PPR):
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 600px;" src="/Fantasy/Analysis/interactive/TE/stability/season/correlation-bar-advanced-stats.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    The bar graph above sorts the stats from highest self correlation (left) to lowest self correlation (right).
+                </p>
+                <p class="blog-p-tag">
+                    It's a bit hard to garner information from the bar graph above, so let's focus on stats that have
+                    correlation values of at least 0.5 in both cases:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 600px;" src="/Fantasy/Analysis/interactive/TE/stability/season/correlation-bar-advanced-stats-focused.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Those are some pretty strong correlations. Furthermore, these results are somewhat similar to the
+                    <a href="/Fantasy/Blogs/sticky-stats/wr-sticky-season-totals#fantasy-relevance-0">correlation bar graph for wide receivers</a>.
+                    This offers us some options for creating a useful predictive metric.
+                </p>
+
+                <p class="blog-p-tag">
+                    We can start by taking a look at the three most self correlating stats - <i>wopr_y</i>, <i>ay_sh</i>, and <i>ay_sh</i> - 
+                    on a plot with fantasy points (PPR version), against age.
+                    Additionally, let's plot the combination of these three strong self correlating stats, and call it
+                    <i>new-metric</i>. This yields the following plot:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 600px;" src="/Fantasy/Analysis/interactive/TE/stability/season/new-metric-and-metrics-starters-by-age.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    This appears to be a pretty great approximation of the fantasy career of a tight end. One interesting subtlty that
+                    I would like to point out: tight ends appear to have their lowest fantasy peaks during the ages of 28-30.
+                    A little counter to the information we've already explored.
+                </p>
+                <p class="blog-p-tag">
+                    However, the graph is consistent with stronger correlation values for older tight ends, it's just that
+                    the direction of change is more negative or neutral, than positive. Based on this evidence, evaluating
+                    the tight end position is harder. Young tight ends don't reliably improve, and prime (or older) tight 
+                    ends stagnate or decline.
+                </p>
+                <p class="blog-p-tag">
+                    The metric also seems to be pretty consistent on a season-to-season basis:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 600px;" src="/Fantasy/Analysis/interactive/TE/stability/season/new-metric-and-metrics-starters-by-season.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    It is a bit worse than the career trajectory graph, but I would still argue the <i>new-metric</i> is sufficient.
+                    That's unfortunate for being able to predict reliably good and improving fantasy tight ends.
+                </p>
+            </div>
+            
+
+            <h2 class="h2-blog">A Wasteland?</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Does this mean that tight end is wasteland?
+                </p>
+                <p class="blog-p-tag">
+                    Well, yes and no...
+                </p>
+                <p class="blog-p-tag">
+                    It is hard to determine which tight ends will become and stay reliable for fantasy purposes.
+                    However, this year was the best tight end production across the top 12 options of the years
+                    in my analysis:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 700px;" src="/Fantasy/Analysis/interactive/TE/stability/season/tight-end-seasons.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    This is a golden era of tight ends, despite the apparent loss of the dominant top dog: Kelce.
+                    I think that most teams in most leagues should be able to require a relevant starter with a future,
+                    and likely without breaking the bank.
+                </p>
+            </div>
+
+            <h2 class="h2-blog">Summary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    To those who made it this far, I appreciate you greatly! Please enjoy the recap, once more:
+                </p>
+                <ul class="bullet-list">
+                    <li>Tight end stats appear to correlate quite well. This is especially true when looking at starters.</li>
+                    <li>
+                        Starting tight ends, on average, peak in fantasy production by 27.
+                        Unfortunately that correlation is not always positive.
+                    </li>
+                    <li>The lowest point of a starting tight end's career appears to be between the ages of 28-30.</li>
+                    <li>
+                        Those that remain starters after 30 have a decent production bump at 31.
+                        There are too few samples to examine beyond that age.
+                    </li>
+                    <li>Most starters are between the ages of 26-31.</li>
+                    <li>
+                        2023 was the best year of tight end fantasy production of all the years I looked into (2012-2023).
+                        This is a golden era of tight ends, and one that lacks a dominant player at the top.
+                    </li>
+                </ul>
+                <p class="blog-p-tag">
+                    Thanks for reading!
+                </p>
+                <p class="blog-p-tag">
+                    Cheers, <br />
+                    Alex
+                </p>
+            </div>
+            
+
+            <h2 class="h2-blog">Glossary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    For term definitions on the graph above, please refer the following 
+                    <a>glossary</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function scrollToParagraph(paragraphId, headerOffset=100) {
+        console.log("testing scroll to paragraph")
+        let element = document.getElementById(paragraphId);
+        // let headerOffset = 100;  // Change this value according to your needs
+        let elementPosition = element.getBoundingClientRect().top;
+        let offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+        });
+    }
+</script>
+<script>
+    $("#common-header").load("/Fantasy/header.html");;
+</script>
