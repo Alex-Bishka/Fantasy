@@ -1,0 +1,774 @@
+<head>
+    <title>RBs in 2022</title>
+    <link rel="stylesheet" href="/Fantasy/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/Fantasy/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>RBs in 2022</h1>
+
+
+            <h2>TL;DR</h2>
+            <p class="blog-p-tag">
+            <ul class="bullet-list">
+                <li>James Conner is good value for his production.</li>
+                <li>Najee feels like a plodder.</li>
+                <li>Swift might be very good with the Eagles. His per game numbers and efficiency numbers are
+                    encouraging. Perhaps better than Sanders with that Eagles o-line.</li>
+                <li>Good running backs don't need to be good runners or rather have great running stats.</li>
+                <li>Jamaal Williams was really good for the Lions last year, Monty could be even better in that role.
+                </li>
+                <li>CMC and Ekeler are goldmines in PPR leagues. You need to get yourself a back on this level as a
+                    contender.</li>
+                <li>Receiving numbers correspond to success more so that rushing numbers do!</li>
+                <li>Backs that get at least 4 targets a game produce well in PPR.</li>
+            </ul>
+            </p>
+
+
+            <h2 class="h2-blog">Overview</h2>
+            <p class="blog-p-tag">
+                Welcome back to my 2022 player performance review by position group! This time, I'll be focusing on
+                running backs.
+            </p>
+
+            <p class="blog-p-tag">
+                This write-up got a bit long, so I'll be splitting it into a couple of blogs, the first of which will
+                focus on simpler analysis.
+                Stay tuned for part 2, which should come out shortly.
+            </p>
+
+            <p class="blog-p-tag">
+                To see my previous work on the other position groups, check out my <a
+                    href="https://alex-bishka.github.io/Fantasy/Blogs.html">blogs page</a>.
+            </p>
+
+            <p class="blog-p-tag">
+                My data disclaimer, as always:
+            <ul class="bullet-list">
+                <li>I don't take into account anything related to two point conversions, partly due to
+                    the randomness and small sample size but mostly because it was difficult to incorporate into the
+                    data I
+                    fetched</li>
+                <li>The top 40 RBs I analyze are by the top 40 fantasy point totals, this is done for
+                    simplicity and reusability of graphing code</li>
+                <li>Colors for the graphs after the fantasy points section are based on PPR scoring</li>
+            </ul>
+            </p>
+
+
+            <h2 class="h2-blog">Fantasy Points</h2>
+            <p class="blog-p-tag">
+                Let's go ahead and kick off the analysis by looking at fantasy points on a season and per game basis.
+                We will start by taking a look at standard scoring and then move onto PPR scoring.
+            </p>
+
+            <h3 class="h3-blog">Standard Scoring</h3>
+            <p class="blog-p-tag">
+                Here we have the season total and per game numbers for fantasy points in standard scoring:
+            </p>
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/RB/Total Fantasy Points.png">
+                <img class="multi-img" src="/Fantasy/Analysis/images/RB/Fantasy Points Per Game.png">
+            </div>
+            <p class="blog-p-tag">
+                The trend of positional scarcity continues here, as a top running back offers so much more than even
+                borderline RB1 quality players.
+            </p>
+            <p class="blog-p-tag">
+                Take for example Najee, who was the threshold for the RB1, versus Nick Chubb, who was RB5 on the season
+                last year.
+                Najee had 182 points, while Chubb had 254 points last year. That's a difference of 72 points.
+            </p>
+            <p class="blog-p-tag">
+                That's a larger difference than Najee and the threshold for the RB2 tier.
+                The threshold for the RB2 tier was 140 points (McKinnon, Singletary, and Dillon tied for this).
+                That's a 42 point difference between the bar for being an RB1 and an RB2.
+            </p>
+            <p class="blog-p-tag">
+                Going even further, the difference between Najee and the RB3 threshold, which was Jonathan Taylor was 64
+                points.
+                So, Chubb has more value over Najee, than Najee has over the RB3 threshold - <b>positional dominance
+                    makes a big difference to a fantasy team!</b>
+            </p>
+            <p class="blog-p-tag">
+                That being said, there isn't as much of clear tier break within the RB1 crowd when looking at fantasy
+                points on a per game basis.
+                Although, the top four backs - Henry, Jacobs, CMC, and Ekeler - are still more valuable than the RB1
+                threshold compared to the RB1 threshold to the RB3
+                threshold.
+            </p>
+            <p class="blog-p-tag">
+                Ekeler, the lowest per game scorer of those four backs, had 15.64 points per game, while K9 (the RB12)
+                had 11.73 points per game.
+                That's a difference of 3.91 points per game.
+            </p>
+            <p class="blog-p-tag">
+                Meanwhile, the difference between K9 and the RB3 threshold (Dillon) is 3.49 points per game.
+                Top backs are worth it, and I would pay the price to get one to push my contending team over the edge.
+            </p>
+            <p class="blog-p-tag">
+                Couple other things to note:
+            <p class="blog-p-tag">
+            <ul class="bullet-list">
+                <li>Breece Hall is a stud! He was RB7 on a per game basis last year, with 13.71 points per game. Excited
+                    to see what he can do when fully healthy.</li>
+                <li>Najee's per game numbers (10.70 points per game) put him in the RB2 crowd, which isn't encouraging
+                    given how unexplosive he looked last year.</li>
+            </ul>
+            </p>
+            </p>
+
+
+            <h3 class="h3-blog">PPR Scoring</h3>
+            <p class="blog-p-tag">
+                Moving on, let's take a look at fantasy points in PPR scoring.
+            </p>
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/RB/Total Fantasy Points PPR.png">
+                <img class="multi-img" src="/Fantasy/Analysis/images/RB/Fantasy Points Per Game PPR.png">
+            </div>
+            <p class="blog-p-tag">
+                The elite group of RB1s stretches out a bit more here, than it does in standard scoring,
+                with Chubb being the last back to break the 280 point mark:
+            </p>
+            <p class="blog-p-tag">
+            <ul class="bullet-list">
+                <li>Austin Ekeler - 372.7</li>
+                <li>Christian McCaffrey - 356.4</li>
+                <li>Josh Jacobs - 328.3</li>
+                <li>Derrick Henry - 302.8</li>
+                <li>Saquon Barkley - 284.0</li>
+                <li>Nick Chubb - 281.4</li>
+            </ul>
+            </p>
+            <p class="blog-p-tag">
+                As a result of this widened group of great running backs, the value gap isn't as wide as it is in
+                standard.
+                The difference between Chubb and the RB1 threshold is 55.29 points.
+            <p class="blog-p-tag">
+                Big Lenny was that threshold at RB12, and the difference between him and the RB2 threshold was 48.4
+                points.
+                Furthermore, the difference between Big Lenny and the RB3 threshold was 87 points.
+            </p>
+            <p class="blog-p-tag">
+                That being said, if we choose Henry as the cutoff - the lowest scoring back over 300 points last year -
+                the value gained in having
+                a dominate back becomes more similar to the situation in standard, as Henry outscored Big Lenny by 76.7
+                points last year.
+            </p>
+            <p class="blog-p-tag">
+                So, the takeaway for me here is that elite running backs still have immense value, but they aren't as
+                valuable as they would be in standard,
+                which makes sense from an intuitive point of view.
+            </p>
+
+
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/RB/Total Fantasy Points PPR-by-Fantasy Points Per Game PPR.png">
+            </div>
+            <p class="blog-p-tag">
+                Here's another representation of the two graphs above.
+                I would say it serves as additional confirmation of findings in our analysis above.
+            </p>
+            <p class="blog-p-tag">
+                Although, I will say this shows that Conner, Kamara, Najee, K9, Jamaal Williams, Swift and (maybe)
+                Taylor are all on that fringe of being an RB1, at least on a per game basis.
+            </p>
+            <p class="blog-p-tag">
+                I say maybe for Taylor, as if he is healthy, I do expect him to perform much better on a per game basis
+                than what he did last year.
+            </p>
+            <p class="blog-p-tag">
+                Also, I'm surprised by how much Conner has left in the tank. He averaged 15.39 points per game last
+                year, which is in RB1 territory. Could be a great value buy for contenders this year.
+            </p>
+
+
+            <h2 class="h2-blog">Rushing Stats</h2>
+            <p class="blog-p-tag">
+                Let's go ahead and examine some rushing stats like yardage, carries, touchdowns and fumbles.
+            </p>
+
+            <h3 class="h3-blog">Rushing Yards</h3>
+            <p class="blog-p-tag">
+                Starting with rushing season totals:
+            </p>
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/RB/Total Rushing Yards.png">
+                <img class="multi-img"
+                    src="/Fantasy/Analysis/images/RB/Total Fantasy Points PPR-by-Total Rushing Yards.png">
+            </div>
+            <p class="blog-p-tag">
+                Quite a few things catch my eye:
+            <ul class="bullet-list">
+                <li>Big Lenny was an RB1 in spite of his putrid 668 rushing yards on the season.</li>
+                <li>Mixon only had 814 rushing yards, which also feels very low for an RB1.</li>
+                <li>Foreman and Pacheco overachieved relative to their RB tier, with both being RB2s in regards to
+                    season total rushing yards. Makes Pacheco an interesting buy for me, but I would stay away from
+                    Foreman as I am very high on Roschon.</li>
+                <li>Miles Sanders had 1269 rushing yards. I'm less a believer in him, than the Eagles o-line, so I would
+                    try and grab Swift for value if that's still possible.</li>
+                <li>Same principal applies to the Lions o-line, Jamaal Williams had 1066 rushing yards last year.</li>
+                <li>Tyler Allgeier had 1035 rushing yards. I'm excited for Bijan, but also Tyler might still have a role
+                    in that offense, or on a different NFL team.</li>
+            </ul>
+            </p>
+            <p class="blog-p-tag">
+                Let's move onto the per game rushing numbers:
+            </p>
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/RB/Rushing Yards Per Game.png">
+                <img class="multi-img"
+                    src="/Fantasy/Analysis/images/RB/Fantasy Points Per Game PPR-by-Rushing Yards Per Game.png">
+            </div>
+            <p class="blog-p-tag">
+                What I find to be of note here:
+            <ul class="bullet-list">
+                <li>Taylor shows his value here, as RB5 on the list with 78.27 rushing yards per game.</li>
+                <li>Dameon Pierce also highlights his strength here as RB7, with 72.23 rushing yards per game.</li>
+                <li>Big Lenny and Ekeler are far lower than their other fellow RB1s, with 41.75 and 53.82 rushing yards
+                    per game respectively.</li>
+                <li>These graphs really show me that rushing numbers might not be as important as I originally suspected
+                    to running back value.
+                    Despite that, it does seem that being under 50 yards rushing per game makes it almost impossible to
+                    be an RB1 or RB2.</li>
+            </ul>
+            </p>
+
+            <h3 class="h3-blog">Carries and Yards Per Carry</h3>
+            <p class="blog-p-tag">
+                Let's go ahead and take a look at rushing attempts and carry stats:
+            </p>
+            <div class="blog-img-container">
+                <img class="multi-img"
+                    src="/Fantasy/Analysis/images/RB/Total Fantasy Points PPR-by-Total Rushing Attempts.png">
+                <img class="multi-img"
+                    src="/Fantasy/Analysis/images/RB/Fantasy Points Per Game PPR-by-Carries Per Game.png">
+            </div>
+            <p class="blog-p-tag">
+                Volume does seem to track with success, but only to a degree. The magic threshold for being a quality
+                back seems to be around 200 carries throughout the season.
+                Players with 200 plus carries and their per game numbers:
+            <ul class="bullet-list">
+                <li>Austin Ekeler - 204 attempts | 21.92 ppg</li>
+                <li>Christian McCaffrey - 244 attempts | 20.96 ppg</li>
+                <li>Josh Jacobs - 340 attempts | 19.31 ppg</li>
+                <li>Derrick Henry - 349 attempts | 18.93 ppg</li>
+                <li>Saquon Barkley - 295 attempts | 17.75 ppg</li>
+                <li>Nick Chubb - 302 attempts | 16.55 ppg</li>
+                <li>Rhamondre Stevenson - 210 attempts | 14.65 ppg</li>
+                <li>Aaron Jones - 213 attempts | 14.62 ppg</li>
+                <li>Joe Mixon - 210 attempts | 17.11 ppg</li>
+                <li>Dalvin Cook - 264 attempts | 13.99 ppg</li>
+                <li>Jamaal Williams - 262 attempts | 13.29 ppg</li>
+                <li>Najee Harris - 272 attempts | 13.15 ppg</li>
+                <li>Miles Sanders - 259 attempts | 12.75 ppg</li>
+                <li>Alvin Kamara - 223 attempts | 14.11 ppg</li>
+                <li>Travis Etienne - 220 attempts | 12.06 ppg</li>
+                <li>Kenneth Walker III - 228 attempts | 13.5 ppg</li>
+                <li>Ezekiel Elliott - 231 attempts | 12.39 ppg</li>
+                <li>David Montgomery - 201 attempts | 11.11 ppg</li>
+                <li>Dameon Pierce - 220 attempts | 12.8 ppg</li>
+                <li>Tyler Allgeier - 210 attempts | 9.96 ppg</li>
+                <li>D'Onta Foreman - 203 attempts | 7.71 ppg</li>
+            </ul>
+            </p>
+            <p class="blog-p-tag">
+                Allgeier and Foreman are the slackers in the group above, but other than Foreman, the production is
+                solid (throwing value out of the window for a second).
+            </p>
+            <p class="blog-p-tag">
+                The list does improve a bit in quality if you look at carries per game:
+            <ul class="bullet-list">
+                <li>Christian McCaffrey - 14.35 carries per game | 20.96 ppg</li>
+                <li>Josh Jacobs - 20.0 carries per game | 19.31 ppg</li>
+                <li>Derrick Henry - 21.81 carries per game | 18.93 ppg</li>
+                <li>Saquon Barkley - 18.44 carries per game | 17.75 ppg</li>
+                <li>Nick Chubb - 17.76 carries per game | 16.55 ppg</li>
+                <li>Rhamondre Stevenson - 12.35 carries per game | 14.65 ppg</li>
+                <li>Tony Pollard - 12.06 carries per game | 15.55 ppg</li>
+                <li>Aaron Jones - 12.53 carries per game | 14.62 ppg</li>
+                <li>Joe Mixon - 15.0 carries per game | 17.11 ppg</li>
+                <li>Dalvin Cook - 15.53 carries per game | 13.99 ppg</li>
+                <li>Jamaal Williams - 15.41 carries per game | 13.29 ppg</li>
+                <li>Najee Harris - 16.0 carries per game | 13.15 ppg</li>
+                <li>Miles Sanders - 15.24 carries per game | 12.75 ppg</li>
+                <li>Alvin Kamara - 14.87 carries per game | 14.11 ppg</li>
+                <li>Travis Etienne - 12.94 carries per game | 12.06 ppg</li>
+                <li>Kenneth Walker III - 15.2 carries per game | 13.5 ppg</li>
+                <li>James Conner - 14.08 carries per game | 15.4 ppg</li>
+                <li>Ezekiel Elliott - 15.4 carries per game | 12.39 ppg</li>
+                <li>David Montgomery - 12.56 carries per game | 11.11 ppg</li>
+                <li>Dameon Pierce - 16.92 carries per game | 12.8 ppg</li>
+                <li>Tyler Allgeier - 13.12 carries per game | 9.96 ppg</li>
+                <li>Latavius Murray - 13.15 carries per game | 11.86 ppg</li>
+                <li>Jonathan Taylor - 17.45 carries per game | 13.31 ppg</li>
+                <li>Cam Akers - 12.53 carries per game | 9.42 ppg</li>
+            </ul>
+            </p>
+            <p class="blog-p-tag">
+                Basically, if your back is getting at least 12 carries a game, you'll be getting at least 10 points per
+                game out of them
+                which is flirting with RB2 territory, in the worst case scenario.
+            </p>
+            <p class="blog-p-tag">
+                So volume is important, but what about efficiency?
+            </p>
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/RB/Fantasy Points Per Game PPR-by-Yards Per Carry.png">
+            </div>
+            <p class="blog-p-tag">
+                It's a bit harder to draw conclusions from this, as inefficient and efficient backs both produce.
+                Hyper-efficient backs, which I'll call backs with more than 5 yards a carry, are valuable, but rare.
+            </p>
+            <p class="blog-p-tag">
+                The list:
+            <ul class="bullet-list">
+                <li>Nick Chubb - 16.55 ppg</li>
+                <li>Tony Pollard - 15.55 ppg</li>
+                <li>Aaron Jones - 14.62 ppg</li>
+                <li>Travis Etienne - 12.06 ppg</li>
+                <li>D'Andre Swift - 13.65 ppg</li>
+            </ul>
+            </p>
+            <p class="blog-p-tag">
+                That's a solid list of backs. Also, shoutout to Chubb (RIP), that's insane for his workload.
+            </p>
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/RB/Carries Per Game-by-Yards Per Carry.png">
+            </div>
+            <p class="blog-p-tag">
+                This one is really all over the place, and I can't make much of a connection between volume, efficiency,
+                and performance.
+            </p>
+            <p class="blog-p-tag">
+                You would ideally want a back that has high volume and elite efficiency, but outside of Chubb that
+                doesn't really exist.
+                Although I think you could make a case for Jacobs being close with 20 carries a game on 4.86 yards per
+                carry.
+            </p>
+
+            <h3 class="h3-blog">Touchdowns</h3>
+            <p class="blog-p-tag">
+                Onto examining touchdowns:
+            </p>
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/RB/Total Fantasy Points PPR-by-Total Rushing Touchdowns.png">
+            </div>
+            <p class="blog-p-tag">
+                Once again, there isn't as strong a correlation as I would have expected between fantasy points and
+                rushing touchdowns for running backs.
+                That being said, the list of backs with 10 or more touchdowns is pretty solid:
+            <ul class="bullet-list">
+                <li>Austin Ekeler - 21.92 ppg</li>
+                <li>Josh Jacobs - 19.31 ppg</li>
+                <li>Derrick Henry - 18.93 ppg</li>
+                <li>Nick Chubb - 16.55 ppg</li>
+                <li>Jamaal Williams - 13.29 ppg</li>
+                <li>Miles Sanders - 12.75 ppg</li>
+                <li>Ezekiel Elliott - 12.39 ppg</li>
+            </ul>
+            </p>
+            <p class="blog-p-tag">
+                All of these players are delivering solid per game returns.
+            </p>
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/RB/Fantasy Points Per Game PPR-by-Rushing Touchdowns Per Game.png">
+            </div>
+            <p class="blog-p-tag">
+                Not too much changes when we look at fantasy points per game versus touchdowns per game.
+            </p>
+
+            <h3 class="h3-blog">Fumbles</h3>
+            <p class="blog-p-tag">
+                Last but not least, let's take a look at the fumble data:
+            </p>
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/RB/Total Fantasy Points PPR-by-Fumbles.png">
+                <img class="multi-img" src="/Fantasy/Analysis/images/RB/Total Fantasy Points PPR-by-Fumbles Lost.png">
+            </div>
+            <p class="blog-p-tag">
+                I'm struggling to find much here to connect fumbles and fantasy performance.
+                Each of the running back tiers are pretty evenly split across the graph.
+                So, the only thing I can say is that as long as your back doesn't get benched from fumbles, it's not a
+                problem.
+            </p>
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/RB/Total Rushing Attempts-by-Fumbles.png">
+                <img class="multi-img" src="/Fantasy/Analysis/images/RB/Total Rushing Attempts-by-Fumbles Lost.png">
+            </div>
+            <p class="blog-p-tag">
+                I was curious to see if there was a correlation between volume and fumbles. To my surprise, there isn't
+                really.
+                Again, it's pretty mixed and hard to draw conclusions.
+            </p>
+
+
+            <h2 class="h2-blog">Receiving Stats</h2>
+            <p class="blog-p-tag">
+                Moving onto the other speciality of the running back: receiving stats.
+            </p>
+
+            <h3 class="h3-blog">Receiving Yards</h3>
+            <p class="blog-p-tag">
+                We can start by examining receiving yards:
+            </p>
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/RB/Total Receiving Yards.png">
+                <img class="multi-img"
+                    src="/Fantasy/Analysis/images/RB/Total Fantasy Points PPR-by-Total Receiving Yards.png">
+            </div>
+            <p class="blog-p-tag">
+                Outside of Chubb, and to some degree Dalvin Cook, pretty much all of the RB1 tier has good receiving
+                yardage output.
+                This definitely surprised me, and showed me how outdated my beliefs of what makes a good back: they need
+                to be at least competent receivers.
+            </p>
+            <p class="blog-p-tag">
+                The graph on the right really hammers this home, as the tiers of running backs correlate strongly with
+                receiving performance.
+            </p>
+            <p class="blog-p-tag">
+                Additionally, CMC and Ekeler are just insane. The top five backs by receiving yards:
+            <ul class="bullet-list">
+                <li>Christian McCaffrey - 741 receiving yards | 20.96 ppg</li>
+                <li>Austin Ekeler - 722 receiving yards | 21.92 ppg</li>
+                <li>Leonard Fournette - 523 receiving yards | 14.13 ppg</li>
+                <li>Jerick McKinnon - 512 receiving yards | 11.55 ppg</li>
+                <li>Alvin Kamara - 490 receiving yards | 14.11 ppg</li>
+            </ul>
+            </p>
+            <p class="blog-p-tag">
+                Pretty big gap between those two and the rest of the backs in the league.
+            </p>
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/RB/Receiving Yards Per Game.png">
+                <img class="multi-img"
+                    src="/Fantasy/Analysis/images/RB/Fantasy Points Per Game PPR-by-Receiving Yards Per Game.png">
+            </div>
+            <p class="blog-p-tag">
+                The per game numbers definitely makes the trend a bit
+                blurrier - it is slightly less clear here that receiving backs are
+                productive backs (at least in regards to RB1 production).
+            </p>
+            <p class="blog-p-tag">
+                That being said, the RB1s, outside of Chubb and Cook, are still dominating the receiving yard stats on a
+                per game basis.
+            </p>
+            <p class="blog-p-tag">
+                Outside of that I was surprised by Antonio Gibson creeping into the RB1 territory here, but he's not
+                someone I recommend in investing in.
+            </p>
+            <p class="blog-p-tag">
+                Additionally, RB2s and RB3s are kinda all over the place on the per game numbers as well, so receiving
+                stats do seem to correlate with RB1s,
+                but not so much with anyone else.
+            </p>
+
+            <h3 class="h3-blog">Targets and Receptions</h3>
+            <p class="blog-p-tag">
+                Moving onto targets and receptions:
+            </p>
+            <div class="blog-img-container">
+                <img class="multi-img"
+                    src="/Fantasy/Analysis/images/RB/Total Receiving Targets-by-Total Receiving Receptions.png">
+                <img class="multi-img" src="/Fantasy/Analysis/images/RB/Targets Per Game-by-Receptions Per Game.png">
+            </div>
+            <p class="blog-p-tag">
+                The first that catches my eye is actually with the graph on the right.
+                Targets to receptions are pretty much 1:1 or like <i>targets per game = receptions per game + 1</i>.
+                This makes sense when giving it some thought, as running backs are likely to get dump offs,
+                but it surprised me because it's different for tight ends and wide receivers.
+            </p>
+            <p class="blog-p-tag">
+                The other thing that I noticed, is that backs with at least 4 targets a game return really good
+                production:
+            <ul class="bullet-list">
+                <li>Austin Ekeler - 21.92 ppg</li>
+                <li>Christian McCaffrey - 20.96 ppg</li>
+                <li>Saquon Barkley - 17.75 ppg</li>
+                <li>Rhamondre Stevenson - 14.65 ppg</li>
+                <li>Aaron Jones - 14.62 ppg</li>
+                <li>Joe Mixon - 17.11 ppg</li>
+                <li>Leonard Fournette - 14.13 ppg</li>
+                <li>Alvin Kamara - 14.11 ppg</li>
+                <li>James Conner - 15.4 ppg</li>
+                <li>Jerick McKinnon - 11.55 ppg</li>
+                <li>D'Andre Swift - 13.65 ppg</li>
+            </ul>
+            </p>
+            <p class="blog-p-tag">
+                I think it's possible to find guys every year that you think might get at least 4 targets a game and get
+                them on the cheap before they produce.
+            </p>
+            <p class="blog-p-tag">
+                Looking at the season total numbers, it seems like the number you want your back to hit is at least 60
+                targets.
+                The reception numbers aren't as clear, especially since some backs do a lot more with less.
+            </p>
+            <p class="blog-p-tag">
+                Take Henry for example, back number 9 last year in total receiving yards with 398 receiving yards.
+                He only had 2.06 catches on 2.56 targets a game. That's pretty crazy!
+            </p>
+
+
+            <h3 class="h3-blog">Touchdowns</h3>
+            <p class="blog-p-tag">
+                Now, let's take a look at receiving touchdowns:
+            </p>
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/RB/Total Fantasy Points PPR-by-Total Receiving Touchdowns.png">
+            </div>
+            <p class="blog-p-tag">
+                Pretty much like other positions, touchdowns are pretty variant across the board.
+                Touchdowns are great for fantasy production, but hard to rely on and use to determine back quality.
+            </p>
+            <div class="blog-img-container">
+                <img src="/Fantasy/Analysis/images/RB/Fantasy Points Per Game PPR-by-Receiving Touchdowns Per Game.png">
+            </div>
+            <p class="blog-p-tag">
+                On a per game basis, it does clear up a little bit, especially if we ignore Perine.
+                It seems like average 0.2 receiving touchdowns a game (or 1 touchdown every 5 games) does correlate to
+                some success.
+            </p>
+
+
+            <h2 class="h2-blog">Totals</h2>
+            <p class="blog-p-tag">
+                Last section! We are going to put it all together and look at combined yardage and touchdowns.
+            </p>
+
+            <h3 class="h3-blog">Yards</h3>
+            <p class="blog-p-tag">
+                Starting with total yardage:
+            </p>
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/RB/Total Yards.png">
+                <img class="multi-img" src="/Fantasy/Analysis/images/RB/Total Fantasy Points PPR-by-Total Yards.png">
+            </div>
+            <p class="blog-p-tag">
+                As expected, total yardage correlates strongly with fantasy success.
+                Furthermore, it seems like 1400 total yards is a good threshold for being an RB1 on the season.
+            </p>
+            <p class="blog-p-tag">
+                The list of backs with at least 1400 total yards:
+            <ul class="bullet-list">
+                <li>Austin Ekeler - 21.92 ppg</li>
+                <li>Christian McCaffrey - 20.96 ppg</li>
+                <li>Josh Jacobs - 19.31 ppg</li>
+                <li>Derrick Henry - 18.93 ppg</li>
+                <li>Saquon Barkley - 17.75 ppg</li>
+                <li>Nick Chubb - 16.55 ppg</li>
+                <li>Rhamondre Stevenson - 14.65 ppg</li>
+                <li>Aaron Jones - 14.62 ppg</li>
+                <li>Dalvin Cook - 13.99 ppg</li>
+                <li>Travis Etienne - 12.06 ppg</li>
+            </ul>
+            </p>
+            <p class="blog-p-tag">
+                That's a pretty solid list. I'd be happy with most of those backs on my team (Cook is the caveat as he's
+                splitting time with Breece now).
+            </p>
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/RB/Total Yards Per Game.png">
+                <img class="multi-img"
+                    src="/Fantasy/Analysis/images/RB/Fantasy Points Per Game PPR-by-Total Yards Per Game.png">
+            </div>
+            <p class="blog-p-tag">
+                Not much changes on the per game basis.
+                The number on a per game basis for being an RB1 appears to be about 85 yards a game.
+            </p>
+            <p class="blog-p-tag">
+                The list of backs with at least 85 yards a game:
+                <ul class="bullet-list">
+                    <li>Austin Ekeler - 21.92 ppg</li>
+                    <li>Christian McCaffrey - 20.96 ppg</li>
+                    <li>Josh Jacobs - 19.31 ppg</li>
+                    <li>Derrick Henry - 18.93 ppg</li>
+                    <li>Saquon Barkley - 17.75 ppg</li>
+                    <li>Nick Chubb - 16.55 ppg</li>
+                    <li>Rhamondre Stevenson - 14.65 ppg</li>
+                    <li>Tony Pollard - 15.55 ppg</li>
+                    <li>Aaron Jones - 14.62 ppg</li>
+                    <li>Joe Mixon - 17.11 ppg</li>
+                    <li>Dalvin Cook - 13.99 ppg</li>
+                    <li>Alvin Kamara - 14.11 ppg</li>
+                    <li>Jonathan Taylor - 13.31 ppg</li>                
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                Again, a really solid list of backs to have (minus Cook, due to the new situation).
+            </p>
+
+            <h3 class="h3-blog">Touchdowns</h3>
+            <p class="blog-p-tag">
+                Moving onto total touchdowns:
+            </p>
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/RB/Total Touchdowns.png">
+                <img class="multi-img"
+                    src="/Fantasy/Analysis/images/RB/Total Fantasy Points PPR-by-Total Touchdowns.png">
+            </div>
+            <p class="blog-p-tag">
+                It's all over the place, as expected. I will say that 10 seems to be a magic number.
+                You can also find some real value with that expectation, see Jamaal Williams and Jerick McKinnon.
+            </p>
+            <p class="blog-p-tag">
+                The list of backs with at least 10 touchdowns last year:
+                <ul class="bullet-list">
+                    <li>Austin Ekeler - 21.92 ppg</li>
+                    <li>Christian McCaffrey - 20.96 ppg</li>
+                    <li>Josh Jacobs - 19.31 ppg</li>
+                    <li>Derrick Henry - 18.93 ppg</li>
+                    <li>Nick Chubb - 16.55 ppg</li>
+                    <li>Tony Pollard - 15.55 ppg</li>
+                    <li>Jamaal Williams - 13.29 ppg</li>
+                    <li>Miles Sanders - 12.75 ppg</li>
+                    <li>Ezekiel Elliott - 12.39 ppg</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                It's probably too late to acquire these guys now, but this is why I was pretty high on Monty, and to some degree Swift.
+                Both of them were replacing backs with great redzone opportunities, and both of them are better than their predecessors, in my opinion.
+            </p>
+            <p class="blog-p-tag">
+                For that same reason, I'm off-put by Williams and Sanders this year. I think both are in considerably worse situations, and I want to avoid them.
+            </p>
+            <div class="blog-img-container">
+                <img class="multi-img" src="/Fantasy/Analysis/images/RB/Total Touchdowns Per Game.png">
+                <img class="multi-img"
+                    src="/Fantasy/Analysis/images/RB/Fantasy Points Per Game PPR-by-Total Touchdowns Per Game.png">
+            </div>
+            <p class="blog-p-tag">
+                I don't think much changes here for me, but it is interesting to see the per game numbers.
+                I am a little surprised by Patterson, but I don't see him doing much going forward with Bijan being drafted by the Falcons.
+            </p>
+
+
+            <h2 class="h2-blog">Summary</h2>
+            <p class="blog-p-tag">
+                I've already written enough for this one, so it's time to hit the review and call it a day:
+            <ul class="bullet-list">
+                <li>James Conner is good value for his production, similar to his fellow Cardinal, Ertz.</li>
+                <li>Najee feels like a plodder. I would be worried about Warren.</li>
+                <li>Me likey Swift's and Monty's situations.</li>
+                <li>Good running backs don't need to be good runners or even have great running stats.</li>
+                <li>CMC and Ekeler are guys you pay up for as a contender. They are both special.</li>
+                <li>Receiving numbers correspond to success more so that rushing numbers do!</li>
+                <li>Backs that get at least 4 targets a game produce really well in PPR.</li>
+            </ul>
+            </p>
+            <p class="blog-p-tag">
+                And the standards to be a RB1 are something like:
+            <ul class="bullet-list">
+                <li>1400 total yards - the spread doesn't matter too much, but ~300 yards receiving would be good.</li>
+                <li>10 total touchdowns - again, spread doesn't matter too much.</li>
+                <li>A back with at least 4 targets a game will produce.</li>
+                <li>A minimum of 200 rushing attempts, but the more the merrier.</li>
+            </ul>
+            </p>
+            <p class="blog-p-tag">
+                That's all folks!
+            </p>
+            <p class="blog-p-tag">
+                Please keep an eye out for the next part of the running back 2022 performance review,
+                where I'll be looking into running back tiers via clustering.
+            </p>
+            <p class="blog-p-tag">
+                Thanks for reading!
+            </p>
+            <p class="blog-p-tag">
+                Cheers, <br />
+                Alex
+            </p>
+        </div>
+    </div>
+</body>
+<script>
+    $("#common-header").load("/Fantasy/header.html");;
+</script>

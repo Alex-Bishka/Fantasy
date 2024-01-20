@@ -1,0 +1,369 @@
+<head>
+    <title>Running Back Metrics</title>
+    <link rel="stylesheet" href="/Fantasy/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/Fantasy/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        // google analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>Running Back Metrics</h1>
+
+
+            <h2>TL;DR</h2>
+            <p class="blog-p-tag">
+                <ul class="bullet-list">
+                    <li>It's hard to predict running back performance on rushing stats because 40-50% of a back's production comes from receiving work.</li>
+                    <li>Taking into account all facets of a backs game improves predictability dramatically - going from a correlation of about 0.59 to approximately 0.80 for
+                        <a href="javascript:void(0);" onclick="scrollToParagraph('fantasy-relevant-definition', 10)">fantasy relevant</a> backs.</li>
+                    <li>While it's not exactly as effective as trinity score on a general scale, it offers pretty good insight into the future performance of already
+                        established backs.
+                    </li>
+                </ul>
+            </p>
+
+
+            <h2 class="h2-blog">Overview</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Welcome back to another analysis piece!
+                </p>
+                <p class="blog-p-tag">
+                    This time, I'm revisiting running back metrics to see if there's something I missed
+                    in either the <a>sticky analysis</a> or <a>yards per carry and carries</a> pieces.
+                </p>
+                <p class="blog-p-tag">
+                    Yet again, the goal is to see if we can find any stat or set of stats that can be used as indicators
+                    of future fantasy performance. I will continue to use the 2012-2022 data set for this exploration.
+                </p>
+                <p class="blog-p-tag">
+                    The new angle for the same data takes into account the receiving work for backs. In previous explorations on this 
+                    topic I have only examined the rushing stats of backs, which I realized is a little silly, because the distribution of
+                    fantasy points for backs is pretty even across receiving and rushing stats.
+                </p>
+                <p class="blog-p-tag">
+                    If this surprises you, it surprised me as well, and this bar graph captures the motivation quite well for this piece:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/stability-total/season/distribution-of-fantasy-points.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Generally speaking, receiving work matters for a backs fantasy relevance. In fact, the split of fantasy production from rushing and 
+                    receiving is about 50-50 when looking at all running back seasons from 2012-2022. The graph above seems to reflect this, with younger backs
+                    producing more on the ground, and older ones through the air.
+                </p>
+                <p class="blog-p-tag">
+                    For those who would prefer this type of visualization to directly compare where the fantasy points are coming from for backs:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/stability-total/season/distribution-of-fantasy-points-grouped.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Before moving on, I do want to emphasize that these bar graphs are displaying the results across the whole data set.
+                </p>
+                <p class="blog-p-tag">
+                    However, if we dig further and only take a look at
+                    <a href="javascript:void(0);" onclick="scrollToParagraph('fantasy-relevant-definition', 10)">fantasy relevant</a>
+                    backs, we see that the receiving is slightly less important:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/stability-total/season/distribution-of-fantasy-points-10-games-800-yards.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    The split is still about 60-40, in favor of rushing. Receiving production accounts for a significant portion of fantasy points, even for fantasy relevant backs.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Metric Correlations</h2>
+            <div>
+                <p class="blog-p-tag">
+                    At this point, we want to re-calculate correlations of stats for backs to see if any of the totals or receiving stats 1) self-correlate and 2)
+                    correlate to fantasy production. Before moving on, I want to note that all of the bar graphs below are graphed from highest self correlation (left)
+                    to lowest self correlation (right).
+                </p>
+                <p class="blog-p-tag">
+                    Here are the general corrrelations for all data points from 2012-2022:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/stability-total/season/general-corrs.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    That's a bit intense, so let's take a look at a more focused version of the bar graph above - keeping only stats that have values of at least 0.5
+                    for self and fantasy correlation:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/stability-total/season/general-corrs-focused.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    The stats above are scattered between rushing, total, and receiving, and there are some strong correlations present.
+                    Another validity check that we are on the right path, especially compared to previous analysis deep dives!
+                </p>
+                <p class="blog-p-tag">
+                    Let's apply a stronger filter to remove noise from our data set, at least 10 games played in season X (current) and X - 1 (previous):
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/stability-total/season/10-games-corrs.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Again, the focused view:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/stability-total/season/10-games-corrs-focused.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Once again, another checkpoint confirming that our investigation is in the right direction, as there is a balance of rushing, total, and receiving
+                    stats.
+                </p>
+
+                <p class="blog-p-tag">
+                    Finally, narrowing the data set to our
+                    <a href="javascript:void(0);" onclick="scrollToParagraph('fantasy-relevant-definition', 10)">fantasy relevant</a> backs:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/stability-total/season/10-games-800-yards-corrs.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    The focused view for additional clarity:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/stability-total/season/10-games-800-yards-corrs-focused.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Fascinating, when filtering our data to just fantasy relevant backs, the stats that matter most for predicting fantasy football production
+                    appear to all be receiving stats. That's not what I was expecting at all, and makes me wonder how a model built on this information would 
+                    perform on backs like Henry. I will follow-up this investigation with an article on predictive modeling for backs, that builds of the ideas
+                    found in this piece.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Fantasy Relevance</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Upon this discovery, I immediately plotted some of the highest self correlating stats, their combined values, and fantasy performance, against 
+                    age. I do want to note that age is calculated slightly differently in this section. Rather than keeping the starting age value,
+                    if a player changes age (i.e started the season at 24 and then turned 25 before the season ends), their age is calculated as 24.5. Moreover, in order 
+                    for an age group (i.e. 24, 24.5, 25, etc.) to be considered, there must be at least ten samples of that age group performing at fantasy relevant standards
+                    from 2012-2022.
+                </p>
+                <p class="blog-p-tag">
+                    The following graph contains <i>wopr_y</i>, <i>tgt_sh</i>, and <i>receptions</i>, all of which are combined to create the <i>new-metric</i>.
+                    These four lines are then plotted with fantasy points, against age:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/stability-total/season/new-metric-and-metrics-starters-by-age_mean.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    I encourage you to use the full interactive capabilities of the graph above. You can (de-)select lines on the graph by clicking on them on the legend.
+                    To restore the graph to its original state, double click on a line in the legend.
+                </p>
+                <p class="blog-p-tag">
+                    The three stats are practically mirrors of each other, so I recommend disabling them to see just the <i>new-metric</i> and fantasy points.
+                    While these two lines are not identical to each other, the new-metric does a decent job of mimicking the trends in the fantasy points line. 
+                </p>
+                <p class="blog-p-tag">
+                    Well, what happens if we include the <a>rushing stat that most closely followed fantasy points</a>? If we add carries as part of the <i>new-metric</i>,
+                    we get the following plot:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/stability-total/season/new-metric-carries-and-metrics-starters-by-age_mean.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Again, I encourage you to take advantage of the interactivity of the graph. If we compare the freshly calculated <i>new-metric</i> against fantasy points,
+                    we see that carries improves the quality of our predictive indicator (look closely between the ages of 24.5 and 25.5).
+                </p>
+                <p class="blog-p-tag">
+                    Going further, we see that this new-metric has a really strong correlation value with itself, fantasy points in the same season, and fantasy points with its
+                    previous season's value:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/stability-total/season/10-games-800-yards-corrs-by-metrics.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Before diving into the results of the figure, I want to clarify the graph above. The blue bar shows the correlation of the stat on the x-axis with fantasy points (PPR)
+                    in the same season. The red bar shows the correlation of the x-axis stat measured in the previous season (or season X - 1) and fantasy points (PPR) in the current
+                    season (or season X). The green bar shows the correlation of the x-axis stat to itself, year-over-year.
+                </p>
+                <p class="blog-p-tag">
+                    For fantasy indicator purposes, we are most interested in the red bar graph. Now, while the <i>new-metric</i> has a strong correlation of about 0.82. It 
+                    also isn't the strongest of the x-axis stats.
+                </p>
+                <p class="blog-p-tag">
+                    This suggests that there might be an even better metric of fantasy performance, as I am doubtful a singular stat would be able to outperform a set of 
+                    stats in this task, <a href="/Fantasy/Blogs/sticky-stats/wr-metrics">similar to metrics I looked into that were better than the trinity score for wide receivers</a>.
+                </p>
+                <p class="blog-p-tag">
+                    I am quite excited by the prospects of this and look forward to exploring the possibilities for a more optimal metric. I'll be sharing that, along with
+                    some experimental modeling in the follow up to this piece.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Summary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Thanks to all for joining me on another analysis piece! Once again, the recap:
+                </p>
+                <ul class="bullet-list">
+                    <li>It's hard to predict running back performance on rushing stats because 40-50% of a back's production comes from receiving work.</li>
+                    <li>Taking into account all facets of a backs game improves predictability dramatically - going from a correlation of about 0.59 to approximately 0.80 for
+                        <a href="javascript:void(0);" onclick="scrollToParagraph('fantasy-relevant-definition', 10)">fantasy relevant</a> backs.</li>
+                    <li>While it's not exactly as effective as trinity score on a general scale, it offers pretty good insight into the future performance of already
+                        established backs.
+                    </li>
+                </ul>
+                <p class="blog-p-tag">
+                    Thanks for reading!
+                </p>
+                <p class="blog-p-tag">
+                    Cheers, <br />
+                    Alex
+                </p>
+            </div>
+            
+
+            <h2 class="h2-blog">Glossary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Term definitions below:
+                </p>
+                <ul class="bullet-list">
+                    <li id="fantasy-relevant-definition"><b>Fantasy relevant:</b> a back is defined as fantasy relevant if they have played in at least 10 games in a season and have at least 800 yards in that season. If the graph is using multiple seasons (i.e. self correlations), this standard is applied to each season.</li>
+                </ul>
+                <p class="blog-p-tag">
+                    For stat definitions on the graphs, please check out <a href="/Fantasy/Blogs/sticky-stats/wr-sticky-season-totals#glossary-0">this previous glossary</a>
+                    and these <a href="https://cran.r-project.org/web/packages/nflreadr/vignettes/">vignettes</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function scrollToParagraph(paragraphId, headerOffset=100) {
+        let element = document.getElementById(paragraphId);
+        // let headerOffset = 100;  // Change this value according to your needs
+        let elementPosition = element.getBoundingClientRect().top;
+        let offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+        });
+    }
+</script>
+<script>
+    $("#common-header").load("/Fantasy/header.html");;
+</script>

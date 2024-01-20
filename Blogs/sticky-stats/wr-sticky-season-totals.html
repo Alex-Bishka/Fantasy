@@ -1,0 +1,567 @@
+<head>
+    <title>WR Sticky Stats</title>
+    <link rel="stylesheet" href="/Fantasy/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/Fantasy/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        // google analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>Wide Receiver Sticky Stats</h1>
+
+
+            <h2>TL;DR</h2>
+            <p class="blog-p-tag">
+                <ul class="bullet-list">
+                    <li>Basic wide receiver stats correlate pretty strongly with themselves year-over-year, indicating that 
+                        the wide receiver position is a positively predictable one.
+                    </li>
+                    <li>This more or less holds for starting wide receivers.</li>
+                    <li>
+                        Receiving touchdowns are the most fluky stat from the basic ones, but are more consistent year-over-year for starting wide receivers (0.40) than 
+                        for starting quarterbacks (0.36) and starting running backs (0.25).
+                    </li>
+                    <li>Starting wide receivers have somewhat strong correlations on most of their basic stats (receptions, targets, receiving yards, etc.).</li>
+                    <li>
+                        There isn't as strong a drop-off for wide receivers, as for quarterbacks and running backs.
+                        As long as a wide receiver is #1 or #2 on the depth chart, they are likely to produce in fantasy.
+                        30 and on is when the number of wide receivers as the #1 or #2 becomes rare-to-extinct.
+                    </li>
+                    <li>
+                        Wide receivers have by far the strongest correlating stats, compared to running backs and quarterbacks.
+                        This comparison is in regards to the stat against fantasy points and the stat against itself from year-to-year.
+                        So, not only are wide receiver stats the most predictable here, but they also are good indicators of fantasy performance.
+                    </li>
+                    <li>
+                        Three of the best metrics (I would argue the three best metrics) for wide receiver predictability are:
+                        <a href="javascript:void(0);" onclick="scrollToParagraph('wopr_x')">weighted opportunity rating</a>,
+                        <a href="javascript:void(0);" onclick="scrollToParagraph('ay_sh')">air yards share</a>, and
+                        <a href="javascript:void(0);" onclick="scrollToParagraph('tgt_sh')">target share</a>.
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" onclick="scrollToParagraph('cushion')">Cushion</a> and
+                        <a href="javascript:void(0);" onclick="scrollToParagraph('separation')">separation</a> have extraordinarily poor correlation with fantasy points.
+                        These metrics appear to be extremely poor indicators for how a wide receiver performs in fantasy and are not really predictable 
+                        themselves.
+                    </li>
+                </ul>
+            </p>
+
+
+            <h2 class="h2-blog">Overview</h2>
+            <div>
+                <p class="blog-p-tag">
+                    This analysis is a continuation of the current sticky stat series I have been working on.
+                    Generally speaking, the exploration of sticky stats is part of a larger effort to find reliable
+                    predictors for fantasy football performance, at each position group.
+                </p>
+                <p class="blog-p-tag">
+                    The specific goal of this writing is to find receiving stats that are, positively, consistent from
+                    year-to-year and also serve as useful indicators of fantasy performance.
+                </p>
+                <p class="blog-p-tag">
+                    The data used for the findings below is primarily from 2012-2022, unless otherwise stated.
+                </p>
+                <p class="blog-p-tag">
+                    Before diving in, I do recommend checking out some of the other pieces in the series:
+                    <ul class="bullet-list">
+                        <li><a href="/Fantasy/Blogs/sticky-stats/qbs-sticky-season-totals.html">Quarterback Season Total Sticky Stats</a></li>
+                        <li><a href="/Fantasy/Blogs/sticky-stats/qbs-sticky-per-game.html">Quarterback Per Game Sticky Stats</a></li>
+                        <li><a href="/Fantasy/Blogs/sticky-stats/rushing-sticky-season-totals.html">Running Back Season Total Sticky Stats</a></li>
+                    </ul>
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">A Cursory Glance</h2>
+            <div>
+                <p class="blog-p-tag">
+                    As with the other data set explorations, we start with a general overview of the wide receiver data:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 800px; height: 650px;" src="/Fantasy/Analysis/interactive/WR/stability/season/Basic-Receiving-Stat-Correlations.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    The heat map above is an encouraging start! While no one stat has a super strong correlation,
+                    with itself or other stats, there is strong correlation across the board.
+                </p>
+                <p class="blog-p-tag">
+                    This is a much better start, especially in comparision to the correlation heat map of
+                    <a href="/Fantasy/Analysis/interactive/RB/stability-rushing/season/simple-rb.html">general running backs</a>.
+                </p>
+                <p class="blog-p-tag">
+                    I want to point out that the trend of touchdowns being inconsistent, across the position groups, continues.
+                    The correlation of <i>receiving_tds vs. receiving_tds_last</i> is 0.54, and it is by far the weakest self-correlated
+                    year-to-year stat.
+                </p>
+                <p class="blog-p-tag">
+                    Now, if we take a look at a scatter plot for one of the strongest correlations above, <i>Receptions vs. Receptions Last</i>,
+                    we can see that we have some noise:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/WR/stability/season/Basic-Receiving-Stat-Correlations-Receptions-vs.-Receptions-Last.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    To filter the data to find information on more fantasy relevant players, we will only
+                    keep data points where players have played at least 10 games each of the current and previous
+                    seasons.
+                </p>
+                <p class="blog-p-tag">
+                    This filter yields the following heat map:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 800px; height: 650px;" src="/Fantasy/Analysis/interactive/WR/stability/season/Basic-Receiving-Stat-Correlations-(Games=10-and-Games-Last=10).html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    For the most part, receiving stats are still positively consistent across the board.
+                    The only correlation that takes a serious hit is <i>receiving_tds vs. receiving_tds_last</i>,
+                    which drops to 0.41. Touchdowns seem to be a fluky stat no matter the position in fantasy.
+                </p>
+                <p class="blog-p-tag">
+                    A visual for how noisy the touchdown data is:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/WR/stability/season/Basic-Receiving-Stat-Correlations-(Games=10-and-Games-Last=10)-Receiving-Tds-vs.-Receiving-Tds-Last.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    To get an even better sense of what the data currently looks with the applied filter,
+                    here is the scatter plot of <i>Receptions vs. Receptions Last</i>:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/WR/stability/season/Basic-Receiving-Stat-Correlations-(Games=10-and-Games-Last=10)-Receptions-vs.-Receptions-Last.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Hovering over some points, our data quality has improved much more! We have far less noise and a 
+                    higher concentration of fantasy relevant players.
+                </p>
+                <p class="blog-p-tag">
+                    Perhaps we can do better, in regards to finding fantasy relevant players. Let's add an additional filter of
+                    being at least 2nd on the depth chart - in both seasons - as a wide receiver:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 800px; height: 650px;" src="/Fantasy/Analysis/interactive/WR/stability/season/Basic-Receiving-Stat-Correlations-(Games=10-and-Games-Last=10-and-Starter).html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    While this stronger filter removes about 100 samples from the previous heat map, the correlations remain largely unchanged.
+                    It seems that, outside of touchdowns, starting wide receivers tend to improve year-over-year.
+                </p>
+                <p class="blog-p-tag">
+                    The landscape for wide receivers is far more stable than the 
+                    <a href="/Fantasy/Analysis/interactive/RB/stability-rushing/season/simple-rb-starting.html">starting running back one</a>.
+                <p class="blog-p-tag">
+                    In fact, it's even more stable compared to the 
+                    <a href="/Fantasy/Analysis/interactive/QB/stability-passing/starters.html">starting quarterback one</a>.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Digging Deeper</h2>
+            <div>
+                <p class="blog-p-tag">
+                    When performing this analysis, I have been trying to see if there's a difference between young and old
+                    starters at the position. The idea being that at a certain point, there's a drop-off due to injuries,
+                    father time catching up, or younger, better players taking over.
+                </p>
+                <p class="blog-p-tag">
+                    For quarterbacks, <a href="/Fantasy/Blogs/sticky-stats/qbs-sticky-season-totals#diving-deeper-0">the age marker for the drop-off was around 30 years old</a>.
+                    For backs, there wasn't a clear drop-off, at least when looking at stat correlations year-over-year. However, taking a look
+                    at <a href="/Fantasy/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-age-10-games-10-samples-carries.html">yards per carry and total carries against fantasy points</a>,
+                    shows a picture where backs severely decline by and after the age of 28.
+                </p>
+                <p class="blog-p-tag">
+                    The same doesn't really seem to apply for wide receivers. The biggest performance discrepancy I could by age was at 27.
+                </p>
+                <p class="blog-p-tag">
+                    The correlation heat map for wide receivers who were 29 or younger in their current season:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 800px; height: 650px;" src="/Fantasy/Analysis/interactive/WR/stability/season/Basic-Receiving-Stat-Correlations-(Young-Starters).html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    The correlation heat map for wide receivers who were older than 29 in their current season:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 800px; height: 650px;" src="/Fantasy/Analysis/interactive/WR/stability/season/Basic-Receiving-Stat-Correlations-(Old-Starters).html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Yes, there is a bit of a dip, but for the most part it's close.
+                    Outside of touchdowns and fantasy points, these are still pretty solid correlations from year-to-year.
+                </p>
+                <p class="blog-p-tag">
+                    It would seem that so long as your aging receiver remains a top two option on the depth chart, they should
+                    stay fantasy relevant.
+                </p>
+                <p class="blog-p-tag">
+                    Easier said than done to stay a top two option into your thirties:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/samples-v-age.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    The graph above shows how many players are either the wide receiver one or two on the depth chart, by age. 
+                    By 30-32, the sample size has greatly declined. Receivers in a starting role at 33 and 34 still exist, but by
+                    35 there's almost none left.
+                </p>
+                <p class="blog-p-tag">
+                    The graph below shows the same information, but with the average depth chart position as the line, and sample size
+                    on hover. 
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/depth-chart-v-age.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Interestingly enough, if a receiver remains a starter as they get older, they are far more likely to be the wide
+                    receiver one (i.e. climb the depth chart), provided they stay heathy (recall this data is with receivers who have played at least 10 games in a current and
+                    previous season from 2012-2022).
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Fantasy Relevance</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Now, the important question: which of these stats - that is positively predictable - is fantasy relevant? 
+                    At the end of the day, it's great if a stat is predictable, but that does not really matter to us if there's
+                    no use for it in predicting fantasy performance.
+                </p>
+                <p class="blog-p-tag">
+                    So, in this section, we will check both the correlation of a stat to fantasy points and to its value in the previous year.
+                </p>
+                <p class="blog-p-tag">
+                    Before continuing, I want to note that the data set appears to have a couple of repeat stats. I believe these are small variations of the same stat. I'm looking
+                    into the differences now, but await an answer from a creator of the data set.
+                </p>
+                <p class="blog-p-tag">
+                    Now that's out of the way, we first start with stats from 2012-2022, these are slightly more basic than the next gen stats that we will also examine 
+                    in this section. The strongest filter (played 10 games in back to back seasons and at least wide receiver two in both years)
+                    yields the following bar graph, sorted by highest (left) to lowest (right) correlation to self:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/correlation-bar.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    For more information on what each abbreviation stands for, please check out the <a href="javascript:void(0);" onclick="scrollToParagraph('glossary-0')">glossary</a> below.
+                </p>
+                <p class="blog-p-tag">
+                    To make more sense of the bar graph above, let's apply a filter to the bar graph above: both correlation values must be at least 0.50. This yields the following
+                    bar graph:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/correlation-bar-focused.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    All of these stats have at least decent-to-strong correlation with both themselves and fantasy points. The three in particular that
+                    have above 0.70 correlation for both fantasy points and themselves year-to-year, are <i>wopr_y</i>, <i>ay_sh</i>, and <i>tgt_sh</i>,
+                    aka <i>weighted opportunity rating</i>, <i>air yards share</i>, and <i>target share</i>.
+                </p>
+                <p class="blog-p-tag">
+                    Seems like wide receivers might be the most predictable position group. At the very least, this position group - for its fantasy 
+                    relevant players - has the strongest correlation values for stats against fantasy points and against themselves year-over-year.
+                </p>
+                <p class="blog-p-tag">
+                    Diving further, by using Amazon Next Gen Stats, we see the following bar graph:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/correlation-bar-advanced-stats.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Before focusing in on the more useful stats, that could serve as indicators for wide receiver fantasy performance, I want to point out two stats
+                    in the bar graph above: <i>avg_cushion_mean</i> and <i>avg_separation_mean</i>. Both appear to be at the very least noisy, but more likely 
+                    irrelevant to fantasy performance. 
+                </p>
+                <p class="blog-p-tag">
+                    What does this mean? Well, chances are how much space a wide receiver gets before the snap and how much space a wide receiver has when the (in)completion
+                    occurs, doesn't matter for fantasy. I found this to be quite interesting as it goes against intuition and what I have read. It's possible that these stats
+                    don't matter for fantasy performance because wide receivers coming into the NFL are already good (enough) at breaking the press and getting separation.
+                    I plan to dig deeper on this in a future write-up.
+                </p>
+                <p class="blog-p-tag">
+                    Below we have a more focused version of the previous bar graph:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/correlation-bar-advanced-stats-focused.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    There is a little bit of change between the order of the columns of this focused bar graph and the previous focused one. I would attribute this mostly
+                    to the time frame differences. This advanced stat bar graph is from 2016-2022, whereas the first focused bar graph on more "basic" stats used data from 
+                    2012-2022.
+                </p>
+                <p class="blog-p-tag">
+                    I want to end the piece of the two following line graphs. The first compares the top five self-correlating stats from the 2012-2022 bar graph to
+                    fantasy points, on a season-by-season basis:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/line-graph-season-metrics.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    I want to point out the <i>combined_metric</i>, which is the average of the non-fantasy points metrics. I strongly encourage you to 
+                    utilize the interactive ability of the graph to only display the <i>combined_metric</i> and <i>fantasy_points-mean</i> lines. 
+                </p>
+                <p class="blog-p-tag">
+                    To do so, simply double-click on one line in the legend, and then single-click the other.
+                    Double-click either selected line to reset the graph.
+                </p>
+                <p class="blog-p-tag">
+                    You should notice that the <i>combined_metric</i> follows <i>fantasy_points-mean</i> pretty closely,
+                    but not exactly.
+                </p>
+                <p class="blog-p-tag">
+                    The second line graph compares the top five self-correlating stats from the 2012-2022 bar graph to
+                    fantasy points, by age:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/line-graph-age-metrics.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    We have the same <i>combined_metric</i> here, and I encourage you to toggle the lines on the graph to display only the <i>combined_metric</i> and <i>fantasy_points-mean</i> lines.
+                    The <i>combined_metric</i> follows <i>fantasy_points-mean</i> even better, in this case.
+                </p>
+                <p class="blog-p-tag">
+                    This very much touches on the idea of the trinity score, which is an aggregate metric composed of yards after catch (YAC), target share and air yards share. 
+                </p>
+                <p class="blog-p-tag">
+                    I would argue that, based on the correlations above, YAC probably should not be used, if we are using a metric that only contains three stats.
+                    To me, YAC probably should be replaced with weighted opportunity rating or receiving first down share. Likely the latter as the former might be too
+                    repetitive with target share and air yards.
+                </p>
+                <p class="blog-p-tag">
+                    That being said, why limit yourself to three stats when creating a predictive metric? This position has a a plethora of useful indicators, and more
+                    information can be useful, especially when creating predictive models.
+                </p>
+                <p class="blog-p-tag">
+                    I'll touch more upon this idea, along with an examinaion of the trinity score, in a follow up piece.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Summary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    That wraps up this one! As always, the recap: 
+                </p>
+                <ul class="bullet-list">
+                    <li>Basic wide receiver stats correlate pretty strongly with themselves year-over-year, indicating that 
+                        the wide receiver position is a positively predictable one.
+                    </li>
+                    <li>This more or less holds for starting wide receivers.</li>
+                    <li>
+                        Receiving touchdowns are the most fluky stat from the basic ones, but are more consistent year-over-year for starting wide receivers (0.40) than 
+                        for starting quarterbacks (0.36) and starting running backs (0.25).
+                    </li>
+                    <li>Starting wide receivers have somewhat strong correlations on most of their basic stats (receptions, targets, receiving yards, etc.).</li>
+                    <li>
+                        There isn't as strong a drop-off for wide receivers, as for quarterbacks and running backs.
+                        As long as a wide receiver is #1 or #2 on the depth chart, they are likely to produce in fantasy.
+                        30 and on is when the number of wide receivers as the #1 or #2 becomes rare-to-extinct.
+                    </li>
+                    <li>
+                        Wide receivers have by far the strongest correlating stats, compared to running backs and quarterbacks.
+                        This comparison is in regards to the stat against fantasy points and the stat against itself from year-to-year.
+                        So, not only are wide receiver stats the most predictable here, but they also are good indicators of fantasy performance.
+                    </li>
+                    <li>
+                        Three of the best metrics (I would argue the three best metrics) for wide receiver predictability are:
+                        <a href="javascript:void(0);" onclick="scrollToParagraph('wopr_x')">weighted opportunity rating</a>,
+                        <a href="javascript:void(0);" onclick="scrollToParagraph('ay_sh')">air yards share</a>, and
+                        <a href="javascript:void(0);" onclick="scrollToParagraph('tgt_sh')">target share</a>.
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" onclick="scrollToParagraph('cushion')">Cushion</a> and
+                        <a href="javascript:void(0);" onclick="scrollToParagraph('separation')">separation</a> have extraordinarily poor correlation with fantasy points.
+                        These metrics appear to be extremely poor indicators for how a wide receiver performs in fantasy and are not really predictable 
+                        themselves.
+                    </li>
+                </ul>
+                <p class="blog-p-tag">
+                    Thanks to all for reading!
+                </p>
+                <p class="blog-p-tag">
+                    Have a happy New Year!
+                </p>
+                <p class="blog-p-tag">
+                    Cheers, <br />
+                    Alex
+                </p>
+            </div>
+            
+
+            <h2 class="h2-blog">Glossary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Term definitons below:
+                </p>
+                <ul class="bullet-list">
+                    <li><b>avg_yac_above_expectation_mean:</b> Season average for a receiver's yards after catch (YAC) compared to their expected YAC.</li>
+                    <li><b>avg_yac_mean:</b> Average yards gained after catch by a receiver.</li>
+                    <li><b>avg_expected_yac_mean:</b> Average expected yards after catch, based on numerous factors using tracking data such as how open the receiver is, how fast they're traveling, how many defenders/blockers are in space, etc.</li>
+                    <li><b>catch_percentage_mean:</b> Percentage of caught passes relative to targets.</li>
+                    <li id="separation"><b>avg_separation_mean:</b> The distance (in yards) measured between a WR/TE and the nearest defender at the time of catch or incompletion.</li>
+                    <li id="cushion"><b>avg_cushion_mean:</b> The distance (in yards) measured between a WR/TE and the defender they're lined up against at the time of snap on all targets.</li>
+                    <li><b>avg_intended_air_yards_mean:</b> Average air yards on all attempted passes.</li>
+                    <li><b>percent_share_of_intended_air_yards_mean:</b> The sum of the receivers total intended air yards (all attempts) over the sum of his team's total intended air yards.
+                        Represented as a percentage, this statistic represents how much of a team's deep yards does the player account for.</li>
+                    <li><b>racr:</b> Receiving (yards) Air (yards) Conversion Ratio - the number of receiving yards per air yards targeted per game.</li>
+                    <li><b>rtd_sh:</b> Receiving TDs share for a player.</li>
+                    <li><b>receiving_epa:</b> Total <a href="/Fantasy/Blogs/sticky-stats/rushing-sticky-season-totals#glossary-0">EPA</a> on plays where this receiver was targeted.</li>
+                    <li><b>depth_team_mean:</b> The averge depth chart position for a player on a roster. Lower is better (1 is the starter).</li>
+                    <li><b>dom:</b> Dominator rating. "Displays the percentage of team yards and touchdowns a specific player accounts for.
+                        The idea is that the higher the number, the more dominant that player was for his respective team" - 
+                        <a href="https://www.pff.com/news/fantasy-football-predicting-breakout-rookie-wide-receivers-using-pff-grades-and-dominator-rating">PFF</a>.</li>
+                    <li><b>yac_sh:</b> Yards after catch share.</li>
+                    <li><b>w8dom:</b> A weighted version of <i>dom</i> that favors receiving yards over TDs.</li>
+                    <li><b>ppr_sh:</b> PPR fantasy points share.</li>
+                    <li><b>ry_sh:</b> Receiving yards share.</li>
+                    <li><b>rtdfd_sh:</b> Receiving TDs + 1st Downs share.</li>
+                    <li><b>yptmpa:</b> Receiving yards per team pass attempt.</li>
+                    <li><b>rfd_sh:</b> Receiving 1st Downs share.</li>
+                    <li id="tgt_sh"><b>tgt_sh:</b> Target share.</li>
+                    <li id="ay_sh"><b>ay_sh:</b> Air yards share.</li>
+                    <li id="wopr_x"><b>wopr_x:</b> Weighted opportunity rating. "It takes a player's target share and share of team Air Yards and
+                        combines them in a way that best predicts both PPR and standard fantasy points. The formula for WOPR is: <i>1.5 * Target Share + 0.7 * Share of Team Air Yards</i>"
+                        - <a href="https://www.nbcsports.com/fantasy/football/news/article-numbers-why-receiver-air-yards-matter">NBC Sports</a>.
+                    </li>
+                    <li><b>wopr_y:</b> Another variation of weighted opportunity rating.</li>
+                </ul>
+                <p class="blog-p-tag">
+                    Note that any of the stats above with <i>avg</i> and <i>mean</i> are seasonal average values. The redundancy comes from how the data 
+                    is formatted and then processed in my tooling - please ignore it.
+                </p>
+                <p class="blog-p-tag">
+                    For further digging on and curiousity about stat definitions please refer to these <a href="https://cran.r-project.org/web/packages/nflreadr/vignettes/">vignettes</a>.
+                    The majority of the definitions for this piece come the vignettes, specifically from the <a href="https://cran.r-project.org/web/packages/nflreadr/vignettes/dictionary_player_stats.html">season stats</a>
+                    and <a href="https://cran.r-project.org/web/packages/nflreadr/vignettes/dictionary_nextgen_stats.html">next gen stats</a>.
+                    The rest come from the <a href="https://github.com/cooperdff/nfl_data_py">nfl_data_py</a> repository - see the table defintions under the <i>Working with seasonal data</i>
+                    section.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function scrollToParagraph(paragraphId, headerOffset=100) {
+        let element = document.getElementById(paragraphId);
+        // let headerOffset = 100;  // Change this value according to your needs
+        let elementPosition = element.getBoundingClientRect().top;
+        let offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+        });
+    }
+</script>
+<script>
+    $("#common-header").load("/Fantasy/header.html");;
+</script>
