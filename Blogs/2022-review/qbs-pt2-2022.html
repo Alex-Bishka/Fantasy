@@ -1,0 +1,1302 @@
+<head>
+    <title>QBs in 2022 Part 2</title>
+    <link rel="stylesheet" href="/Fantasy/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/Fantasy/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        // google analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>QBs in 2022 Part 2</h1>
+
+
+            <h2>TL;DR</h2>
+            <p class="blog-p-tag">
+            <ul class="bullet-list">
+                <li>Fields has pretty much no passing base (in regards to fantasy production). Hard to evaluate this season, with how little he has played, but he frequently ends up in tiers with quarterbacks like Mariota. <b>YIKES!</b></li>
+                <li>Danny Dimes gives me similar concerns to Fields, but his passing base is quite better. I suppose his rushing is not on the same level as Fields, but he could be a really good buy now with his injury. I would still avoid him, but a situation to monitor.</li>
+                <li>Murray poses a better buy low to me, as the ceiling is higher, and the price shouldn't be expensive for him. Murray also has the best passing base out of these three players.</li>
+                <li>Jackson had an off year last year, but he is still worth every penny. Injuries and a bad situation hindered him, congrats to those that pounced on him during the offeseason.</li>
+                <li>Goff is a great budget purchase for really solid passing production in fantasy.</li>
+                <li>Herbert and TLaw could sneak into that Burrow, or even Mahomes tier in a year or two. I love them as franchise cornerstones, and would buy them before their prices sky rocket.</li>
+            </ul>
+            </p>
+
+            <h2 class="h2-blog">Overview</h2>
+            <p class="blog-p-tag">
+                Welcome back to yet another analysis piece on position group performance in 2022. This is part two for quarterbacks,
+                where we be using passing stats to create quarterback tiers.
+            </p>
+            <p class="blog-p-tag">
+                The goal is to find hidden value from these tiers, in other words: opportunities to add underappreciated talent to your roster.
+            </p>
+            <p class="blog-p-tag">
+                <a href="https://alex-bishka.github.io/Fantasy/Blogs/qbs2022">Part one</a> focuses on trends amongst quarterback stats to find points of arbitrage, so if you're interested
+                in looking even further into the subject, I would recommend looking back at it.
+            </p>
+            <p class="blog-p-tag">
+                For those curious about analysis on the other position groups in 2022, please check out the <a href="https://alex-bishka.github.io/Fantasy/Blogs.html">blogs page</a>.
+            </p>
+            <p class="blog-p-tag">
+                <b>My data disclaimer, as always:</b>
+            <ul class="bullet-list">
+                <li>I don't take into account anything related to two point conversions, partly due to
+                    the randomness and small sample size but mostly because it was difficult to incorporate into the
+                    data I
+                    fetched</li>
+                <li>The top 30 QBs I analyze are by the top 30 fantasy point totals, this is done for
+                    simplicity and reusability of graphing code</li>
+            </ul>
+            </p>
+
+
+            <h2 class="h2-blog">Tiers (Season Totals)</h2>
+            <p class="blog-p-tag">
+                The passing stats that we will evaluate quarterbacks on:
+                "Passing Yards", "Attempts", "Completions", "Passing TDs", and "Interceptions".
+            </p>
+
+            <h3 class="h3-blog">QBs as Three Tiers</h3>
+            <p class="blog-p-tag">
+                Starting off with three tiers:
+            </p>
+            <div class="iframe-container">
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-3.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                The players in each tier:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Jalen Hurts</li>
+                        <li>Aaron Rodgers</li>
+                        <li>Tua Tagovailoa</li>
+                        <li>Russell Wilson</li>
+                        <li>Derek Carr</li>
+                        <li>Dak Prescott</li>
+                        <li>Davis Mills</li>
+                        <li>Mac Jones</li>
+                        <li>Matt Ryan</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Patrick Mahomes</li>
+                        <li>Josh Allen</li>
+                        <li>Joe Burrow</li>
+                        <li>Geno Smith</li>
+                        <li>Trevor Lawrence</li>
+                        <li>Kirk Cousins</li>
+                        <li>Jared Goff</li>
+                        <li>Justin Herbert</li>
+                        <li>Tom Brady</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Fields</li>
+                        <li>Daniel Jones</li>
+                        <li>Lamar Jackson</li>
+                        <li>Kyler Murray</li>
+                        <li>Marcus Mariota</li>
+                        <li>Andy Dalton</li>
+                        <li>Jacoby Brissett</li>
+                        <li>Jimmy Garoppolo</li>
+                        <li>Ryan Tannehill</li>
+                        <li>Kenny Pickett</li>
+                        <li>Baker Mayfield</li>
+                        <li>Taylor Heinicke</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                A quick breakdown of each tier:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> Middling numbers, very much between Cluster 1 and Cluster 2. The exception is interceptions: this group is slightly worse than Cluster 1.</li>
+                    <li><b>Cluster 1:</b> QB1 territory. These guys throw the ball frequently, and accumulate a substantial amount of yards and touchdowns. Their interception numbers are about on par with Cluster 0.</li>
+                    <li><b>Cluster 2:</b> Quarterbacks who don't attempt or complete many passes. As a result, they don't have many passing yards, touchdowns or interceptions.</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                You definitely want a quarterback in Cluster 1. That is a sustainable and successful fantasy archetype for the quarterback position.
+                Obviously not everyone will be Mahomes, but 2022 Goff, TLaw, Cousins, etc. offer very solid QB1 numbers.
+            </p>
+            <p class="blog-p-tag">
+                Furthermore, you can get a decent start without breaking the bank like Brady. For this season, my favorite quarterback from
+                this cluster - in terms of bang for your buck - was Goff.
+            </p>
+            <p class="blog-p-tag">
+                I would still say Goff is at a good price: listed as QB14 on KTC (as of 10/3/23). That feels like a pretty sweet price for QB9 on the season.
+                I am quite confident he will finish as a QB1 in that Detroit offense, and see no reason why he can't be a lower end QB1 for the foreseeable future
+                in that situation.
+            </p>
+            <p class="blog-p-tag">
+                Another observation worth mentioning: Cluster 2 has some star names in it.
+                Looking at the per game numbers, Murray does improve, so I'll hold off my judgement on him for now.
+            </p>
+            <p class="blog-p-tag">
+                Lamar, Fields, and Danny Dimes are all in Cluster 2. That concerns me. I love the running threat that each of them have,
+                but I would want them to at least be in Cluster 0... 
+            </p>
+            <p class="blog-p-tag">
+                I said in in <a href="https://alex-bishka.github.io/Fantasy/Blogs/qbs2022">part one</a>, but for the major deficiencies in the passing game, I would want out on Fields.
+                Fields is such an outlier, it terrifies me. Could he turn it around? Maybe... but I am doubtful for many reasons.
+            </p>
+            <p class="blog-p-tag">
+                Fields had two monster games in 2023, but they were against very favorable matchups: Denver and Washington.
+                Every other game, he has looked meh at best. I would look to sell after a couple of monster rushing games.
+            </p>
+            <p class="blog-p-tag">
+                I am a little more lenient on Jones and Jackson, because they both have showed much more in the passing game than Fields,
+                but Jones would make me very uneasy. The Giants have such a bad oline and the Waller experiment hasn't really worked out.
+            </p>
+            <p class="blog-p-tag">
+                The reason I'm more iffy on moving off of Jones is because I don't think you can recoup much value for him, and he still might offer a 
+                QB1/QB2 game here and there, which is useful in superflex. Fields, on the other hand, could still yield a good-to-great haul.
+            </p>
+            <p class="blog-p-tag">
+                I am most comfortable riding out Jackson. He's having a really good season so far, and could beat his MVP season passing numbers, which
+                are in the ball park of being in Cluster 2 above. That being said, I would consider a TLaw+ offer for Jackson, just for sustainablity concerns,
+                running quarterbacks getting hurt a little too much for my taste.
+            </p>
+            <p class="blog-p-tag">
+                It should be noted that I want a quarterback that can produce in the passing game, but I would prefer one with a strong passing base (in regards to their stat output).
+                To me, these quarterbacks are more consistent and last longer than those who get a significant amount of their production from running the ball.
+            </p>
+            <p class="blog-p-tag">
+                I admit that rushing quarterbacks have a higher ceiling, but in a dynasty league with super-flex, I want set-and-forget guys who can be in the QB1 tier
+                for years to come. However, from my impressions (the fact only four of the QB1s in 2022 were dominant rushers; elite rushing quarterbacks seem
+                to get more [seriously] injured, more often), a good, pass heavy quarterback is the way to go.
+                
+            <p class="blog-p-tag">
+                In the future, I will dig more into this question more: <i>"what is the value gap between an elite rushing quarterback vs. an elite passing quarterback, and which is more worth it?"</i>.
+            </p>
+
+            <h3 class="h3-blog">QBs as Four Tiers</h3>
+            <p class="blog-p-tag">
+                Taking a look at the quarterback position with four tiers:
+            </p>
+            <div class="iframe-container">
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-4.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                The players in each tier:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Patrick Mahomes</li>
+                        <li>Josh Allen</li>
+                        <li>Joe Burrow</li>
+                        <li>Geno Smith</li>
+                        <li>Trevor Lawrence</li>
+                        <li>Kirk Cousins</li>
+                        <li>Jared Goff</li>
+                        <li>Justin Herbert</li>
+                        <li>Tom Brady</li>
+                        <li>Aaron Rodgers</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Fields</li>
+                        <li>Lamar Jackson</li>
+                        <li>Kyler Murray</li>
+                        <li>Marcus Mariota</li>
+                        <li>Jacoby Brissett</li>
+                        <li>Jimmy Garoppolo</li>
+                        <li>Ryan Tannehill</li>
+                        <li>Kenny Pickett</li>
+                        <li>Baker Mayfield</li>
+                        <li>Taylor Heinicke</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Jalen Hurts</li>
+                        <li>Daniel Jones</li>
+                        <li>Tua Tagovailoa</li>
+                        <li>Andy Dalton</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Russell Wilson</li>
+                        <li>Derek Carr</li>
+                        <li>Dak Prescott</li>
+                        <li>Davis Mills</li>
+                        <li>Mac Jones</li>
+                        <li>Matt Ryan</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                A breakdown of each cluster:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> See Cluster 1 in the previous graph: <i>"QB1 territory. These guys throw the ball frequently, and accumulate a substantial amount of yards and touchdowns. This group tends to throw more interceptions than clusters 1 and 2."</i></li>
+                    <li><b>Cluster 1:</b> Quarterbacks that do not throw the ball much - this depresses the rest of their passing stats.</li>
+                    <li><b>Cluster 2:</b> These qbs are in the middle across all passing stats - not super excited from any of their stats, but also not very disappointed.</li>
+                    <li><b>Cluster 3:</b> About on par with Cluster 2, but this group throws more interceptions.</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                Our QB1 tier, Cluster 0 in this case, remains pretty unchanged. The only change, here, when 
+                going from three tiers to four tiers is that Rodgers joins the group.
+            </p>
+            <p class="blog-p-tag">
+                I don't think it would shock many people to see Rodgers be part of the better passing group(s) in this analysis.
+                I was actually pretty high on him going into this season. He finished as QB13 last year with some minor injuries
+                bothering him, and I believe the Jets offense puts him in a better position.
+            </p>
+            <p class="blog-p-tag">
+                It's a shame that he tore his achilles
+                on the first play of the year, but he might be worth a punt for next year. I wouldn't pay more than a 3rd, because
+                it would probably be about one year of production at most.
+            </p>
+            <p class="blog-p-tag">
+                The other noticeable change worth talking about with four tiers is that Hurts and Tua fall to a lower tier passing cluster.
+            </p>
+            <p class="blog-p-tag">
+                I think this is an argument for being a bit more pessimistic on Hurts, compared to Allen and Mahomes. Hurts is great, but
+                the lack of a strong passing base might prove to be the reason why he can't consistently shake up those two as the quarterbacks to have
+                for the next five-to-ten years. It's the only knock against him joining or surpassing Allen and Mahomes.
+            </p>
+            <p class="blog-p-tag">
+                I would like to withhold judgement on Tua until we hit the per game numbers, as he only played in 13 games last year, and in one
+                of them he played only 39% of the snaps.
+            </p>
+            <p class="blog-p-tag">
+                One more thing to add: Jones is in Cluster 2. To me this shows that his passing base is borderline legitimate, which is why I have less
+                concerns for him long term, compared to, say, Fields.
+            </p>
+            <p class="blog-p-tag">
+                I will say that Fields' ceiling is insanely high, but, throughout this analysis,
+                I have developed serious questions about his sustainablity and future as a quarterback. 
+            </p>
+            <p class="blog-p-tag">
+                Can he stay healthy with all the running he does? Can he become a more consistent and better passer?
+                If not, can he reliably deliver RB1 numbers? Is that a recipe for winning in the NFL?
+                Will he still be a starting quarterback in a year or two with how things have gone for the Bears?
+            </p>
+            <p class="blog-p-tag">
+                Too many concerns there for me to consider him a dynasty cornerstone piece.
+            </p>
+
+            <h3 class="h3-blog">QBs as Five Tiers</h3>
+            <p class="blog-p-tag">
+                Time to add another layer to the puzzle:
+            </p>
+            <div class="iframe-container">
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-5.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                The five tiers listed out:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Fields</li>
+                        <li>Lamar Jackson</li>
+                        <li>Kyler Murray</li>
+                        <li>Marcus Mariota</li>
+                        <li>Andy Dalton</li>
+                        <li>Jacoby Brissett</li>
+                        <li>Jimmy Garoppolo</li>
+                        <li>Ryan Tannehill</li>
+                        <li>Kenny Pickett</li>
+                        <li>Baker Mayfield</li>
+                        <li>Taylor Heinicke</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Patrick Mahomes</li>
+                        <li>Josh Allen</li>
+                        <li>Joe Burrow</li>
+                        <li>Geno Smith</li>
+                        <li>Kirk Cousins</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Orange)</b>
+                    <ul class='bullet-list'>
+                        <li>Aaron Rodgers</li>
+                        <li>Russell Wilson</li>
+                        <li>Derek Carr</li>
+                        <li>Dak Prescott</li>
+                        <li>Davis Mills</li>
+                        <li>Mac Jones</li>
+                        <li>Matt Ryan</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Jalen Hurts</li>
+                        <li>Daniel Jones</li>
+                        <li>Tua Tagovailoa</li>
+                    </ul>
+            
+                    <b>Cluster 4 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Trevor Lawrence</li>
+                        <li>Jared Goff</li>
+                        <li>Justin Herbert</li>
+                        <li>Tom Brady</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                A quick breakdown of the five clusters:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> Quarterbacks that do not attempt or complete many passes. Low passing stats across the board.</li>
+                    <li><b>Cluster 1:</b> The higher end of the QB1 scale, in regards to passing. High passing yards, attempts, completions, touchdowns, and interceptions.</li>
+                    <li><b>Cluster 2:</b> Middle of the pack quarterbacks that throw the most picks compared to other tiers.</li>
+                    <li><b>Cluster 3:</b> About on par with Cluster 2, but far less interceptions thrown.</li>
+                    <li><b>Cluster 4:</b> In contention with Cluster 1 for being the best tier here. The lower amount of passing touchdowns holds them back, but they do throw less interceptions.</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                Daniel Jones sticking with Hurts is interesting... perhaps he is Hurts lite? This season has been really tough for Jones, but I do wonder
+                what would happen if the Giants gave him a good oline and a legitmate receiving threat or two.
+                Might be a good buy low, as you shouldn't have to break the bank for him and the Giants seem committed to Jones.
+            </p>
+            <p class="blog-p-tag">
+                Clusters 1 and 4 really catch my eye. Burrow sticking around with Mahomes and Allen seems reasonable, but Geno and Kirk too?
+            </p>
+            <p class="blog-p-tag">
+                Geno revitalized himself last year, and I thought he would be a decent option in startups or re-draft, but he has struggled 
+                to capture the magic from 2022. I do expect him to improve in the second half of 2023 as he has some easier matchups, but 
+                probably someone I would stay away from unless the price was very cheap. For what it's worth Geno is currently QB21 on KTC
+                (10/4/23), and is worth just above a 2025 early 2nd. However, for that price I would rather take a shot on Jordon Love or
+                Danny Dimes.
+            </p>
+            <p class="blog-p-tag">
+                Captain Kirk is a really solid fantasy quarterback, and him being in Cluster 1 confirms to me that his passing base is really, really good.
+                After his achilles injury, he might be a great buy low for next year. It should be noted that he may no longer be a Viking, and who knows 
+                how this injury will affect him in the few remaining years of his career. However, he could also get a massive upgrade and end up somewhere
+                like Atlanta. Kirk with those weapons would be pretty mouthwatering.
+            </p>
+            <p class="blog-p-tag">
+                Now, Cluster 4 has three names that I would consider investing in as any dynasty franchise: TLaw, Goff, and Herbert.
+                Each of these three should continue to deliver in this range, and I believe TLaw and Herbert could break into that
+                Burrow range at some point (better than everyone else, but just below Mahomes and Allen).
+            </p>
+            <p class="blog-p-tag">
+                For the record, I have paid up for TLaw and Herbert, but I see them as cornerstone pieces that are likely part of my
+                rooster until they retire, only parting with them if I were to receive an insane offer for either.
+            </p>
+
+            <h3 class="h3-blog">QBs as Six Tiers</h3>
+            <p class="blog-p-tag">
+                Taking a look at the quarterback landscape with six tiers:
+            </p>
+            <div class="iframe-container">
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-6.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                The players in the six tiers:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Fields</li>
+                        <li>Marcus Mariota</li>
+                        <li>Andy Dalton</li>
+                        <li>Kenny Pickett</li>
+                        <li>Baker Mayfield</li>
+                    </ul>
+            
+                    <b>Cluster 1 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Trevor Lawrence</li>
+                        <li>Jared Goff</li>
+                        <li>Justin Herbert</li>
+                        <li>Tom Brady</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Patrick Mahomes</li>
+                        <li>Josh Allen</li>
+                        <li>Joe Burrow</li>
+                        <li>Geno Smith</li>
+                        <li>Kirk Cousins</li>
+                        <li>Aaron Rodgers</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 (Teal)</b>
+                    <ul class='bullet-list'>
+                        <li>Russell Wilson</li>
+                        <li>Derek Carr</li>
+                        <li>Dak Prescott</li>
+                        <li>Davis Mills</li>
+                        <li>Mac Jones</li>
+                        <li>Matt Ryan</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 4 (Orange)</b>
+                    <ul class='bullet-list'>
+                        <li>Lamar Jackson</li>
+                        <li>Kyler Murray</li>
+                        <li>Jacoby Brissett</li>
+                        <li>Jimmy Garoppolo</li>
+                        <li>Ryan Tannehill</li>
+                        <li>Taylor Heinicke</li>
+                    </ul>
+            
+                    <b>Cluster 5 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Jalen Hurts</li>
+                        <li>Daniel Jones</li>
+                        <li>Tua Tagovailoa</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                A breakdown of the clusters:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> These quarterbacks do not pass much and accumulate few passing stats.</li>
+                    <li><b>Cluster 1:</b> Attempt and complete a lot of passes. Great yardage numbers, poor touchdown numbers, but on the middle-to-low end for interceptions.</li>
+                    <li><b>Cluster 2:</b> Throw more touchdowns and picks that Cluster 1, but similar otherwise.</li>
+                    <li><b>Cluster 3:</b> Pretty meh stats across the board. Throw the most picks.</li>
+                    <li><b>Cluster 4:</b> Basically Cluster 0, with less interceptions thrown.</li>
+                    <li><b>Cluster 5:</b> A bit below middle of the pack numbers with few picks.</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                For the most part, things have stayed the same here. Rodgers jumps from the Russell Wilson tier to the Mahomes tier and our 
+                quarterbacks who don't pass much have been split into two groups.
+            </p>
+            <p class="blog-p-tag">
+                I think this graph shows why many were excited about Rodgers to the Jets.
+                Maybe he could've repeated his 2021 numbers for another MVP? Maybe injuries and time finally caught up to him?
+                Who knows, but it would have been nice to see him play this year, and, for the same reasons, I am intrigued by the 
+                prospect of Rodgers starting for the Jets next year.
+            </p>
+            <p class="blog-p-tag">
+                The other big change splits our quarterbacks who don't pass much, based on interceptions. Clusters 0 and 4 have similar numbers,
+                but everyone in Cluster 0 threw at least 8 interceptions, whereas no one in Cluster 4 had more than 7.
+            </p>
+            <p class="blog-p-tag">
+                Another reason to think the Fields experiment won't work? He threw 11 interceptions, the most of anyone in Cluster 0.
+            </p>
+
+            <h3 class="h3-blog">QBs as Seven Tiers</h3>
+            <p class="blog-p-tag">
+                Our last tier analysis on the season stats:
+            </p>
+            <div class="iframe-container">
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-7.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                The clusters in detail:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Patrick Mahomes</li>
+                        <li>Josh Allen</li>
+                        <li>Joe Burrow</li>
+                        <li>Geno Smith</li>
+                        <li>Kirk Cousins</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Fields</li>
+                        <li>Kyler Murray</li>
+                        <li>Marcus Mariota</li>
+                        <li>Kenny Pickett</li>
+                        <li>Baker Mayfield</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Pink)</b>
+                    <ul class='bullet-list'>
+                        <li>Russell Wilson</li>
+                        <li>Derek Carr</li>
+                        <li>Dak Prescott</li>
+                        <li>Davis Mills</li>
+                        <li>Mac Jones</li>
+                        <li>Matt Ryan</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Jalen Hurts</li>
+                        <li>Daniel Jones</li>
+                        <li>Tua Tagovailoa</li>
+                        <li>Andy Dalton</li>
+                    </ul>
+            
+                    <b>Cluster 4 (Orange)</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Herbert</li>
+                        <li>Tom Brady</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 5 (Teal)</b>
+                    <ul class='bullet-list'>
+                        <li>Lamar Jackson</li>
+                        <li>Jacoby Brissett</li>
+                        <li>Jimmy Garoppolo</li>
+                        <li>Ryan Tannehill</li>
+                        <li>Taylor Heinicke</li>
+                    </ul>
+            
+                    <b>Cluster 6 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Trevor Lawrence</li>
+                        <li>Jared Goff</li>
+                        <li>Aaron Rodgers</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                The final breakdown for season total clusters:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> The best tier at everything except protecting the ball: they are on the higher end for throwing picks.</li>
+                    <li><b>Cluster 1:</b> These guys are on the lower end for all of the stats above.</li>
+                    <li><b>Cluster 2:</b> Middle of the pack numbers for each stat, except interceptions: the leaders on that stat.</li>
+                    <li><b>Cluster 3:</b> A bit better than Cluster 2 in all regards, except picks. This groupw throws very few picks.</li>
+                    <li><b>Cluster 4:</b> Really high passing attempts and completions for great yardage numbers. Middle of the pack touchdown and interception numbers.</li>
+                    <li><b>Cluster 5:</b> Like Cluster 1, but this group throws less picks.</li>
+                    <li><b>Cluster 6:</b> Really comparable to Cluster 4. This group does throw less for less yardage, but scores a bit more. Interception numbers are about the same as Cluster 4.</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                Again, not too much shifting here. The big picture stays pretty constant.
+            </p>
+            <p class="blog-p-tag">
+                The comment I will make is that guys in Cluster 0, 4, and 6 - who are not the premium options - interest me a lot.
+            </p>
+            <p class="blog-p-tag">
+                Kirk, Herbert, TLaw, Goff, and Rodgers all cause me to perk my ears.
+            </p>
+            <p class="blog-p-tag">
+                I think Herbert and TLaw are great cornerstone pieces for any dynasty franchise and are still affordable, expensive, but
+                not Allen, Hurts, or Mahomes level pricey. Considering they can both hit (or at least approximate) that level of production,
+                with how young they are, I would be willing to pay up for either.
+            </p>
+            <p class="blog-p-tag">
+                Kirk and Rodgers are the ultra budget options that could be fantastic re-tooling pieces for contenders in 2024.
+                They should be super affordable and have high ceilings. I would love either as a QB2, if I need to fix my super-flex
+                position for cheap next year.
+            </p>
+            <p class="blog-p-tag">
+                Goff is the bridge option. Not super expensive, not super cheap. Not very young, but not very old.
+                Not the highest ceiling, but a sweet floor. Goff makes a lot of sense to me for teams that need to re-tool,
+                and don't want to worry about the position for a while.
+            </p>
+
+
+            <h2 class="h2-blog">Tiers (Per Game)</h2>
+            <p class="blog-p-tag">
+                We will now take a look at the per game version of the stats used in the previous section.
+                As a reminder the stats were: "Passing Yards", "Attempts", "Completions", "Passing TDs", and "Interceptions". 
+            </p>
+
+            <h3 class="h3-blog">QBs as Three Tiers</h3>
+            <p class="blog-p-tag">
+                Starting with three tiers, as always:
+            </p>
+            <div class="iframe-container">
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-3-per-game.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                The players listed in each tier:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Aaron Rodgers</li>
+                        <li>Russell Wilson</li>
+                        <li>Derek Carr</li>
+                        <li>Kyler Murray</li>
+                        <li>Dak Prescott</li>
+                        <li>Davis Mills</li>
+                        <li>Mac Jones</li>
+                        <li>Matt Ryan</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Fields</li>
+                        <li>Daniel Jones</li>
+                        <li>Lamar Jackson</li>
+                        <li>Marcus Mariota</li>
+                        <li>Andy Dalton</li>
+                        <li>Jacoby Brissett</li>
+                        <li>Jimmy Garoppolo</li>
+                        <li>Ryan Tannehill</li>
+                        <li>Kenny Pickett</li>
+                        <li>Baker Mayfield</li>
+                        <li>Taylor Heinicke</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Patrick Mahomes</li>
+                        <li>Josh Allen</li>
+                        <li>Jalen Hurts</li>
+                        <li>Joe Burrow</li>
+                        <li>Geno Smith</li>
+                        <li>Trevor Lawrence</li>
+                        <li>Kirk Cousins</li>
+                        <li>Jared Goff</li>
+                        <li>Justin Herbert</li>
+                        <li>Tom Brady</li>
+                        <li>Tua Tagovailoa</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                A breakdown of the tiers:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> Middling numbers for the first four stats; lead these clusters in interception numbers.</li>
+                    <li><b>Cluster 1:</b> The worst of the three tiers in regards to putting up fantasy numbers via the passing game.</li>
+                    <li><b>Cluster 2:</b> The highest fantasy - via the passing game - producing cluster.</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                Things are quite a bit different here, compared to our three tiers on the season stats.
+            </p>
+            <p class="blog-p-tag">
+                The big change is that our best cluster is now the largest. Tua and Hurts both enter the top tier on the per game numbers.
+                For those that owned them, take a breath, they are great in the passing game. My only concern for each of these guys
+                is can they stay healthy? That concern applies more so to Tua than Hurts.
+            </p>
+            <p class="blog-p-tag">
+                Also, note that Murray joins the middling tier on a per game basis.
+                Keep an eye on Murray. I realize the injury and the turmoil of the situation in Arizona makes it easy
+                to forget about or ignore him, but the guy could be a regular QB1 again, once he gets healthy.
+                A great buy low, for me.
+            </p>
+            <p class="blog-p-tag">
+                Jones, Fields and Lamar are stuck with the worst of the three tiers, even on a per game basis.
+            </p>
+            <p class="blog-p-tag">
+                <a href="https://www.nfl.com/news/giants-qb-daniel-jones-ruled-out-against-raiders-with-knee-injury">Jones
+                probably just tore his ACL against the Raiders</a> - as I write the second half of this piece -
+                which is really unfortunate. You wish the best for him, and hope he comes back to being better than ever.
+            <p class="blog-p-tag">
+                That being said, this makes me even more nervous about his future as a fantasy asset.
+                I think the shark in me smells blood for a good buy low opportunity, but his fantasy production relies a lot on rushing.
+                That makes me more nervous about him that Kyler, who I believe could still produce just as a passer.
+            </p>
+            <p class="blog-p-tag">
+                Lamar gets a bit of a pass for me for last season because of the injuries to him and the rest of the offense.
+                Lamar has proven himself in this league, and is doing great this year, so I attribute 2022 to the unlucky situation
+                that occurred.
+            </p>
+            <p class="blog-p-tag">
+                The more I look into the numbers on quarterbacks, the more Fields makes me nervous. That is not a tier you want your
+                franchise cornerstone to be in.
+            </p>
+            <p class="blog-p-tag">
+                His ceiling is incredibly high,
+                I just don't see it panning out. I would try and sell on a high if possible; however, I would sidegrade to a pass first
+                quarterback as well.
+            </p>
+
+            <h3 class="h3-blog">QBs as Four Tiers</h3>
+            <p class="blog-p-tag">
+                Moving on to four tiers:
+            </p>
+            <div class="iframe-container">
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-4-per-game.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                The players in each tier:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Patrick Mahomes</li>
+                        <li>Josh Allen</li>
+                        <li>Joe Burrow</li>
+                        <li>Kirk Cousins</li>
+                        <li>Justin Herbert</li>
+                        <li>Tom Brady</li>
+                        <li>Matt Ryan</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Fields</li>
+                        <li>Daniel Jones</li>
+                        <li>Lamar Jackson</li>
+                        <li>Marcus Mariota</li>
+                        <li>Andy Dalton</li>
+                        <li>Jacoby Brissett</li>
+                        <li>Ryan Tannehill</li>
+                        <li>Kenny Pickett</li>
+                        <li>Baker Mayfield</li>
+                        <li>Taylor Heinicke</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Jalen Hurts</li>
+                        <li>Geno Smith</li>
+                        <li>Trevor Lawrence</li>
+                        <li>Jared Goff</li>
+                        <li>Tua Tagovailoa</li>
+                        <li>Kyler Murray</li>
+                        <li>Jimmy Garoppolo</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Aaron Rodgers</li>
+                        <li>Russell Wilson</li>
+                        <li>Derek Carr</li>
+                        <li>Dak Prescott</li>
+                        <li>Davis Mills</li>
+                        <li>Mac Jones</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                The breakdown of the clusters:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> Best of the bunch. Really good numbers across the board, with a slight tendency to throw more picks than the average quarterback.</li>
+                    <li><b>Cluster 1:</b> The worst of the tiers. At least they don't lead in interceptions per game.</li>
+                    <li><b>Cluster 2:</b> Really solid numbers all around. Won't wow you with their passing numbers, but a strong base with few mistakes.</li>
+                    <li><b>Cluster 3:</b> Similar to Cluster 2, but turn the ball over a lot - probably the worst cluster on interceptions per game.</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                Our worst tier (Cluster 1 in this case) remains unchanged - sorry Fields owners.
+                The other changes: Matt Ryan is in the elite tier (Cluster 0 somehow, blew my mind), Murray is in that middling tier
+                below Cluster 0, and the top tier from the previous graph has been split into two groups.
+            </p>
+            <p class="blog-p-tag">
+                We see Mahomes, Allen, Burrow, and other great passing quarterbacks remain in the elite tier (again, Cluster 0 in this graph), while
+                many quarterbacks that were with them have now been split to Cluster 2, a more modest - still good - passing tier.
+            </p>
+            <p class="blog-p-tag">
+                By all means, Cluster 2 is a really strong tier for fantasy, accounting for only the passing stats. This highlights that guys
+                like Hurts and Murray have a strong enough passing base to be relevant when their rushing game might fluctuate or eventually go.
+            </p>
+            <p class="blog-p-tag">
+                This does portray the gap to me between Allen and Hurts. Allen has a stronger passing base, so you would hope that Hurts
+                improves his passing game a bit, so that he can consistently crack into the Allen-Mahomes tier.
+            </p>
+
+            <h3 class="h3-blog">QBs as Five Tiers</h3>
+            <p class="blog-p-tag">
+                Seeing how things change with five tiers:
+            </p>
+            <div class="iframe-container">
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-5-per-game.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                The five tiers:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Daniel Jones</li>
+                        <li>Lamar Jackson</li>
+                        <li>Russell Wilson</li>
+                        <li>Andy Dalton</li>
+                        <li>Mac Jones</li>
+                        <li>Jimmy Garoppolo</li>
+                        <li>Ryan Tannehill</li>
+                        <li>Kenny Pickett</li>
+                        <li>Baker Mayfield</li>
+                        <li>Taylor Heinicke</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 1 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Patrick Mahomes</li>
+                        <li>Josh Allen</li>
+                        <li>Joe Burrow</li>
+                        <li>Kirk Cousins</li>
+                        <li>Justin Herbert</li>
+                        <li>Tom Brady</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Orange)</b>
+                    <ul class='bullet-list'>
+                        <li>Derek Carr</li>
+                        <li>Dak Prescott</li>
+                        <li>Davis Mills</li>
+                        <li>Matt Ryan</li>
+                    </ul>
+            
+                    <b>Cluster 3 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Fields</li>
+                        <li>Marcus Mariota</li>
+                        <li>Jacoby Brissett</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 4 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Jalen Hurts</li>
+                        <li>Geno Smith</li>
+                        <li>Trevor Lawrence</li>
+                        <li>Jared Goff</li>
+                        <li>Aaron Rodgers</li>
+                        <li>Tua Tagovailoa</li>
+                        <li>Kyler Murray</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                A breakdown of the five clusters:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> A tad better than the worst tier (which is Cluster 3).</li>
+                    <li><b>Cluster 1:</b> Quarterback royalty - the quarterbacks with the best passing base. Would want them to throw slightly less picks, but they are not the worst in that regard.</li>
+                    <li><b>Cluster 2:</b> Lead in interceptions per game by a decent margin, with middling numbers for the rest of their stats.</li>
+                    <li><b>Cluster 3:</b> The worst cluster of the bunch. Bad at everything, except interceptions per game.</li>
+                    <li><b>Cluster 4:</b> Cluster 2, but with far fewer interceptions per game.</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                First thing that pops out to me here: Cluster 3. <b>Fields is stuck with Brissett and Mariota</b>. That is very much not the passing
+                production you would want to see from cornerstone quarterback on your dynasty team.
+            </p>
+            <p class="blog-p-tag">
+                The other notable observation, that I haven't touched on much, is that both Tua and Kyler are in that tier of quarterbacks
+                just below Cluster 1. That would make me excited for both guys going forward.
+            </p>
+            <p class="blog-p-tag">
+                One more note, Rodgers is also in Cluster 4... so maybe he could be a QB1 for 2024?
+            </p>
+            <p class="blog-p-tag">
+                The rest of the groupings are more of the same.
+            </p>
+
+            <h3 class="h3-blog">QBs as Six Tiers</h3>
+            <p class="blog-p-tag">
+                Examining the quarterback position by splitting into six tiers:
+            </p>
+            <div class="iframe-container">
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-6-per-game.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                The players in each of the six tiers:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Fields</li>
+                        <li>Marcus Mariota</li>
+                        <li>Jacoby Brissett</li>
+                    </ul>
+            
+                    <b>Cluster 1 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Patrick Mahomes</li>
+                        <li>Josh Allen</li>
+                        <li>Joe Burrow</li>
+                        <li>Geno Smith</li>
+                        <li>Kirk Cousins</li>
+                        <li>Tua Tagovailoa</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Jalen Hurts</li>
+                        <li>Trevor Lawrence</li>
+                        <li>Jared Goff</li>
+                        <li>Kyler Murray</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Daniel Jones</li>
+                        <li>Aaron Rodgers</li>
+                        <li>Lamar Jackson</li>
+                        <li>Russell Wilson</li>
+                        <li>Andy Dalton</li>
+                        <li>Mac Jones</li>
+                        <li>Jimmy Garoppolo</li>
+                        <li>Ryan Tannehill</li>
+                        <li>Kenny Pickett</li>
+                        <li>Baker Mayfield</li>
+                        <li>Taylor Heinicke</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 4 (Teal)</b>
+                    <ul class='bullet-list'>
+                        <li>Derek Carr</li>
+                        <li>Dak Prescott</li>
+                        <li>Davis Mills</li>
+                        <li>Matt Ryan</li>
+                    </ul>
+            
+                    <b>Cluster 5 (Orange)</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Herbert</li>
+                        <li>Tom Brady</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                The breakdown:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> Okay on interception numbers, but really, really, really bad at everything else.</li>
+                    <li><b>Cluster 1:</b> The best at producing numbers in the passing game.</li>
+                    <li><b>Cluster 2:</b> Slightly worse version than Cluster 1, but with less interceptions per game.</li>
+                    <li><b>Cluster 3:</b> A worse version of Cluster 2.</li>
+                    <li><b>Cluster 4:</b> About on par with Cluster 2, but lead all tiers in interceptions per game.</li>
+                    <li><b>Cluster 5:</b> Much closer to Cluster 1 than Cluster 2 is. This tier would be better than Cluster 1 if the passing touchdowns per game were better.</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                Again, Fields is in that tier with Mariota and Brissett - bad news Bears.
+            </p>
+            <p class="blog-p-tag">
+                On a more positive note, Tua cracks Cluster 1, which is really encouraging. Tua has had many moments where he looks like
+                an elite passer, the only complaint I have is that every now and then, Tua and that offense seems to forget what they
+                are capable of. Tua's concussion history might suppress his value in regards to his production. A risky, but probably
+                worth it purchase for a contender in need of a great quarterback.
+            </p>
+            <p class="blog-p-tag">
+                Rodgers here falls to Cluster 3. Which isn't great, but because he's been grouped with better passing tiers, I
+                would still call him a fascinating buy, as a potential QB1 in 2024.
+            </p>
+            <p class="blog-p-tag">
+                Last thing I'm going to point out here, Murray sticks with Hurts, TLaw, and Goff.
+                That screams buy low to me, if you still can.
+            </p>
+            <p class="blog-p-tag">
+                The rest of the picture mimics what we have seen before.
+            </p>
+
+            <h3 class="h3-blog">QBs as Seven Tiers</h3>
+            <p class="blog-p-tag">
+                Our final tier graph of the day:
+            </p>
+            <div class="iframe-container">
+                <iframe class="large-iframe" data-src="/Fantasy/Analysis/interactive/QB/clustering-7-per-game.html"></iframe>
+            </div>
+            <p class="blog-p-tag">
+                The tiers with the players listed in each of them:
+            </p>
+            <div style='display: flex; justify-content: space-evenly;''>
+                <div>
+                    <b>Cluster 0 (Red)</b>
+                    <ul class='bullet-list'>
+                        <li>Jalen Hurts</li>
+                        <li>Daniel Jones</li>
+                        <li>Andy Dalton</li>
+                        <li>Jimmy Garoppolo</li>
+                        <li>Ryan Tannehill</li>
+                    </ul>
+            
+                    <b>Cluster 1 (Pink)</b>
+                    <ul class='bullet-list'>
+                        <li>Derek Carr</li>
+                        <li>Dak Prescott</li>
+                        <li>Matt Ryan</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 2 (Purple)</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Fields</li>
+                        <li>Lamar Jackson</li>
+                        <li>Marcus Mariota</li>
+                        <li>Jacoby Brissett</li>
+                        <li>Baker Mayfield</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 3 (Orange)</b>
+                    <ul class='bullet-list'>
+                        <li>Justin Herbert</li>
+                        <li>Tom Brady</li>
+                    </ul>
+            
+                    <b>Cluster 4 (Blue)</b>
+                    <ul class='bullet-list'>
+                        <li>Patrick Mahomes</li>
+                        <li>Josh Allen</li>
+                        <li>Joe Burrow</li>
+                        <li>Kirk Cousins</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 5 (Teal)</b>
+                    <ul class='bullet-list'>
+                        <li>Aaron Rodgers</li>
+                        <li>Russell Wilson</li>
+                        <li>Kyler Murray</li>
+                        <li>Davis Mills</li>
+                        <li>Mac Jones</li>
+                        <li>Kenny Pickett</li>
+                        <li>Taylor Heinicke</li>
+                    </ul>
+                </div>
+            
+                <div>
+                    <b>Cluster 6 (Green)</b>
+                    <ul class='bullet-list'>
+                        <li>Geno Smith</li>
+                        <li>Trevor Lawrence</li>
+                        <li>Jared Goff</li>
+                        <li>Tua Tagovailoa</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="blog-p-tag">
+                The last tier breakdown:
+                <ul class="bullet-list">
+                    <li><b>Cluster 0:</b> Middle of the pack, or slightly below in all stats except interceptions per game. Probably the best group at protecting the ball.</li>
+                    <li><b>Cluster 1:</b> Pretty good stats at everything except interceptions per game - lead all tiers in that stat.</li>
+                    <li><b>Cluster 2:</b> The worst tier at everything, except in interceptions per game - they do okay in that stat category. Kind of the opposite to Cluster 1.</li>
+                    <li><b>Cluster 3:</b> Really high completions and attempts per game. The volume alone keeps them fantasy relevant. Great yards per game, but struggle at throwing the ball for touchdowns. They do compensate for that by being one of the best tiers at throwing few picks.</li>
+                    <li><b>Cluster 4:</b> The best tier for putting up numbers in the passing game. Only weakness is that they throw more a few more picks than the median quarterback.</li>
+                    <li><b>Cluster 5:</b> Pretty much middle of the pack numbers all around; touchdowns are a little below middle of the pack.</li>
+                    <li><b>Cluster 6:</b> Very similar to Cluster 3, but more efficient and better at scoring touchdowns.</li>
+                </ul>
+            </p>
+            <p class="blog-p-tag">
+                Changing to seven tiers introduces some eye-popping changes to the tiers.
+            </p>
+            <p class="blog-p-tag">
+                For one, our worst tier - Cluster 2 - now has Lamar Jackson in it. Man, was it a rough year for him,
+                but for reasons I've already gone over, I am not too worried about his outlook long term.
+            </p>
+            <p class="blog-p-tag">
+                Additionally, our top tier - Cluster 4 - contains Captain Kirk, in company with Mahomes, Allen, and Burrow.
+                Cousins has played well this year too, and his torn achilles represents a good buy low opportunity for next season.
+                He might no longer be a Viking, but I would expect him to still be a mid-to-low end QB1.
+            </p>
+            <p class="blog-p-tag">
+                Geno drops into the TLaw, Goff, Tua tier. I think, based on his performances this year, this tier flatters him quite a bit.
+                I would love to have any of the others in that group on my roster.
+            </p>
+            <p class="blog-p-tag">
+                Rodgers and Murray end up in a lower tier as well. That being said, they've been yo-yoing between a few tiers here, so that 
+                should support the idea that their passing abilities yield, at least, fringe QB1 stats.
+            </p>
+            <p class="blog-p-tag">
+                Hurts is also in a not-so-flattering tier, but like Murray and Rodgers, he has shown in this analysis
+                that he does have enough of a passing base to be fantasy relevant, as just a passer.
+            </p>
+            <p class="blog-p-tag">
+                One name I haven't mentioned much thus far is Prescott. Throughout these quarterback pieces, I would say that he hasn't made
+                himself distinct. That being said, I think he would be a fine QB2 in super-flex leagues.
+            </p>
+            <p class="blog-p-tag">
+                I would be a little worried if he were my QB1, because I don't see him ever repeating his 2019 season,
+                and he has never been better than QB7, outside of that year. Moreover, his last QB1 finish was 2021, where he was QB8.
+                Taking into account injuries, Prescott was QB14 on a points per game basis last year.
+                He is currently QB11, heading into the Monday night game, but I would want a little more fire power from my QB1.
+            </p>
+
+
+            <h2 class="h2-blog">Summary</h2>
+            <p class="blog-p-tag">
+                That's all the analysis for tiering quarterbacks based on passing numbers.
+            </p>
+            <p class="blog-p-tag">
+                As always, my recap/takeaways:
+            </p>
+            <ul class="bullet-list">
+                <li>Fields has pretty much no passing base (in regards to fantasy production). Hard to evaluate this season, with how little he has played, but he frequently ends up in tiers with quarterbacks like Mariota. <b>YIKES!</b></li>
+                <li>Danny Dimes gives me similar concerns to Fields, but his passing base is quite better. I suppose his rushing is not on the same level as Fields, but he could be a really good buy now with his injury. I would still avoid him, but a situation to monitor.</li>
+                <li>Murray poses a better buy low to me, as the ceiling is higher, and the price shouldn't be expensive for him. Murray also has the best passing base out of these three players.</li>
+                <li>Jackson had an off year last year, but he is still worth every penny. Injuries and a bad situation hindered him, congrats to those that pounced on him during the offeseason.</li>
+                <li>Goff is a great budget purchase for really solid passing production in fantasy.</li>
+                <li>Herbert and TLaw could sneak into that Burrow, or even Mahomes tier in a year or two. I love them as franchise cornerstones, and would buy them before their prices sky rocket.</li>
+            </ul>
+            <p class="blog-p-tag">
+                Please keep an eye out for part three on quarterbacks, where I'll be creating tiers by rushing numbers.
+                If you enjoyed this article, please check out the other ones on <a href="https://alex-bishka.github.io/Fantasy/Blogs.html">my blog page</a>.
+            </p>
+            <p class="blog-p-tag">
+                A pleasure as always!
+            </p>
+            <p class="blog-p-tag">
+                Cheers, <br />
+                Alex
+            </p>
+        </div>
+    </div>
+</body>
+<script>
+    $("#common-header").load("/Fantasy/header.html");;
+</script>

@@ -1,0 +1,342 @@
+<head>
+    <title>Yards Per Carry Stability</title>
+    <link rel="stylesheet" href="/Fantasy/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/Fantasy/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        // google analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>Yards Per Carry Stability</h1>
+
+
+            <h2>Overview</h2>
+            <div>
+                <p class="blog-p-tag">
+                    This post serves as a quick extension to my previous one, <a href="https://alex-bishka.github.io/Fantasy/Blogs/rushing-sticky-season-totals">Rushing Sticky Stats</a>
+                    and is inspired by the discussion on my previous <a href="https://www.reddit.com/r/DynastyFF/comments/18n87a0/how_sticky_are_rushing_stats/">Reddit post</a>. 
+                </p>
+                <p class="blog-p-tag">
+                    The question we are trying to answer: <b>how stable are yards per carry (ypc)?</b>
+                </p>
+                <p class="blog-p-tag">
+                    From the previous <a href="https://alex-bishka.github.io/Fantasy/Blogs/rushing-sticky-season-totals">examination</a>, 
+                    ypc is most definitely not a <a href="https://alex-bishka.github.io/Fantasy/Analysis/interactive/RB/stability-rushing/season/simple-rb.html">sticky stat</a>, 
+                    as it frequently had a low correlation with itself, year-over-year (0.15 in the heat map linked). While ypc doesn't increase year-over-year, it could be possible
+                    that this stat doesn't change much, or fluctuates crazily.
+                </p>
+                <p class="blog-p-tag">
+                    The graphs generated below to try and answer this question, display ypc on the y-axis
+                    against the sum of carries in the current season and previous season on the x-axis.
+                    Each line on the graph is created by a minimum game threshold.
+                </p>
+                <p class="blog-p-tag">
+                    For a player's stats to qualify
+                    for the data for a line in the line graph, they must have played <i>n</i> minimum games in each
+                    of the current and previous seasons. So, if a player had 10 games and 4 games in the current and 
+                    previous season, respectively, their stats would contribute only to the line labeled as 'Min Games: 4'.
+                </p>
+                <p class="blog-p-tag">
+                    The last remarks before diving into the graphs: the data used was from 2012-2022 and focuses only on running
+                    backs.
+                </p>
+            </div>
+
+            
+            <h2 class="h2-blog">YPC is Noisy</h2>
+            <div>
+                <p class="blog-p-tag">
+                    The three graphs below are the ones that I find the most useful to answering this question:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-carries-2-8-13-16.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    This first one above does a great job of showcasing how noisy yards per carry are when backs have less than 100 carries 
+                    and barely play. The ypc varies wildly from -8 to almost 9 yards per carry. This is highlighted very well by the blue and 
+                    red line (min games of 2 and 8, respectively).
+                </p>
+                <p class="blog-p-tag">
+                    Furthermore, the yo-yoing decreases as the number of games increases, highlighted best by the green and purple line
+                    (min games of 13 and 16 respectively). When taking a look at the ypc over 300 carries, the range is from about 2.92 to 5.60 yards
+                    per carry.
+                </p>
+                <p class="blog-p-tag">
+                    If we narrow our focus to over 500 total carries in the two year time span, the range decreases even more, to about 3.18 to 5.45
+                    yards per carry.
+                </p>
+                <p class="blog-p-tag">
+                    The two graphs below do an even better job of show casing the difference in the range of ypc as the number of minimum games increases,
+                    and consequently, the sum of carries:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-carries-4-6-8-10-12.html"></iframe>
+                </div>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-carries-3-5-7-9-11.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Despite ypc stabilizing for, what I would call, starting backs, I would still argue that the final range of 3.18 to 5.45 yards per carry
+                    still shows how noisy the stat is. This paints a clearer picture on what the lack of a strong correlation for ypc vs. ypc in the previous year 
+                    looks like.
+                </p>
+            </div>
+            
+
+            <h2 class="h2-blog">YPC and Fantasy Performance</h2>
+            <div>
+                <p class="blog-p-tag">
+                    One more thing I was interested in exploring in this piece, was the idea that once a running back declines, from
+                    a ypc perspective, their fantasy career also tended to decline, or completely falls off a cliff.
+                </p>
+                <p class="blog-p-tag">
+                    Looking at graphing both ypc and <a href="javascript:void(0);" onclick="scrollToParagraph('fantasy-points-normalized', 150)">normalized fantasy points</a>
+                    (over a season) against age, yield the following line graph with the unfiltered running back data:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 550px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-age-all.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Not really what I would've expect... yards per carry stays quite constant and the best fantasy seasons seem to occur between the ages
+                    of 32-34.
+                </p>
+                <p class="blog-p-tag">
+                    However, we do need to apply some filters to the data. Let's see what happens when 
+                    we apply a filter of being in at least 10 games in a season, to filter out injuries and part-time players:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 550px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-age-10-games.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    The graph is still not what I expected. I would not expect the peak years for a back in fantasy to be from the ages of 32-34.
+                    Furthermore, I am surprised this is occuring with the gradual decline of the ypc numbers.
+                </p>
+                <p class="blog-p-tag">
+                    However, the sample size is extremely small where the unexpected behavior is occuring. Applying an additional filter, say at least 10 samples per age group,
+                    to remove the outliers yields the graph below:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 550px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-age-10-games-10-samples.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Now at a point where the data makes more sense for fantasy purposes, we see that backs have basically three peaks for fantasy production
+                    at the ages of 22, 26 and 28, in order of most to least productive.
+                </p>
+                <p class="blog-p-tag">
+                    Moreover, yards per carry hovers between 4.2 and 4.4 until backs turn 26. From that point, there's a pretty sharp decline in efficiency at 27.
+                    The efficiency seems to briefly recover by 29, before plummetting again. I want to point out that the sample size of backs at 29 and 30 is the
+                    lowest in the data, so backs that fit into this category appear to be surviving against father time for a bit longer than the majority
+                    of their peers. I also want to emphasize that past thirty, there are only a handful of backs that play at least 10 games a year - the graph cuts 
+                    off before we hit extremely rare territory.
+                </p>
+                <p class="blog-p-tag">
+                    The last graph I want to highlight adds the <a href="javascript:void(0);" onclick="scrollToParagraph('carries-normalized', 150)">normalized average number of carries</a>, to the graph above:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 550px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-age-10-games-10-samples-carries.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    The average number of carries also matches the trend from the previous graph. Running backs depreciate as soon as they are drafted, but seriously
+                    start to lose value just after 26, before falling off some time between 28 and 30 years old.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Summary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Yards per carry is a noisy stat in pretty much every way you choose to inspect the data. It does stablize a bit more
+                    for backs who get more carries, but it still isn't consistent at that point.
+                </p>
+                <p class="blog-p-tag">
+                    While yards per carry is not a sticky stat, it serves as a decent signal for fantasy performance, along with carries.
+                    Once a backs' ypc numbers crash, the end of their fantasy shelf life is likely closing in.
+                </p>
+                <p class="blog-p-tag">
+                    Finally, backs have about three peaks in their career, marked by the ages of 22, 26, and 28 years old.
+                    A back's value tends to stay mostly intact up until the second peak at 26, but 28 appears to be a lower
+                    peak and a last hurray.
+                </p>
+                <p class="blog-p-tag">
+                    If you want to maximize the value of back, use them until about 25-26 and then sell. If you're a contender, buying backs
+                    in a down year around 26-27 might be a good way to get cheap one-two year rentals.
+                </p>
+                <p class="blog-p-tag">
+                    With that, I hope you enjoyed this shorter write-up! Happy holidays to all!
+                </p>
+                <p class="blog-p-tag">
+                    As always, thanks for reading!
+                </p>
+                <p class="blog-p-tag">
+                    Cheers, <br />
+                    Alex
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Glossary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Term definitons for the line graphs below:
+                </p>
+                <ul class="bullet-list">
+                    <li id="fantasy-points-normalized"><b>Normalized fantasy points:</b> in order to compare fantasy points on
+                        the same axis as yards per carry, we normalize the stat by: <br/><br/>
+                        1. dividing all values of average fantasy points by the largest value of average fantasy points <br/>
+                        2. multiplying the resulting values from the previous step by the largest ypc average
+                    </li>
+                    <br/>
+                    <li id="carries-normalized"><b>Normalized carries:</b> similar to normalized fantasy points, we have to normalize
+                        the averge number of carries to able to compare the stat on the same axis as yards per carry. <br/><br/>
+                        The following steps are used: <br/><br/>
+                        1. dividing all values of average number of carries by the largest value of average number of carries <br/>
+                        2. multiplying the resulting values from the previous step by the largest ypc average <br/>
+                    </li>
+                </ul>
+            </div>
+
+
+            <h2 class="h2-blog">Appendix</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Here is the full version of the line graph:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-carries-all.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Since the graphs are interactive, you may toggle which lines to display by clicking on them under the legend.
+                    To reset the graph, simply double-click on it, or the legend.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function scrollToParagraph(paragraphId, headerOffset=100) {
+        let element = document.getElementById(paragraphId);
+        // let headerOffset = 100;  // Change this value according to your needs
+        let elementPosition = element.getBoundingClientRect().top;
+        let offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+        });
+    }
+</script>
+<script>
+    $("#common-header").load("/Fantasy/header.html");;
+</script>

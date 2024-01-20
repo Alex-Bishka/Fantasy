@@ -1,0 +1,423 @@
+<head>
+    <title>QB Stability</title>
+    <link rel="stylesheet" href="/Fantasy/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/Fantasy/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        // google analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>Quarterback Sticky Stats</h1>
+
+
+            <h2>TL;DR</h2>
+            <p class="blog-p-tag">
+                <ul class="bullet-list">
+                    <li>Passing stats on the all are sticky.</li>
+                    <li>However, looking at just the data from starting quarterbacks, everything is far less sticky.</li>
+                    <li>There is a big difference in how sticky these stats are amongst starting quarterbacks when dividing them by old vs. young. Young quarterbacks have far stickier stats than old quarterbacks, and slightly more than just starting quarterbacks.</li>
+                    <li>Passing yards, completions and attempts are the most sticky, but only moderately so for starters.</li>
+                    <li>Touchdowns are less sticky than yards, especially when looking at just starter data.</li>
+                    <li>Unfortunately, none of stats provide strong indicators for reliable future fantasy performance.</li>
+                </ul>
+            </p>
+
+            <h2 class="h2-blog">Overview</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Welcome back to yet another blog analyis piece!
+                </p>
+                <p class="blog-p-tag">
+                    This post kicks off the sticky stat series. I am going to attempt to find sticky stats at each position group.
+                </p>
+                <p class="blog-p-tag">
+                    <b>Sticky stats</b> are stats that are consistent and predictable from year to year.
+                    So, we want to find a positive correlation - if one stat increases, so does the other - between stats
+                    year over year. A positive correlation suggests that a good performance in one year, is likely to be followed
+                    by a good performance in the following year.
+                </p>
+                <p class="blog-p-tag">
+                    As a rule of thumb, a strong correlation is between 0.60 and 0.80, and a very strong one is from 0.80 to 1.0.
+                    So, we'll be on the lookout for correlation values from year to year values of greater than 0.60.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">A Cursory Glance</h2>
+            <div>
+                <p class="blog-p-tag">
+                    We'll dive in by taking a look at the correlation between passing stats, year-to-year, from 2012 to 2022.
+                    The stats we'll be starting off with are: passing yards, passing attempts, total epa (see definition below),
+                    passing touchdowns, and completions.
+                </p>
+                <p class="blog-p-tag">
+                    We'll start by taking a look at every pass that occurred during that decade time span.
+                </p>
+                <p class="blog-p-tag">
+                    <b>Note:</b> EPA stands for Expected Points Added. This is a commonly used advanced statistic in football.
+                    In short, this stat measures how well a team or player performs on a play-by-play basis. The more likely a play
+                    is to lead to a score, the higher the EPA value. So, if a player catches an 80 yard bomb to set up a touchdown drive,
+                    but does not actually score the touchdown themselves, the EPA for that play would still be high, as that catch played 
+                    a significant part in the touchdown, despite the lack of a touchdown. 
+                    EPA is this idea that the touchdown is not worth all the marbles
+                    of a drive, and each play in a drive has some value towards to a score.
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 900px; height: 900px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/unfiltered.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    The above heat map shows the correlation stats between the previous season statistics and the current season statistics
+                    during the decade we are examining.
+                </p>
+                <p class="blog-p-tag">
+                    So, each of the correlation values in each square of the heat map come from comparing the 2013 value of the stat to
+                    the 2012 of the stat, the 2014 value of the stat to the 2013 value of the stat, and so on, until our final comparison
+                    of the data from 2022 to 2021. 
+                </p>
+                <p class="blog-p-tag">
+                    This is a pretty encouraging start. We see that there generally is a strong correlation across the board,
+                    not only on a stat compared to its value the previous year, but for each stat compared to the each of
+                    the other stats in the previous year. 
+                </p>
+                <p class="blog-p-tag">
+                    Another thing I would like to point out here: while passing touchdowns are techinally not as sticky as passing yards
+                    (0.74 vs. 0.79, respectively), they're almost equally sticky.
+                </p>
+                <p class="blog-p-tag">
+                    <i>This is a little strange... aren't touchdowns supposed to be more unreliable than yards? What's going on here?</i>
+                </p>
+                <p class="blog-p-tag">
+                    Well, if we plot the data, we see that using all pass attempts from 2012 to 2022 yields graphs like this:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/passing_yards-vs-passing_yards_last-unfiltered.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    And this:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/passing_attempts-vs-passing_attempts_last-unfiltered.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    So while you can see a positive correlation between stats, there do seem to be a lot of outliers.
+                    We don't want trick plays, injuries, etc. to muddle our data and lead us to innocent conclusions.
+                </p>
+                <p class="blog-p-tag">
+                    So, while on a general look, passing stats are sticky, we must dig futher to find something closer to the truth!
+                </p>
+            </div>
+
+            <h2 class="h2-blog">Starters Only</h2>
+            <div>
+                <p class="blog-p-tag">
+                    To try and eliminate potential noise or data that can mislead our takeaways, I filtered away players from the data set
+                    above that were non-starters. So, the data below - correlations and graphs - will be on only starters from 2012 to 2022.
+                </p>
+                <p class="blog-p-tag">
+                    I want to make it clear as to <b>what I define a starter to be:</b> a player who has played at least 12 games and has had 1500
+                    yards in consecutive seasons. I used this definition as a proxy to avoid massive jumps in the data that were due
+                    to injury and jouryman players catching fire, as I believe both of these cases would add noise to the data set.
+                </p>
+                <p class="blog-p-tag">
+                    This means the data will be missing out on quarterbacks who sat and barely played their rookie season.
+                    Additionally, it will phase out quarterbacks with massive declines. However, I think there's an argument that can be made
+                    that these cases should roughly cancel, so including them would blurry the data a bit. Furthermore, they could be seen as 
+                    outliers - as a rookie season and sharply declined quarterback season are not indicative of a player's career.
+                </p>
+                <p class="blog-p-tag">
+                    Without futher ado, the correlation heat map for starters:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 900px; height: 900px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/starters.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Immediately, we see that all of the stats are far less correlated to their previous iteration.
+                    There still is some moderate correlation - which is defined as a correlation value between 0.40 and 0.60 - and even hints
+                    of strong correlation for some stats.
+                </p>
+                <p class="blog-p-tag">
+                    We can see that completions (0.63), passing yards (0.57), and passing attempts (0.58) are all still moderately sticky.
+                    So, NFL starters still exhibit my expectation from the data, albeit to a weaker degree than what I was anticipating.
+                </p>
+                <p class="blog-p-tag">
+                    Moreover, we can see that passing touchdowns are far harder to replicate year-to-year, with a correlation of 0.36.
+                    This does confirm the belief that passing touchdowns are a more finicky number for quarterbacks to repeat.
+                </p>
+                <p class="blog-p-tag">
+                    Out of curiousity, let's take a look at what some of the graphs look like of the stats from year-to-year, 
+                    starting with our strongest correlation stat, completions:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/completions-vs-completions_last-staters.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    This actually looks pretty linear, with the outlier of Kaepernick at the bottom left of the graph messing things up a bit.
+                    I would consider him an outlier, as while he techinally hit the threshold of a starter in 2012, he only started 7 of the 13
+                    games he played in.
+                </p>
+                <p class="blog-p-tag">
+                    Removing him from the data set yields the following new completion graph:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/completions-vs-completions_last-staters-no-kap.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    This seems to be a better faith representation of what we call starters.
+                    It's possible I'm still missing filtering out certain situations, but that data point seemed very off, and after further inspection,
+                    it should not have been included.
+                </p>
+                <p class="blog-p-tag">
+                    That being said, this doesn't change much from a correlation standpoint:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 900px; height: 900px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/starters-no-kap.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    If anything, our moderate-to-strong correlations got minimally weaker and our weak correlations got minimally stronger.
+                    Additionally, the belief that yardage is more reliable than touchdowns also continues to stand.
+                </p>
+                <p class="blog-p-tag">
+                    In fact, completions, passing attempts, and yardage all correlate pretty well with each other and are all sticky together,
+                    which when you think about it makes sense. You need to attempts to get completions, and more attempts should lead to
+                    more catches. Catches lead to passing yards, so more attempts, leads to more completions which leads to more yards. 
+                </p>
+                <p class="blog-p-tag">
+                    Unfortunately, EPA is also not very sticky and it also doesn't correlate well with the other stats.
+                    This is a shame, as EPA is a good proxy for fantasy points in a season, so having a way to know if EPA will be high
+                    would likely mean knowing, relatively reliably, if fantasy points will be high.
+                </p>
+                <p class="blog-p-tag">
+                    For a better visualization of one of the weaker correlations, here is what the correlation looks now like for EPA:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/epa-vs-epa_last-staters-no-kap.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Also touchdowns:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/touchdowns-vs-touchdowns_last-staters-no-kap"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    As indicated by the correlation heat map, there is a slightly positive relationship in both cases, but it is rather weak.
+                </p>
+            </div>
+
+            <h2 class="h2-blog">Diving Deeper</h2>
+            <div>
+                <p class="blog-p-tag">
+                    At this point, I was messing around with the data to see if I could find anything interesting
+                    or valuable.
+                </p>
+                <p class="blog-p-tag">
+                    I happened to notice a quite the difference in the strength of correlation between old starters and young starters.
+                    I define old as players who were 30 in the previous season, and young as players who were
+                    30 in the current season. The contrast surprised me.
+                </p>
+                <p class="blog-p-tag">
+                    The correlation heat map for our savy vets:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 900px; height: 900px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/starters-old.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    And the correlation heat map for our young bucks:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 900px; height: 900px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/starters-young.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    That's a pretty staggering difference for what we called sticky stats for starters (passing yards, completions and attempts).
+                    All of the old quarterback correlations for these stats are, at best, weak-to-moderately strong.
+                    On the other hand, all of theses stats correlate moderately-to-strongly for young quarterbacks.
+                </p>
+                <p class="blog-p-tag">
+                    This is a pretty neat trend, as it shows a pattern that quarterbacks consistently improve their numbers year over year, up until about 30.
+                </p>
+                <p class="blog-p-tag">
+                    It probably would be a bit too strong to say that the best time to cash in for a quarterback would be around 30, based off of just this data,
+                    but this hints at potential signs of decay for the position coming sooner than one may have expected.
+                </p>
+            </div>
+
+            <h2 class="h2-blog">Other Findings</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Some final findings to conclude this piece, that you may find interesting as well.
+                </p>
+                <p class="blog-p-tag">
+                    The heat map below shows the year-over-year correlation values for the <i>average time to throw</i>, <i>average intended air yards</i>,
+                    <i>average intended air yards</i> (a PFF metric for how aggressive a quarterback is), <i>average expected completion percentage</i>, <i>average air yard distance</i>,
+                    and season total <i>fantasy points</i>.
+                </p>
+                <p class="blog-p-tag">
+                    <b>Note:</b> these stats are from 2016-2022, as the data set I am using for these somewhat advanced stats does not go back further than 2016.
+                </p>
+                <p class="blog-p-tag">
+                    Please forgive the <i>avg</i> and <i>mean</i> redundancy in the heat map below, as it came from a Python data cleaning hack:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1100px; height: 900px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/advanced_stats.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    I choose these stats amongst starters as they are the remaining ones that I found to have at least moderate-to-strong correlations from year-to-year.
+                </p>
+                <p class="blog-p-tag">
+                    Some observations and ideas to ponder:
+                </p>
+                <ul class="bullet-list">
+                    <li>Quarterbacks seem to progressively get more time to throw in their careers - there is strong correlation (0.70) for the average time to throw from year-to-year. Is this a result of getting more help or them getting better in the pocket?</li>
+                    <li>Quarterbacks throw further and further during their career, as there is moderate correlation (0.49) for year-to-year average intended air yards. I wonder if this comes from becoming more comfortable in the pocket, schemas, and the game.</li>
+                    <li>Aggression tends to increase strongly (correlation of 0.63). Similar thoughts to the previous point.</li>
+                    <li>Expected completion percentage improves moderately over time (correlation of 0.56) - this likely ties in with increased comfortability.</li>
+                    <li>Average air distance also moderately increases from year-to-year (0.54). Similar reasons to the stats above?</li>
+                    <li>Lastly, fantasy points to some degree are sticky (0.52).</li>
+                </ul>
+                <p class="blog-p-tag">
+                    I was most surprised by the average time to throw increasing.
+                </p>
+                <p class="blog-p-tag">
+                    Here's the graph of that stat to better visualize it:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/QB/stability-passing/time2throw-time2throw_last-staters.html"></iframe>
+                </div>
+            </div>
+
+            <h2 class="h2-blog">Summary</h2>
+            <p class="blog-p-tag">
+                That's all for this one, here are the quick takeaways, as per usual:
+            </p>
+            <ul class="bullet-list">
+                <li>Passing stats on the all are sticky.</li>
+                <li>However, looking at just the data from starting quarterbacks, everything is far less sticky.</li>
+                <li>There is a big difference in how sticky these stats are amongst starting quarterbacks when dividing them by old vs. young. Young quarterbacks have far stickier stats than old quarterbacks, and slightly more than just starting quarterbacks.</li>
+                <li>Passing yards, completions and attempts are the most sticky, but only moderately so for starters.</li>
+                <li>Touchdowns are less sticky than yards, especially when looking at just starter data.</li>
+                <li>Unfortunately, none of stats provide strong indicators for relaible future fantasy performance.</li>
+            </ul>
+            <p class="blog-p-tag">
+                Thanks for tuning into this piece!
+            </p>
+            <p class="blog-p-tag">
+                Cheers, <br />
+                Alex
+            </p>
+        </div>
+    </div>
+</body>
+<script>
+    $("#common-header").load("/Fantasy/header.html");;
+</script>
