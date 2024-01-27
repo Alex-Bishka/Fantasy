@@ -1,0 +1,371 @@
+<head>
+    <title>Modeling Backs</title>
+    <link rel="stylesheet" href="/Fantasy/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/Fantasy/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        // google analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>Modeling Running Back Fantasy Performance</h1>
+
+
+            <h2>TL;DR</h2>
+            <p class="blog-p-tag">
+                <ul class="bullet-list">
+                    <li>Future fantasy performance of backs can be predicted with some degree of accuracy and confidence.</li>
+                    <li>This can be done with models that focus on backs that are more fantasy relevant.</li>
+                    <li>Models trained on the generalized data also pretty decent.</li>
+                    <li>The improvement from previous research I've done is incorporating receiving stats for backs.</li>
+                </ul>
+            </p>
+
+
+            <h2 class="h2-blog">Overview</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Hi everyone! Welcome back to another fantasy analysis post!
+                </p>
+                <p class="blog-p-tag">
+                    In this episode, we will be building a model that predicts the fantasy performance of running backs. This work will utilize
+                    the information discovered in the previous blog post, <a href="/Fantasy/Blogs/sticky-stats/running-back-metrics.html">A View at Running Back Metrics</a>,
+                    which essentially showed that <a>fantasy relevant</a> backs are predictable, if receiving work is taken into account. Moreover, it showed that 
+                    receiving stats for backs had strong correlations with fantasy performance in the next season.
+                </p>
+                <p class="blog-p-tag">
+                    While the inclusion of receiving work may seem obvious to some, I would like to point out that using only rushing stats to find metrics that serve 
+                    as solid indicators of fantasy peformance, is rather futile. In fact, it's far more likely to be accurate with predictions by just using receiving work.
+                    My first glance into <a href="/Fantasy/Blogs/sticky-stats/rushing-sticky-season-totals.html">how sticky rushing stats are</a> displayed how poor rushing 
+                    stats were as indicators of fantasy performance, unfortunately.
+                </p>
+                <p class="blog-p-tag">
+                    So, given the discovery of the strong correlations from the previous work, the goal for the research here is to accomplish the following: first find an 'optimal'
+                    metric and second use it to create a useful predictive model.
+                </p>
+                <p class="blog-p-tag">
+                    Before moving onto the exciting stuff, I must mention that the data used for this analysis is from 2012-2022.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">A Viable Metric</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Note: for stat and term definitions in this section that you are unfamiliar with, please check out the
+                    <a href="javascript:void(0);" onclick="scrollToParagraph('glossary-0', 10)">glossary</a> below.
+                </p>
+                <p class="blog-p-tag">
+                    First, we need to choose some stat(s) to create a metric that would be useful for predictions. In our previous work, we explored two potential metrics.
+                    The first was built on <i>wopr_y</i>, <i>tgt_sh</i>, and <i>receptions</i>:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/stability-total/season/new-metric-and-metrics-starters-by-age_mean.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    The second included these three stats and <i>carries</i>:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/stability-total/season/new-metric-carries-and-metrics-starters-by-age_mean.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    For more info, including how to interact with the graphs, the <a href="/Fantasy/Blogs/sticky-stats/running-back-metrics#fantasy-relevance-0">Fantasy Relevance</a>
+                    section from that work should be referenced. In this version of running back metric research, I attempted to find a more optimal metric.
+                </p>
+                <p class="blog-p-tag">
+                    Before moving on, I want to go into how I went about this. Continuing off the idea of <a>sticky stats</a>, I created many metrics based off stats from
+                    the previous season (or season X - 1) and used the metric to build a model that would inference fantasy points - ppr flavored - in the next season (or 
+                    season X). The assumption here is that strong correlations should provide us models that are capable at predicting fantasy performance in the future,
+                    or at least the direction of change (i.e. improved or declined season upcoming). This may not take into account potential non-linear patterns of the 
+                    data, but it again feels like a reasonable direction to at least start with.
+                </p>
+                <p class="blog-p-tag">
+                    One final note: the combinations created were limited by my compute power, so I was not able to calculate all permuations of the stats. However,
+                    I was still be able to run correlations for many potential metrics. The results from the last piece seemed to be more promising than real. It was
+                    difficult to find anything better than the metric built on <i>wopr_y</i>, <i>tgt_sh</i>, <i>receptions</i> and <i>carries</i>. 
+                </p>
+                <p class="blog-p-tag">
+                    The metric we used to build these models was based on the following stats: <i>rushing_fumbles_lost</i>, <i>target_share</i>, <i>tgt_sh</i>, <i>dom</i>,
+                    <i>yptmpa</i>, and <i>ppr_sh</i>. It was quite an improvement, and this is what it looks like when graphed with fantasy points ppr against age:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/fantasy-metrics/new-metric-against-fp-ppr.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Again, I encourage you to interact with the graph. Specifically, display only <i>new-metric</i> and <i>fantasy_points_ppr_normalized_mean</i>
+                    on the graph, by first double-clicking on one of the lines in the legend, and then single-click on the other. Double-click on any selected line
+                    to reset the graph.
+                </p>
+                <p class="blog-p-tag">
+                    Now, I want to note that building a model on the individual data points, instead of age buckets, resulted in correlation with
+                    <a href="javascript:void(0);" onclick="scrollToParagraph('fantasy-relevant-definition', 10)">fantasy relevant</a> backs to decrease.
+                </p>
+                <p class="blog-p-tag">
+                    This is still a strong correlation, and serves as a much more useful indicator than any of my previous work on backs. Furthermore, on the general 
+                    running back data, the correlation is actually stronger, at about 0.85.
+                </p>
+                <p class="blog-p-tag">
+                    We are cooking with gas here, even if it might not feel like it, given the previous research preparing this blog post.
+                </p>
+                <p class="blog-p-tag">
+                    I do plan on revisiting this work once my compute situation improves, which should be in about a month or so, with the hope that I'll be able to compute
+                    more metric options that can beat the current one.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Predictive Modeling</h2>
+            <div>
+                <p class="blog-p-tag">
+                    The moment we've all been waiting for! What kind of damage can a model built on our new-metric do?
+                </p>
+                <p class="blog-p-tag">
+                    Well, if we start with a <a href="/Fantasy/Blogs/sticky-stats/wr-metrics#glossary-0">multiple linear regression (MLR) model</a>, we get the following
+                    result:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/fantasy-metrics/new-metric-mlr.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    The green in the graph above indicates that the predicted fantasy production yielded the same delta as what actually occured. In other words,
+                    if the model predicts an increase in fantasy points and the player actually increased their fantasy production, the point is marked as green 
+                    on the graph. 
+                </p>
+                <p class="blog-p-tag">
+                    Similarly, if the model incorrectly predicts an increase in fantasy points, then the point is marked as red.
+                </p>
+                <p class="blog-p-tag">
+                    Unfortunately, our test set of data points is small - only 36 samples. So, it might be hard to strongly believe in the results, but the model has 
+                    a 69.39% accuracy when it comes to identifying the correct direction of change. I would say this matches the strong, but not spectacular correlation
+                    from our new-metric and fantasy points ppr. Furthermore, since the correlation of the new-metric was out of this world, at 0.85, this model, or at least
+                    how it was built, should perform even better on all backs.
+                </p>
+                <p class="blog-p-tag">
+                    I also trained a <a href="/Fantasy/Blogs/sticky-stats/wr-metrics#glossary-0">random forest regression (RFR) model</a> with the same methodolgy as the
+                    MLR model above. It yielded the following result:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/fantasy-metrics/new-metric-rfr.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    This peformed better than the MLR model, with an accuracy of 77.8% when it comes to predicting the correct direction of change for fantasy production.
+                    That's exciting, but again, it is a small test set, so I would take these results with a grain of salt.
+                </p>
+                <p class="blog-p-tag">
+                    The correlation value we calculated and the results of these models do bode well for running back predictability. I think this shows that it isn't quite
+                    the desolate wasteland that I had originally thought, and that models can out peform random chance.
+                </p>
+            </div>
+
+            <h2 class="h2-blog">Generalized Models</h2>
+            <div>
+                <p class="blog-p-tag">
+                    In this section we will train these models on all running back data from 2012-2022, to see how they perform on the generalized data.
+                    Furthermore, by doing this, the test set will be far larger, with 237 samples. The same metric used for the models above will be used here.
+                </p>
+                <p class="blog-p-tag">
+                    Our generalizd MLR model:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/fantasy-metrics/new-metric-mlr-generalized.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    This is an improvement on our niche version, as it has an accuracy of 74.7%. I also feel more confident about the results here, as we have both a larger
+                    test and train set. Additionally, the correlation value is super strong for the generalized version, at 0.85.
+                </p>
+                <p class="blog-p-tag">
+                    Now, looking at the RFR model:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/fantasy-metrics/new-metric-rfr-generalized.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Turns out the performance of the RFR model is slightly diminished when using the generalzied version of the data, falling to an accuracy of 74.7%.
+                    Still, not bad. 
+                </p>
+                <p class="blog-p-tag">
+                    It is encouraging to see the models peform well on the generalized level too.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Summary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Thanks to all for making it this far!
+                </p>
+                <p class="blog-p-tag">
+                    Before wrapping up with the TL;DR, I want to mention that the progress here is quite exiciting, even if 
+                    I was unable to find an optimal metric. The peformance of these models beats that of the
+                    <a href="/Fantasy/Blogs/sticky-stats/wr-metrics#predictive-modeling-0">wide receiver ones with trinity scoring and alternative metrics</a>.
+                </p>
+                <p class="blog-p-tag">
+                    If you were to tell me beforehand that back performance could actually be more accurately predicted than wide receiver performance, I wouldn't have believed you.
+                    So, while the work here is not over, I think this piece serves as a strong proof of concept that backs can be accurately predicted.
+                </p>
+                <p class="blog-p-tag">
+                    Additionally, this makes me want to revisit the wide receiver numbers to find something even better for modeling that position group, but more on that in
+                    another piece.
+                </p>
+                <p class="blog-p-tag">
+                    On that note, here's the recap for this one:
+                </p>
+                <ul class="bullet-list">
+                    <li>Future fantasy performance of backs can be predicted with some degree of accuracy and confidence.</li>
+                    <li>This can be done with models that focus on backs that are more fantasy relevant.</li>
+                    <li>Models trained on the generalized data also pretty decent.</li>
+                    <li>The improvement from previous research I've done is incorporating receiving stats for backs.</li>
+                </ul>
+                <p class="blog-p-tag">
+                    Thanks for reading!
+                </p>
+                <p class="blog-p-tag">
+                    Cheers, <br />
+                    Alex
+                </p>
+            </div>
+            
+
+            <h2 class="h2-blog">Glossary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Term definitions below:
+                </p>
+                <ul class="bullet-list">
+                    <li id="fantasy-relevant-definition"><b>Fantasy relevant:</b> a back is defined as fantasy relevant if they have played in at least 10 games in a season and have at least 800 yards in that season. If the graph is using multiple seasons (i.e. self correlations), this standard is applied to each season.</li>
+                </ul>
+                <p class="blog-p-tag">
+                    For stat definitions on the graphs, please check out <a href="/Fantasy/Blogs/sticky-stats/wr-sticky-season-totals#glossary-0">this previous glossary</a>
+                    and these <a href="https://cran.r-project.org/web/packages/nflreadr/vignettes/">vignettes</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function scrollToParagraph(paragraphId, headerOffset=100) {
+        let element = document.getElementById(paragraphId);
+        // let headerOffset = 100;  // Change this value according to your needs
+        let elementPosition = element.getBoundingClientRect().top;
+        let offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+        });
+    }
+</script>
+<script>
+    $("#common-header").load("/Fantasy/header.html");;
+</script>
