@@ -146,7 +146,7 @@
                 </p>
                 <p class="blog-p-tag">
                     While the inclusion of receiving work may seem obvious to some, I would like to point out that using only rushing stats to find metrics that serve 
-                    as solid indicators of fantasy peformance, is rather futile. In fact, it's far more likely to be accurate with predictions by just using receiving work.
+                    as solid indicators of fantasy performance, is rather futile. In fact, it's far more likely to be accurate with predictions by just using receiving work.
                     My first glance into <a href="/Fantasy/Blogs/sticky-stats/rushing-sticky-season-totals.html">how sticky rushing stats are</a> displayed how poor rushing 
                     stats were as indicators of fantasy performance, unfortunately.
                 </p>
@@ -191,7 +191,7 @@
                     data, but it again feels like a reasonable direction to at least start with.
                 </p>
                 <p class="blog-p-tag">
-                    One final note: the combinations created were limited by my compute power, so I was not able to calculate all permuations of the stats. However,
+                    One final note: the combinations created were limited by my compute power, so I was not able to calculate all permutations of the stats. However,
                     I was still be able to run correlations for many potential metrics. The results from the last piece seemed to be more promising than real. It was
                     difficult to find anything better than the metric built on <i>wopr_y</i>, <i>tgt_sh</i>, <i>receptions</i> and <i>carries</i>. 
                 </p>
@@ -238,7 +238,7 @@
                     <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/fantasy-metrics/new-metric-mlr.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
-                    The green in the graph above indicates that the predicted fantasy production yielded the same delta as what actually occured. In other words,
+                    The green in the graph above indicates that the predicted fantasy production yielded the same delta as what actually occurred. In other words,
                     if the model predicts an increase in fantasy points and the player actually increased their fantasy production, the point is marked as green 
                     on the graph. 
                 </p>
@@ -252,19 +252,19 @@
                     how it was built, should perform even better on all backs.
                 </p>
                 <p class="blog-p-tag">
-                    I also trained a <a href="/Fantasy/Blogs/sticky-stats/wr-metrics#glossary-0">random forest regression (RFR) model</a> with the same methodolgy as the
+                    I also trained a <a href="/Fantasy/Blogs/sticky-stats/wr-metrics#glossary-0">random forest regression (RFR) model</a> with the same methodology as the
                     MLR model above. It yielded the following result:
                 </p>
                 <div class="iframe-container">
                     <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/fantasy-metrics/new-metric-rfr.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
-                    This peformed better than the MLR model, with an accuracy of 77.8% when it comes to predicting the correct direction of change for fantasy production.
+                    This performed better than the MLR model, with an accuracy of 77.8% when it comes to predicting the correct direction of change for fantasy production.
                     That's exciting, but again, it is a small test set, so I would take these results with a grain of salt.
                 </p>
                 <p class="blog-p-tag">
                     The correlation value we calculated and the results of these models do bode well for running back predictability. I think this shows that it isn't quite
-                    the desolate wasteland that I had originally thought, and that models can out peform random chance.
+                    the desolate wasteland that I had originally thought, and that models can out perform random chance.
                 </p>
             </div>
 
@@ -275,7 +275,7 @@
                     Furthermore, by doing this, the test set will be far larger, with 237 samples. The same metric used for the models above will be used here.
                 </p>
                 <p class="blog-p-tag">
-                    Our generalizd MLR model:
+                    Our generalized MLR model:
                 </p>
                 <div class="iframe-container">
                     <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/fantasy-metrics/new-metric-mlr-generalized.html"></iframe>
@@ -291,11 +291,11 @@
                     <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/fantasy-metrics/new-metric-rfr-generalized.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
-                    Turns out the performance of the RFR model is slightly diminished when using the generalzied version of the data, falling to an accuracy of 74.7%.
+                    Turns out the performance of the RFR model is slightly diminished when using the generalized version of the data, falling to an accuracy of 74.7%.
                     Still, not bad. 
                 </p>
                 <p class="blog-p-tag">
-                    It is encouraging to see the models peform well on the generalized level too.
+                    It is encouraging to see the models perform well on the generalized level too.
                 </p>
             </div>
 
@@ -306,8 +306,8 @@
                     Thanks to all for making it this far!
                 </p>
                 <p class="blog-p-tag">
-                    Before wrapping up with the TL;DR, I want to mention that the progress here is quite exiciting, even if 
-                    I was unable to find an optimal metric. The peformance of these models beats that of the
+                    Before wrapping up with the TL;DR, I want to mention that the progress here is quite exciting, even if 
+                    I was unable to find an optimal metric. The performance of these models beats that of the
                     <a href="/Fantasy/Blogs/sticky-stats/wr-metrics#predictive-modeling-0">wide receiver ones with trinity scoring and alternative metrics</a>.
                 </p>
                 <p class="blog-p-tag">
