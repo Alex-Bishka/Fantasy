@@ -1,0 +1,574 @@
+<head>
+    <title>2023 QB Review</title>
+    <link rel="stylesheet" href="/Fantasy/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/Fantasy/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        // google analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>2023 Quarterback Review</h1>
+
+
+            <h2>TL;DR</h2>
+            <p class="blog-p-tag">
+                <ul class="bullet-list">
+                    <li>Allen is in a tier of his own. Mahomes is probably the only guy just beneath him. Again, this is for fantasy purposes.</li>
+                    <li>Burrow and Hurts - more so the latter - are solid buy lows for elite QBs this offseason.</li>
+                    <li>Stroud and Love have a large disparity in value between them, but I'm not sure the numbers justify that. Stroud does appear to have a higher ceiling, but Love seems to be more consistent with higher quality games (i.e. Stroud can drop a 50 bomb, but Love seems to be in the 20s more consistently). Would love to have either.</li>
+                    <li>Prescott and Lamar are my sell high candidates. Prescott had a really easy fantasy schedule this year, so I expect regression. I'm not sure Lamar will put up another year of this caliber next year. He has shown an MVP season can be repeated, but it feels like a lot has to go right for him and the Ravens for that to happen.</li>
+                    <li>Cousins, Goff, and Stafford are all decent vets, who would be awesome as QB2s. Cousins might still be a QB1 and is somehow about the same value as Stafford on KTC.</li>
+                    <li>Purdy is an interesting case. Regression could very well be on the cards due to how easy his schedule was for fantasy. However, he's still young, has a lot of weapons around him, and I expect the 49ers to improve their interior oline this offeason, so for that reason I think he could improve or maintain his current production.</li>
+                </ul>
+            </p>
+
+
+            <h2 class="h2-blog">Overview</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Hello all! Welcome back to another analysis piece!
+                </p>
+                <p class="blog-p-tag">
+                    This blog post kicks off my 2023 position group review series. I intended to keep this version shorter than the 2022 one, as I will merge clustering analysis
+                    into these pieces. Additionally, this work will be simpler than some of the blogs I've published recently, so it will have analysis in the same vein as the
+                    blogs recapping the 2022 season. Modeling and metric work will continue after this series - hopefully by then I will have the upgraded compute ready to go.
+                </p>
+                <p class="blog-p-tag">
+                    This specific piece will focus on fantasy point production and clustering based off the main sources of quarterback fantasy production. Follow up parts will
+                    narrow in on rushing and passing stats.
+                </p>
+                <p class="blog-p-tag">
+                    I should also note that fantasy points may look slightly different than your league's scoring, as the data is coming from
+                    <a href="https://github.com/cooperdff/nfl_data_py">an NFL data python library</a>.
+                </p>
+                <p class="blog-p-tag">
+                    With all that out of the way, let's dive into the review for quarterbacks!
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Fantasy Points</h2>
+            <div>
+                <p class="blog-p-tag">
+                    We'll start by taking a look at fantasy points production in 2023.
+                </p>
+                <p class="blog-p-tag">
+                    I want to note, before discussing the plots below, for a quarterback to qualify for any of the analysis in this piece,
+                    they must have played at least 5 games in 2023 - this goes for both season totals and per game numbers.
+                    The graph below plots the top 30 quarterbacks by fantasy points:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive-2.0/QB/2023-review/fantasy-points-season.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    First, I want to point out that Josh Allen is QB1 overall, and by a pretty decent margin. The gap between him and, the QB2, Hurts is about 37.82.
+                    That's a larger gap between Hurts and, the QB5, Jordan Love (margin was about 37.76). Allen outscored the average QB1 - who is at 307.71 fantasy points,
+                    including Allen's numbers - by 86.93 points. Divide that by 17, and you get a 5.11 points per game advantage with Allen, against the average tier one
+                    starter.
+                </p>
+                <p class="blog-p-tag">
+                    The common motif in the 2022 review was that the best players in a position group are worth every penny, as their dominance provides so 
+                    much value over other stars and starting value fantasy players. On the first graph of the 2023 review, Josh Allen exemplifies this perfectly.
+                    Sure, there are other QB1s that are exciting and talented, but there's only one Josh Allen in fantasy. He is the Travis Kelce (perhaps of yesteryear)
+                    of quarterbacks.
+                </p>
+                <p class="blog-p-tag">
+                    For the Mahomes fans, I think it's time to admit that Josh Allen is head and shoulders above everyone in the realm of fantasy. If it wasn't for the tragedy
+                    that happened Damar Hamlin, there's a good chance Allen is QB1 for four straight years! If you own Mahomes in a league and could trade him for Allen and change,
+                    I would pull the trigger in a heart beat. I realize Mahomes is the better real-life quarterback, but finishing as QB8 surely has to bump him down off the Allen tier.
+                </p>
+                <p class="blog-p-tag">
+                    Before turning this into a Josh Allen stan article, I want to pivot here and focus on some other guys.
+                </p>
+                <p class="blog-p-tag">
+                    It was good to see Lamar and the Ravens, mostly, stay healthy for a season. His ceiling is high, but I find it difficult to trust him to be a top 3-5
+                    quarterback consistently, simply because of his injury history and how the Ravens handle injuries across the board.
+                </p>
+                <p class="blog-p-tag">
+                    Prescott was also back to his best this year finishing at QB3.  I think he'll stay in the QB1 conversation, but replicating this season would be tough,
+                    as he had one of the easiest schedules from a fantasy perspective this past year:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive-2.0/QB/2023-review/qb-sos.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    The bar plot above shows fantasy strength of schedule (aka Score on the legend) and fantasy points for the 30 easiest schedules for quarterbacks.
+                    Quarterbacks towards the right of the graph had the easiest schedule. Those towards the left had the hardest from this list. 
+                </p>
+                <p class="blog-p-tag">
+                    The difficulty here is predominantly based on passing stats for both quarterbacks and defenses. For more info on how the score was calculated, please
+                    check out the <a href="javascript:void(0);" onclick="scrollToParagraph('sos-calculation', 10)">appendix</a>.
+                </p>
+                <p class="blog-p-tag">
+                    Back to looking at Prescott - he had the fourth easiest schedule, which is why I see him dropping down the fantasy rankings in 2024.
+                </p>
+                <p class="blog-p-tag">
+                    In a similar vein, Purdy also had a pretty easy schedule as well, but I like his stock more as Purdy is surrounded by elite talent and will have
+                    Shanahan around for a while. If the 49ers upgrade their interior oline, I wouldn't be surprised to see Purdy improve again next season.
+                </p>
+                <p class="blog-p-tag">
+                    I also want to highlight both Stroud and Love. Both are young and talented quarterbacks, in seemingly good future environments. Finishing as
+                    QB1s and the way in which they did it is impressive. Stroud has flashed a much higher ceiling with less help, but Love has a supporting cast
+                    that is flourishing with young talent. I'm not sure the gap is quite as large as KTC makes it out to be - as of this writing, Love and AJ Brown
+                    are considered fair value for Stroud.
+                </p>
+                <p class="blog-p-tag">
+                    There's a lot to like across the board so far, but there's also a fair share of disappointment here.
+                </p>
+                <p class="blog-p-tag">
+                    Outside of Mahomes' very off fantasy year, the main three that came as a surprise were Tua, Trevor Lawrence (TLaw), and Fields.
+                </p>
+                <p class="blog-p-tag">
+                    Tua just barely finished as a QB1 despite being in an electric offense. At this point, it seems like he's destined to be a lower tier QB1, who
+                    may have a hot year here or there. Unfortunate, considering how many points Miami puts up.
+                </p>
+                <p class="blog-p-tag">
+                    TLaw also just finished as a QB1. He had some injuries and the rest of the offense wasn't quite clicking, but after two years of Pederson it 
+                    doesn't look like TLaw will be living up to his original hype.
+                </p>
+                <p class="blog-p-tag">
+                    Lastly, Fields finished in QB2, but that was mostly due to injuries. If we see the per game version of fantasy points, the outlook on him is 
+                    a little different:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive-2.0/QB/2023-review/fantasy-points-per-game.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Fields finished as a QB1 on a per game basis, which appears exciting. The drawback on Fields in future years is that he 1) might get replaced 
+                    by Caleb Williams in 2024 and 2) didn't improve enough as a passer to where his future might be safe on a different franchise. His anticipation
+                    and reading of a defense was better, but not great:
+                </p>
+
+                <div class="blog-img-container">
+                    <iframe class="multi-img" style="height: 315;" title="Justin Fields Week 11"
+                      src="https://www.youtube.com/embed/X9Nf-erIkrU?start=3136" frameborder="0" allowfullscreen></iframe>
+                    <iframe class="multi-img" style="height: 315;" title="Justin Fields Week 17"
+                      src="https://www.youtube.com/embed/rrfBujHrz4k?start=4281" frameborder="0" allowfullscreen></iframe>
+                </div>
+
+                <p class="blog-p-tag">
+                    So, Fields is great for fantasy because of a rushing upside, if he's a starter. The question we don't know the answer to, is how long will he be 
+                    a starter in the NFL?
+                </p>
+                <p class="blog-p-tag">
+                    I'd like to point out that TLaw and Tua are both firmly in QB2 range on a points per game basis - not ideal. Moreover, as a bit
+                    of a fun fact, Mahomes is behind Fields... at QB13... still think he's better than Allen in fantasy?
+                </p>
+                <p class="blog-p-tag">
+                    Two other quarterbacks that deserve some attention are Burrow and Watson.
+                </p>
+                <p class="blog-p-tag">
+                    While Burrow finished as the last QB2, he suffered from average-to-poor offensive line play, injuries, and a middle-of-the-road schedule. With all those 
+                    factors, I would expect a healthy Burrow to return to form next season. That being said, I'm not sure he is a buy low, as Burrow is ranked at QB 5
+                    on Keep Trade Cut's (KTC) rankings, somehow above Hurts - whose had two back-to-back top 3 years, go figure.
+                </p>
+                <p class="blog-p-tag">
+                    Watson finished just behind Burrow on the points per game scale. However, he left quite early in one of the six games he played. If you were to average
+                    his five other games together, Watson would be sitting at about 18.3 points per game. That's mid-to-low end QB1 territory. I understand the dislike
+                    surrounding the player, but his value is far below his fantasy performance. Watson is currently QB19 on KTC, which is spectacular value for a
+                    low-end QB1.
+                </p>
+            </div>
+
+            <h2 class="h2-blog">Clustering</h2>
+            <div>
+                <p class="blog-p-tag">
+                    This section uses <a>K-Means Clustering</a> to place quarterbacks into tiers based on the four main sources of fantasy points: passing yards,
+                    passing touchdowns, rushing yards, and rushing touchdowns. I also threw in fantasy points for cluster creation, for good measure.
+                    For each of the season total and per game numbers, I created one cluster graph. I used six tiers, as that offered quite a bit of nuance, while
+                    barely sacrificing <a>optimal cluster size</a>.
+                </p>
+                <p class='blog-p-tag'>
+                    For each of the sub-graphs in the cluster plots, the upper right of the sub-graph is the most ideal position for a player to be in.
+                </p>
+                <div>
+                    <p class='blog-p-tag'>
+                        We start with the six tier cluster graph:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 1050px; height: 1050px;" src="/Fantasy/Analysis/interactive-2.0/QB/2023-review/fantasy-points-season-cluster.html"></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        A brief description of each cluster:
+                    </p>
+                    <ul class='bullet-list'>
+                        <li><b>Cluster 0 (Orange):</b> This cluster is made up entirely of QB1s, who specialize in passing yards and passing touchdowns. The best group when it comes to passing yards and touchdowns. Every player in this group has over 4000 passing yards and 25 touchdowns. The rushing numbers are pretty scattered.</li>
+                        <li><b>Cluster 1 (Green):</b> The rushing quarterbacks: Fields, Lamar, and Dobbs. All three finished top 5 in rushing yards on the season, but lacked rushing touchdowns. Outside of Lamar, passing production is pretty poor from this group. Lamar is a few rushing touchdowns away from being in the Hurts and Allen tier.</li>
+                        <li><b>Cluster 2 (Red):</b> Mostly injured stars and backups (or soon to be) in this group. Outside of Tayson Hill in Cluster 5, the bottom at pretty much every stat we are measuring.</li>
+                        <li><b>Cluster 3 (Teal):</b> Jalen Hurts and Josh Allen. Really strong rushing quarterbacks, who have an equally as strong passing game. Both had 15 rushing touchdowns and over 20 passing touchdowns, along with at least 3800 passing yards and 500 rushing yards. Studs.</li>
+                        <li><b>Cluster 4 (Purple):</b> Low end QB1s and higher end QB2s. Pretty middle of the pack, across the board.</li>
+                        <li><b>Cluster 5 (Dark Blue):</b> Taysom Hill - the gadget QB who has some solid rushing numbers, but not much else here.</li>
+                    </ul>
+                    <p class='blog-p-tag'>
+                        The players in each cluster:
+                    </p>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Orange)</b>
+                            <ul class='bullet-list'>
+                                <li>Tua Tagovailoa</li>
+                                <li>Baker Mayfield</li>
+                                <li>Patrick Mahomes</li>
+                                <li>Jared Goff</li>
+                                <li>Brock Purdy</li>
+                                <li>Jordan Love</li>
+                                <li>Dak Prescott</li>
+                            </ul>
+
+                            <b>Cluster 1 (Green)</b>
+                            <ul class='bullet-list'>
+                                <li>Joshua Dobbs</li>
+                                <li>Justin Fields</li>
+                                <li>Lamar Jackson</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 2 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Zach Wilson</li>
+                                <li>Aidan O'Connell</li>
+                                <li>Jake Browning</li>
+                                <li>Kyler Murray</li>
+                                <li>Joe Burrow</li>
+                                <li>Kirk Cousins</li>
+                                <li>Bryce Young</li>
+                                <li>Desmond Ridder</li>
+                                <li>Gardner Minshew</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 3 (Teal)</b>
+                            <ul class='bullet-list'>
+                                <li>Jalen Hurts</li>
+                                <li>Josh Allen</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 4 (Purple)</b>
+                            <ul class='bullet-list'>
+                                <li>Geno Smith</li>
+                                <li>Justin Herbert</li>
+                                <li>Derek Carr</li>
+                                <li>Matthew Stafford</li>
+                                <li>Sam Howell</li>
+                                <li>Russell Wilson</li>
+                                <li>Trevor Lawrence</li>
+                                <li>C.J. Stroud</li>
+                            </ul>
+
+                            <b>Cluster 5 (Dark Blue)</b>
+                            <ul class='bullet-list'>
+                                <li>Taysom Hill</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="blog-p-tag">
+                        Some commentary on each cluster:
+                    </p>
+                    <ul class='bullet-list'>
+                        <li><b>Cluster 0 (Orange):</b> A pleasant surprise to see Baker here, but can he repeat his success again, especially after Canales left? For what it's worth Geno hasn't looked the same since Canales left Seattle. Tua's passing yardage numbers are really solid (over 4500 yards), but can he throw for more touchdowns since he has little to no rushing ability? Down year for Mahomes, as you'd expect him to be in his own tier, or with Allen.</li>
+                        <li><b>Cluster 1 (Green):</b> A little unfortunate for Lamar to be in this tier, but his rushing touchdowns are what largely holds him back from being in the Hurts and Allen tier. I don't see Dobbs or Fields having long term value, so I would mostly fade this cluster.</li>
+                        <li><b>Cluster 2 (Red):</b> Injuries to Murray, Burrow, and Cousins land them in this poor tier, but I'd expect all three of them to be in contention for top 8 fantasy QBs next year. The biggest question mark for me here is Bryce Young. Hopefully 2023 was rock bottom. Canales as a head coach should help, and Carolina should bring in some players, so with some luck he can improve and show why he was one overall. Even with an optimistic lens, it's hard to see Young turn into Stroud or a top fantasy quarterback and show why he was one overall. Even with an optimistic lens, it's hard to see Young turn into Stroud or a top fantasy quarterback, at least for now.</li>
+                        <li><b>Cluster 3 (Teal):</b> Allen and Hurts. Elite fantasy QBs. I'd still put Allen in a tier of his own, but Hurts at QB6 on KTC looks like a potential steal this offseason. I can't imagine things get worse than the end of the season in Philly, especially after some coordinator upgrades. Hurts was still good after the bye, despite a couple of clunkers.</li>
+                        <li><b>Cluster 4 (Purple):</b> I think there's a good chance Stroud and Herbert jump into that orange tier next season, with the former improving and getting more help, and the latter staying healthy under a better coaching staff. TLaw is the big question in this group - can he finally put it together and turn in a strong fantasy season? There were plenty of issues this year: poor oline play, injuries to him and receivers, and plenty of bad drops. I'd keep my expectations  at low QB1, but don't hold your breathe if he turns a top 8 season next year.</li>
+                        <li><b>Cluster 5 (Dark Blue):</b> Hill is useful if you can start him at tight end, but even then, not a guy I would focus much time on.</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <p class='blog-p-tag'>
+                        </br>Adding the per game version for some more context:
+                    </p>
+                    <div class="iframe-container">
+                        <iframe style="width: 1050px; height: 1050px;" src="/Fantasy/Analysis/interactive-2.0/QB/2023-review/fantasy-points-per-game-cluster.html"></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        A quick summary of each cluster:
+                    </p>
+                    <ul class='bullet-list'>
+                        <li><b>Cluster 0 (Green):</b> Some QB1s and some QB2s on a per game basis. About average across the board.</li>
+                        <li><b>Cluster 1 (Red):</b> Slightly better passing production than Cluster 0, but practically zero rushing output, which makes them a worse fantasy unit than Cluster 0.</li>
+                        <li><b>Cluster 2 (Dark Blue):</b> This cluster is full of backups and Watson (who again would be sitting in a much better cluster if we take out his game where he gets injured early). Worst tier by passing and fantasy numbers. Surprisingly  decent rushing numbers.</li>
+                        <li><b>Cluster 3 (Purple):</b> Fields and Jackson. Both are average of below, when it comes to passing numbers. Their rushing yards per game are out of this world, and both QBs have a decent amount of rushing touchdowns. Lamar is third overall in fantasy points per game. Fields is a budget Lamar, when looking at the numbers.</li>
+                        <li><b>Cluster 4 (Teal):</b> Allen and Hurts. Elite rushing numbers. About middle of the pack with their per game passing numbers. QB1 and QB2, respectively, on a points per game basis.</li>
+                        <li><b>Cluster 5 (Orange):</b> The best passing production as a tier. Minimal rushing output.</li>
+                    </ul>
+                    <p class='blog-p-tag'>
+                        The players in each cluster:
+                    </p>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Green)</b>
+                            <ul class='bullet-list'>
+                                <li>Sam Howell</li>
+                                <li>Jake Browning</li>
+                                <li>Trevor Lawrence</li>
+                                <li>Russell Wilson</li>
+                                <li>Patrick Mahomes</li>
+                                <li>Justin Herbert</li>
+                                <li>C.J. Stroud</li>
+                                <li>Kyler Murray</li>
+                                <li>Jordan Love</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 1 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Nick Mullens</li>
+                                <li>Derek Carr</li>
+                                <li>Joe Burrow</li>
+                                <li>Geno Smith</li>
+                                <li>Tua Tagovailoa</li>
+                                <li>Baker Mayfield</li>
+                                <li>Matthew Stafford</li>
+                                <li>Jared Goff</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <b>Cluster 2 (Dark Blue)</b>
+                            <ul class='bullet-list'>
+                                <li>Gardner Minshew</li>
+                                <li>Taylor Heinicke</li>
+                                <li>Easton Stick</li>
+                                <li>Deshaun Watson</li>
+                                <li>Joshua Dobbs</li>
+                            </ul>
+
+                            <b>Cluster 3 (Purple)</b>
+                            <ul class='bullet-list'>
+                                <li>Justin Fields</li>
+                                <li>Lamar Jackson</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 4 (Teal)</b>
+                            <ul class='bullet-list'>
+                                <li>Jalen Hurts</li>
+                                <li>Josh Allen</li>
+                            </ul>
+
+                            <b>Cluster 5 (Orange)</b>
+                            <ul class='bullet-list'>
+                                <li>Brock Purdy</li>
+                                <li>Kirk Cousins</li>
+                                <li>Dak Prescott</li>
+                                <li>Joe Flacco</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="blog-p-tag">
+                        My notes on clusters for the per game version:
+                    </p>
+                    <ul class='bullet-list'>
+                        <li><b>Cluster 0 (Green):</b>  Believe it or not, TLaw is only ahead of Browning and Howell for point per game in this tier. Not ideal if you paid anywhere close to his hype to acquire him. I still believe there's hope for him, but next year might be the last season that I hold out in hopes of TLaw turning into that special QB. Otherwise, it's pretty good to see the names in this cluster: Wilson's not useless in fantasy yet (pending future situation), Murray is getting back to what he was, Herbert produced despite being on the dumpster fire that the Chargers were, and the youngins in Stroud and Love had great starts to their careers.</li>
+                        <li><b>Cluster 1 (Red):</b>  Despite the injury issues, Burrow still produced decent passing numbers. I think the buy low window is shut by now, but it might be possible to still acquire him at a discount. Interesting to see Carr and Geno here as both appeared poor when watching them, but their passing production was solid - it was the lack of anything from a rushing standpoint that limited their ceilings. Could do worse for a QB2 than anyone in this group. Lastly, it hurts to see Tua here. He's someone that you'd love to see in Cluster 5, and Tua is an offense that should support that kind of fantasy production, but for some reason it's not happening. Between the concussions and lack of a "flash game", he's not someone I'd be interested in buying.</li>
+                        <li><b>Cluster 2 (Dark Blue):</b>  I like Watson for fantasy purposes next year. I think another year back in the NFL will do him well. He's only in this cluster with backups due to his early exit against the Colts. I also feel inclined to say that if Flacco can do what he did, Watson improving feels likely.</li>
+                        <li><b>Cluster 3 (Purple):</b>  The only thing from holding Lamar back from being in the cluster below is rushing touchdowns per game. Otherwise, he's better at every stat, except fantasy points, than Hurts. Again health scares me off Lamar. I don't see Fields surviving long as a starter in the NFL with his current passing abilities.</li>
+                        <li><b>Cluster 4 (Teal):</b>  I'm a little surprised by the lack of passing production from Hurts and Allen. Allen is still close to top ten in passing yards and touchdowns per game, but Hurts is quite a bit behind. Both have elite rushing production, that keeps them as 1 and 2 in fantasy, that keeps them as the number 1 and 2 QBs in fantasy.</li>
+                        <li><b>Cluster 5 (Orange):</b> It's kinda funny to see Flacco as the best passer in this group, from a production standpoint. Granted, he had the easiest fantasy schedule by my metric, but these quarterbacks all had the easiest fantasy schedules. It will be interesting to see how Cousins recovers from his injury, where Flacco lands - he might not be a bad stop-gap solution for a team, and if Prescott and Purdy can continue upon their success from this year. Again, I feel like Purdy has some room for improvement, while Prescott is a candidate for regression, as this is who he is, and he is unlikely to get this easy a fantasy schedule again.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2 class="h2-blog">Summary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Thanks to those who've made it this far - I'm excited to breakdown the rest of the 2023 fantasy season with y'all!
+                </p>
+                <p class="blog-p-tag">
+                    In the next one, I'll dive more into passing and rushing stats for quarterbacks, which should wrap up the 2023 review on QBs.
+                </p>
+                <p class="blog-p-tag">
+                    One last time, the recap:
+                </p>
+                <ul class="bullet-list">
+                    <li>Allen is in a tier of his own. Mahomes is probably the only guy just beneath him. Again, this is for fantasy purposes.</li>
+                    <li>Burrow and Hurts - more so the latter - are solid buy lows for elite QBs this offseason.</li>
+                    <li>Stroud and Love have a large disparity in value between them, but I'm not sure the numbers justify that. Stroud does appear to have a higher ceiling, but Love seems to be more consistent with higher quality games (i.e. Stroud can drop a 50 bomb, but Love seems to be in the 20s more consistently). Would love to have either.</li>
+                    <li>Prescott and Lamar are my sell high candidates. Prescott had a really easy fantasy schedule this year, so I expect regression. I'm not sure Lamar will put up another year of this caliber next year. He has shown an MVP season can be repeated, but it feels like a lot has to go right for him and the Ravens for that to happen.</li>
+                    <li>Cousins, Goff, and Stafford are all decent vets, who would be awesome as QB2s. Cousins might still be a QB1 and is somehow about the same value as Stafford on KTC.</li>
+                    <li>Purdy is an interesting case. Regression could very well be on the cards due to how easy his schedule was for fantasy. However, he's still young, has a lot of weapons around him, and I expect the 49ers to improve their interior oline this offeason, so for that reason I think he could improve or maintain his current production.</li>
+                </ul>
+                <p class="blog-p-tag">
+                    Cheers, <br />
+                    Alex
+                </p>
+            </div>
+            
+
+            <h2 class="h2-blog">Glossary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Term definitions below:
+                </p>
+                <ul class="bullet-list">
+                    <li><b>passing_a_y</b>: How far the football moves on a pass from the line of scrimmage to the catch point (does not matter if the pass is incomplete).</li>
+                    <li><b>pacr</b>: Passing (yards) Air (yards) Conversion Ratio - the number of passing yards per air yards thrown per game.</li>
+                    <li><b>dakota</b>: Adjusted EPA + CPOE composite based on coefficients which best predict adjusted EPA/play in the following year.</li>
+                </ul>
+                <p class="blog-p-tag">
+                    These definitions come from the <a href="https://cran.r-project.org/web/packages/nflreadr/vignettes/dictionary_player_stats.html">R Data Dictionary</a>.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Appendix</h2>
+            <div>
+                <p id="sos-calculation" class="blog-p-tag">
+                    The calculation used to strength of schedule first starts with calculating defensive rating for each defense, for every matchup of the season.
+                    This is done via the following formula (for stat definitions refer to the
+                    <a href="javascript:void(0);" onclick="scrollToParagraph('glossary-0', 10)">glossary</a> above):
+                </p>
+                <pre style="font-size: 18px; display: flex; justify-content: start;">
+                    <code>
+                        defensive_rating = (completions * -0.02) + (attempts * -0.01) + (passing_yards * -0.04) + (passing_tds * -5) \
+                        + (ints * 2) + (sacks * 1) + (fumbles_recovered * 2) + (fumbles_forced * 0.3) + (passing_a_y * -0.01) \
+                        + (pacr * -10) + (dakota * -5) 
+                    </code>
+                </pre>
+                <p class="blog-p-tag">
+                    Then, these ratings are grouped up by quarterback, so that we have the all of the defensive ratings for each match-up a QB played in. These are then
+                    averaged to get the average defensive rating a quarterback played against during a season. 40 is then added to each average so that they are all
+                    positive.
+                </p>
+                <p class="blog-p-tag">
+                    So, the more positive a strength of schedule score for a QB, the tougher the match-ups were, as a less negative defensive rating implies the defense
+                    played better.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function scrollToParagraph(paragraphId, headerOffset=100) {
+        let element = document.getElementById(paragraphId);
+        // let headerOffset = 100;  // Change this value according to your needs
+        let elementPosition = element.getBoundingClientRect().top;
+        let offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+        });
+    }
+</script>
+<script>
+    $("#common-header").load("/Fantasy/header.html");;
+</script>
