@@ -22,7 +22,7 @@ $(document).on('click', '#closeBtn', function () {
 // rediction function for specifc blog
 function redirectToBlog(blogName) {
     // Redirect to the specific blog page
-    window.location.href = "/Fantasy/Blogs/" + blogName;
+    window.location.href = "/Blogs/" + blogName;
 }
 
 // Intercept anchor tag clicks to handle /Blogs specially
@@ -39,5 +39,5 @@ document.addEventListener('click', function (event) {
 // Custom function to handle /Blogs
 function redirectToBlogs() {
     // Your custom logic here, for example:
-    window.location.href = "/Fantasy/Blogs.html"; // Navigate to blog.html
+    window.location.href = "/Blogs.html"; // Navigate to blog.html
 }
