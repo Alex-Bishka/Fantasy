@@ -79,7 +79,7 @@ let selectedColumns;
 
 // Modify loadData function to take parameters for year and position
 function loadData(year, position) {
-    currentCSVPath = `/Fantasy/Analysis/FantasyData/advanced-stats/${position}/${year}.csv`;
+    currentCSVPath = `/Analysis/FantasyData/advanced-stats/${position}/${year}.csv`;
     fetch(currentCSVPath)
         .then(response => response.text())
         .then(csv => {
