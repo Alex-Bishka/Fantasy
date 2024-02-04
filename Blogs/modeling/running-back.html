@@ -1,9 +1,9 @@
 <head>
     <title>Modeling Backs</title>
-    <link rel="stylesheet" href="/Fantasy/styles.css">
+    <link rel="stylesheet" href="/styles.css">
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="/Fantasy/script.js" defer></script>
+    <script src="/script.js" defer></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -129,7 +129,7 @@
                     during model building.
                 </p>
                 <p>
-                    Additionally, the <a href="/Fantasy/Blogs/sticky-stats/wr-metrics">wide receiver modeling blog</a> has been impacted by the same potential bias.
+                    Additionally, the <a href="/Blogs/sticky-stats/wr-metrics">wide receiver modeling blog</a> has been impacted by the same potential bias.
                 </p>
                 <p>
                     I will be revisiting this subject once more, after my compute has been upgraded. Expect updates within the next month. Amendment blogs
@@ -156,14 +156,14 @@
                 </p>
                 <p class="blog-p-tag">
                     In this episode, we will be building a model that predicts the fantasy performance of running backs. This work will utilize
-                    the information discovered in the previous blog post, <a href="/Fantasy/Blogs/sticky-stats/running-back-metrics.html">A View at Running Back Metrics</a>,
+                    the information discovered in the previous blog post, <a href="/Blogs/sticky-stats/running-back-metrics.html">A View at Running Back Metrics</a>,
                     which essentially showed that <a>fantasy relevant</a> backs are predictable, if receiving work is taken into account. Moreover, it showed that 
                     receiving stats for backs had strong correlations with fantasy performance in the next season.
                 </p>
                 <p class="blog-p-tag">
                     While the inclusion of receiving work may seem obvious to some, I would like to point out that using only rushing stats to find metrics that serve 
                     as solid indicators of fantasy performance, is rather futile. In fact, it's far more likely to be accurate with predictions by just using receiving work.
-                    My first glance into <a href="/Fantasy/Blogs/sticky-stats/rushing-sticky-season-totals.html">how sticky rushing stats are</a> displayed how poor rushing 
+                    My first glance into <a href="/Blogs/sticky-stats/rushing-sticky-season-totals.html">how sticky rushing stats are</a> displayed how poor rushing 
                     stats were as indicators of fantasy performance, unfortunately.
                 </p>
                 <p class="blog-p-tag">
@@ -187,16 +187,16 @@
                     The first was built on <i>wopr_y</i>, <i>tgt_sh</i>, and <i>receptions</i>:
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/stability-total/season/new-metric-and-metrics-starters-by-age_mean.html"></iframe>
+                    <iframe style="width: 1150px; height: 650px;" src="/Analysis/interactive/RB/stability-total/season/new-metric-and-metrics-starters-by-age_mean.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
                     The second included these three stats and <i>carries</i>:
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/stability-total/season/new-metric-carries-and-metrics-starters-by-age_mean.html"></iframe>
+                    <iframe style="width: 1150px; height: 650px;" src="/Analysis/interactive/RB/stability-total/season/new-metric-carries-and-metrics-starters-by-age_mean.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
-                    For more info, including how to interact with the graphs, the <a href="/Fantasy/Blogs/sticky-stats/running-back-metrics#fantasy-relevance-0">Fantasy Relevance</a>
+                    For more info, including how to interact with the graphs, the <a href="/Blogs/sticky-stats/running-back-metrics#fantasy-relevance-0">Fantasy Relevance</a>
                     section from that work should be referenced. In this version of running back metric research, I attempted to find a more optimal metric.
                 </p>
                 <p class="blog-p-tag">
@@ -216,7 +216,7 @@
                     <i>yptmpa</i>, and <i>ppr_sh</i>. It was quite an improvement, and this is what it looks like when graphed with fantasy points ppr against age:
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/fantasy-metrics/new-metric-against-fp-ppr.html"></iframe>
+                    <iframe style="width: 1150px; height: 650px;" src="/Analysis/interactive/RB/fantasy-metrics/new-metric-against-fp-ppr.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
                     Again, I encourage you to interact with the graph. Specifically, display only <i>new-metric</i> and <i>fantasy_points_ppr_normalized_mean</i>
@@ -247,11 +247,11 @@
                     The moment we've all been waiting for! What kind of damage can a model built on our new-metric do?
                 </p>
                 <p class="blog-p-tag">
-                    Well, if we start with a <a href="/Fantasy/Blogs/sticky-stats/wr-metrics#glossary-0">multiple linear regression (MLR) model</a>, we get the following
+                    Well, if we start with a <a href="/Blogs/sticky-stats/wr-metrics#glossary-0">multiple linear regression (MLR) model</a>, we get the following
                     result:
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/fantasy-metrics/new-metric-mlr.html"></iframe>
+                    <iframe style="width: 1150px; height: 650px;" src="/Analysis/interactive/RB/fantasy-metrics/new-metric-mlr.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
                     The green in the graph above indicates that the predicted fantasy production yielded the same delta as what actually occurred. In other words,
@@ -268,11 +268,11 @@
                     how it was built, should perform even better on all backs.
                 </p>
                 <p class="blog-p-tag">
-                    I also trained a <a href="/Fantasy/Blogs/sticky-stats/wr-metrics#glossary-0">random forest regression (RFR) model</a> with the same methodology as the
+                    I also trained a <a href="/Blogs/sticky-stats/wr-metrics#glossary-0">random forest regression (RFR) model</a> with the same methodology as the
                     MLR model above. It yielded the following result:
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/fantasy-metrics/new-metric-rfr.html"></iframe>
+                    <iframe style="width: 1150px; height: 650px;" src="/Analysis/interactive/RB/fantasy-metrics/new-metric-rfr.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
                     This performed better than the MLR model, with an accuracy of 77.8% when it comes to predicting the correct direction of change for fantasy production.
@@ -294,7 +294,7 @@
                     Our generalized MLR model:
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/fantasy-metrics/new-metric-mlr-generalized.html"></iframe>
+                    <iframe style="width: 1150px; height: 650px;" src="/Analysis/interactive/RB/fantasy-metrics/new-metric-mlr-generalized.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
                     This is an improvement on our niche version, as it has an accuracy of 74.7%. I also feel more confident about the results here, as we have both a larger
@@ -304,7 +304,7 @@
                     Now, looking at the RFR model:
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1150px; height: 650px;" src="/Fantasy/Analysis/interactive/RB/fantasy-metrics/new-metric-rfr-generalized.html"></iframe>
+                    <iframe style="width: 1150px; height: 650px;" src="/Analysis/interactive/RB/fantasy-metrics/new-metric-rfr-generalized.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
                     Turns out the performance of the RFR model is slightly diminished when using the generalized version of the data, falling to an accuracy of 74.7%.
@@ -324,7 +324,7 @@
                 <p class="blog-p-tag">
                     Before wrapping up with the TL;DR, I want to mention that the progress here is quite exciting, even if 
                     I was unable to find an optimal metric. The performance of these models beats that of the
-                    <a href="/Fantasy/Blogs/sticky-stats/wr-metrics#predictive-modeling-0">wide receiver ones with trinity scoring and alternative metrics</a>.
+                    <a href="/Blogs/sticky-stats/wr-metrics#predictive-modeling-0">wide receiver ones with trinity scoring and alternative metrics</a>.
                 </p>
                 <p class="blog-p-tag">
                     If you were to tell me beforehand that back performance could actually be more accurately predicted than wide receiver performance, I wouldn't have believed you.
@@ -362,7 +362,7 @@
                     <li id="fantasy-relevant-definition"><b>Fantasy relevant:</b> a back is defined as fantasy relevant if they have played in at least 10 games in a season and have at least 800 yards in that season. If the graph is using multiple seasons (i.e. self correlations), this standard is applied to each season.</li>
                 </ul>
                 <p class="blog-p-tag">
-                    For stat definitions on the graphs, please check out <a href="/Fantasy/Blogs/sticky-stats/wr-sticky-season-totals#glossary-0">this previous glossary</a>
+                    For stat definitions on the graphs, please check out <a href="/Blogs/sticky-stats/wr-sticky-season-totals#glossary-0">this previous glossary</a>
                     and these <a href="https://cran.r-project.org/web/packages/nflreadr/vignettes/">vignettes</a>.
                 </p>
             </div>
@@ -383,5 +383,5 @@
     }
 </script>
 <script>
-    $("#common-header").load("/Fantasy/header.html");;
+    $("#common-header").load("/header.html");;
 </script>

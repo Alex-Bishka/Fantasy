@@ -1,9 +1,9 @@
 <head>
     <title>Yards Per Carry Stability</title>
-    <link rel="stylesheet" href="/Fantasy/styles.css">
+    <link rel="stylesheet" href="/styles.css">
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="/Fantasy/script.js" defer></script>
+    <script src="/script.js" defer></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -125,15 +125,15 @@
             <h2>Overview</h2>
             <div>
                 <p class="blog-p-tag">
-                    This post serves as a quick extension to my previous one, <a href="/Fantasy/Blogs/rushing-sticky-season-totals">Rushing Sticky Stats</a>
+                    This post serves as a quick extension to my previous one, <a href="/Blogs/rushing-sticky-season-totals">Rushing Sticky Stats</a>
                     and is inspired by the discussion on my previous <a href="https://www.reddit.com/r/DynastyFF/comments/18n87a0/how_sticky_are_rushing_stats/">Reddit post</a>. 
                 </p>
                 <p class="blog-p-tag">
                     The question we are trying to answer: <b>how stable are yards per carry (ypc)?</b>
                 </p>
                 <p class="blog-p-tag">
-                    From the previous <a href="/Fantasy/Blogs/rushing-sticky-season-totals">examination</a>, 
-                    ypc is most definitely not a <a href="/Fantasy/Analysis/interactive/RB/stability-rushing/season/simple-rb.html">sticky stat</a>, 
+                    From the previous <a href="/Blogs/rushing-sticky-season-totals">examination</a>, 
+                    ypc is most definitely not a <a href="/Analysis/interactive/RB/stability-rushing/season/simple-rb.html">sticky stat</a>, 
                     as it frequently had a low correlation with itself, year-over-year (0.15 in the heat map linked). While ypc doesn't increase year-over-year, it could be possible
                     that this stat doesn't change much, or fluctuates crazily.
                 </p>
@@ -161,7 +161,7 @@
                     The three graphs below are the ones that I find the most useful to answering this question:
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-carries-2-8-13-16.html"></iframe>
+                    <iframe style="width: 1200px; height: 700px;" src="/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-carries-2-8-13-16.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
                     This first one above does a great job of showcasing how noisy yards per carry are when backs have less than 100 carries 
@@ -182,10 +182,10 @@
                     and consequently, the sum of carries:
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-carries-4-6-8-10-12.html"></iframe>
+                    <iframe style="width: 1200px; height: 700px;" src="/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-carries-4-6-8-10-12.html"></iframe>
                 </div>
                 <div class="iframe-container">
-                    <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-carries-3-5-7-9-11.html"></iframe>
+                    <iframe style="width: 1200px; height: 700px;" src="/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-carries-3-5-7-9-11.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
                     Despite ypc stabilizing for, what I would call, starting backs, I would still argue that the final range of 3.18 to 5.45 yards per carry
@@ -206,7 +206,7 @@
                     (over a season) against age, yield the following line graph with the unfiltered running back data:
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1200px; height: 550px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-age-all.html"></iframe>
+                    <iframe style="width: 1200px; height: 550px;" src="/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-age-all.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
                     Not really what I would've expect... yards per carry stays quite constant and the best fantasy seasons seem to occur between the ages
@@ -217,7 +217,7 @@
                     we apply a filter of being in at least 10 games in a season, to filter out injuries and part-time players:
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1200px; height: 550px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-age-10-games.html"></iframe>
+                    <iframe style="width: 1200px; height: 550px;" src="/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-age-10-games.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
                     The graph is still not what I expected. I would not expect the peak years for a back in fantasy to be from the ages of 32-34.
@@ -228,7 +228,7 @@
                     to remove the outliers yields the graph below:
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1200px; height: 550px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-age-10-games-10-samples.html"></iframe>
+                    <iframe style="width: 1200px; height: 550px;" src="/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-age-10-games-10-samples.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
                     Now at a point where the data makes more sense for fantasy purposes, we see that backs have basically three peaks for fantasy production
@@ -245,7 +245,7 @@
                     The last graph I want to highlight adds the <a href="javascript:void(0);" onclick="scrollToParagraph('carries-normalized', 150)">normalized average number of carries</a>, to the graph above:
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1200px; height: 550px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-age-10-games-10-samples-carries.html"></iframe>
+                    <iframe style="width: 1200px; height: 550px;" src="/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-age-10-games-10-samples-carries.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
                     The average number of carries also matches the trend from the previous graph. Running backs depreciate as soon as they are drafted, but seriously
@@ -314,7 +314,7 @@
                     Here is the full version of the line graph:
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1200px; height: 700px;" src="/Fantasy/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-carries-all.html"></iframe>
+                    <iframe style="width: 1200px; height: 700px;" src="/Analysis/interactive/RB/stability-rushing/ypc-stability/ypc-v-carries-all.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
                     Since the graphs are interactive, you may toggle which lines to display by clicking on them under the legend.
@@ -338,5 +338,5 @@
     }
 </script>
 <script>
-    $("#common-header").load("/Fantasy/header.html");;
+    $("#common-header").load("/header.html");;
 </script>

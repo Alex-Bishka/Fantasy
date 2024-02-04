@@ -1,9 +1,9 @@
 <head>
     <title>WR Metrics</title>
-    <link rel="stylesheet" href="/Fantasy/styles.css">
+    <link rel="stylesheet" href="/styles.css">
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="/Fantasy/script.js" defer></script>
+    <script src="/script.js" defer></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -128,7 +128,7 @@
                     the stats for the metrics and then used the same data for building the model.
                 </p>
                 <p>
-                    Additionally, the <a href="/Fantasy/Blogs/modeling/running-back">running back modeling blog</a> has been impacted by the same potential bias.
+                    Additionally, the <a href="/Blogs/modeling/running-back">running back modeling blog</a> has been impacted by the same potential bias.
                     That blog also may additionally have data pollution issues.
                 </p>
                 <p>
@@ -141,7 +141,7 @@
             <h2>TL;DR</h2>
             <p class="blog-p-tag">
                 <ul class="bullet-list">
-                    <li>Even though most <a href="/Fantasy/Analysis/interactive/WR/stability/season/Basic-Receiving-Stat-Correlations-(Games=10-and-Games-Last=10-and-Starter).html">wide receiver stats are sticky</a>, the position is difficult to predict accurately.</li>
+                    <li>Even though most <a href="/Analysis/interactive/WR/stability/season/Basic-Receiving-Stat-Correlations-(Games=10-and-Games-Last=10-and-Starter).html">wide receiver stats are sticky</a>, the position is difficult to predict accurately.</li>
                     <li>Trinity score does an okay job at laying out wide receiver expectations, and is slightly worse as a basis for a predictive model.</li>
                     <li>While there are many scores that perform better than trinity score, as a basis for a predictive model, it is hard to build something reliable.</li>
                     <li>Some variation of the <i>yards after catch</i> stat is present in the
@@ -164,11 +164,11 @@
                     I hope the New Year has been treating everyone well so far!
                 </p>
                 <p class="blog-p-tag">
-                    For those who enjoyed the previous post exploring <a href="/Fantasy/Blogs/sticky-stats/wr-sticky-season-totals">wide receiver sticky stats</a>,
+                    For those who enjoyed the previous post exploring <a href="/Blogs/sticky-stats/wr-sticky-season-totals">wide receiver sticky stats</a>,
                     this piece dives deeper into what wide receiver stats are useful for predictive modeling. 
                 </p>
                 <p class="blog-p-tag">
-                    The goal here is to use the information from the <a href="/Fantasy/Analysis/interactive/WR/stability/season/correlation-bar-advanced-stats-focused.html">strong correlations</a>
+                    The goal here is to use the information from the <a href="/Analysis/interactive/WR/stability/season/correlation-bar-advanced-stats-focused.html">strong correlations</a>
                     found in the previous piece, to 1) find concrete and useful trends and 2) build usable predictive models.
                 </p>
                 <p class="blog-p-tag">
@@ -195,7 +195,7 @@
                     This is what the trinity score, its components, and fantasy points - all normalized - against age look like together on a graph:
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/trinity-starters-by-age.html"></iframe>
+                    <iframe style="width: 1150px; height: 600px;" src="/Analysis/interactive/WR/stability/season/trinity-starters-by-age.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
                     For the most part, the components of the trinity score do a good job of mirroring fantasy production.
@@ -206,7 +206,7 @@
                     correlates quite poorly with fantasy points: 
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/trinity-corr-by-age.html"></iframe>
+                    <iframe style="width: 1150px; height: 600px;" src="/Analysis/interactive/WR/stability/season/trinity-corr-by-age.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
                     So the question I'm now wondering, is why does trinity score utilize <i>yards after the catch per reception</i>?
@@ -218,7 +218,7 @@
                     Maybe it makes a bit more sense if you take a look at the picture by season instead of age:
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/trinity-starters-by-season.html"></iframe>
+                    <iframe style="width: 1150px; height: 600px;" src="/Analysis/interactive/WR/stability/season/trinity-starters-by-season.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
                     In this situation, <i>yards after the catch per reception</i> is a far better indicator of fantasy performance from season-to-season
@@ -228,7 +228,7 @@
                     In fact, it's the best metric when looking at the data from this perspective:
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/trinity-corr-by-season.html"></iframe>
+                    <iframe style="width: 1150px; height: 600px;" src="/Analysis/interactive/WR/stability/season/trinity-corr-by-season.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
                     I would say this is useful in that it shows how trinity keeps up with fantasy production every year, but 
@@ -252,7 +252,7 @@
                     points in the current season is close to being strong:
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/trinity-fp-corr.html"></iframe>
+                    <iframe style="width: 1150px; height: 600px;" src="/Analysis/interactive/WR/stability/season/trinity-fp-corr.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
                     That's a correlation value of about 0.586.
@@ -292,7 +292,7 @@
                     The highest correlation with fantasy football from the state space I explored was 0.623:
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/new-metric-corr.html"></iframe>
+                    <iframe style="width: 1150px; height: 600px;" src="/Analysis/interactive/WR/stability/season/new-metric-corr.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
                     This metric consists of <i>receiving yards</i>, <i>receiving yards after the catch</i>,
@@ -306,7 +306,7 @@
                     For those curious of how this particular new metric appears against age, when caluclated in the same year as fantasy points:
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/new-metric-by-age.html"></iframe>
+                    <iframe style="width: 1150px; height: 600px;" src="/Analysis/interactive/WR/stability/season/new-metric-by-age.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
                     Trinity is thrown on there for comparision. Both metrics become inaccurate at 31 on, but that's likely because there are only 47
@@ -319,7 +319,7 @@
                     The same comparision, but against season instead of age:
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/new-metric-by-season.html"></iframe>
+                    <iframe style="width: 1150px; height: 600px;" src="/Analysis/interactive/WR/stability/season/new-metric-by-season.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
                     Again, the new metric follows fantasy production much more closely than trinity score does.
@@ -354,7 +354,7 @@
                     The results of the model can be seen below:
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/new-metric-mlr.html"></iframe>
+                    <iframe style="width: 1150px; height: 600px;" src="/Analysis/interactive/WR/stability/season/new-metric-mlr.html"></iframe>
                 </div>
                 <p class="blog-p-tag">
                     On first glance, the model appears to do quite poorly, especially on the more elite performers.
@@ -385,7 +385,7 @@
                     Now, if we compare this result to a model that uses trinity as the predictive metric instead, we get the following instead:
                 </p>
                 <div class="iframe-container">
-                    <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/trinity-mlr.html"></iframe>
+                    <iframe style="width: 1150px; height: 600px;" src="/Analysis/interactive/WR/stability/season/trinity-mlr.html"></iframe>
                 </div>
                 
                 <p class="blog-p-tag">
@@ -424,7 +424,7 @@
                     Thanks to all who made it this far! The recap once more:
                 </p>
                 <ul class="bullet-list">
-                    <li>Even though most <a href="/Fantasy/Analysis/interactive/WR/stability/season/Basic-Receiving-Stat-Correlations-(Games=10-and-Games-Last=10-and-Starter).html">wide receiver stats are sticky</a>, the position is difficult to predict accurately.</li>
+                    <li>Even though most <a href="/Analysis/interactive/WR/stability/season/Basic-Receiving-Stat-Correlations-(Games=10-and-Games-Last=10-and-Starter).html">wide receiver stats are sticky</a>, the position is difficult to predict accurately.</li>
                     <li>Trinity score does an okay job at laying out wide receiver expectations, and is slightly worse as a basis for a predictive model.</li>
                     <li>While there are many scores that perform better than trinity score, as a basis for a predictive model, it is hard to build something reliable.</li>
                     <li>Some variation of the <i>yards after catch</i> stat is present in the
@@ -470,10 +470,10 @@
                         These ten metrics had the highest correlation with fantasy points in the next season:
                     </p>
                     <div id="better-metrics">
-                        <iframe style="width: 1150px; height: 900px;" src="/Fantasy/Analysis/interactive/WR/stability/season/top-ten-stats.html"></iframe>
+                        <iframe style="width: 1150px; height: 900px;" src="/Analysis/interactive/WR/stability/season/top-ten-stats.html"></iframe>
                     </div>
                     <p class="blog-p-tag" style="margin-bottom: 0px;">
-                        For stat defintions, please check out the <a href="/Fantasy/Blogs/sticky-stats/wr-sticky-season-totals#glossary-0">glossary section</a> on my previous post.
+                        For stat defintions, please check out the <a href="/Blogs/sticky-stats/wr-sticky-season-totals#glossary-0">glossary section</a> on my previous post.
                         Note that normalization is done via dividing all stats by their respective max value, and last refers
                         to the value in the previous season.
                     </p>
@@ -485,7 +485,7 @@
                         The random forest regressor predictive models:
                     </p>
                     <div class="iframe-container">
-                        <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/new-metric-rfr.html"></iframe>
+                        <iframe style="width: 1150px; height: 600px;" src="/Analysis/interactive/WR/stability/season/new-metric-rfr.html"></iframe>
                     </div>
                     <p class="blog-p-tag">
                         Directional success:
@@ -497,7 +497,7 @@
                     </p>
     
                     <div class="iframe-container">
-                        <iframe style="width: 1150px; height: 600px;" src="/Fantasy/Analysis/interactive/WR/stability/season/trinity-rfr.html"></iframe>
+                        <iframe style="width: 1150px; height: 600px;" src="/Analysis/interactive/WR/stability/season/trinity-rfr.html"></iframe>
                     </div>
                     <p class="blog-p-tag">
                         Directional success:
@@ -526,5 +526,5 @@
     }
 </script>
 <script>
-    $("#common-header").load("/Fantasy/header.html");;
+    $("#common-header").load("/header.html");;
 </script>
