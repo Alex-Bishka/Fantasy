@@ -9,6 +9,10 @@ body {
     margin: auto;
 }
 
+.iframe-wrapper {
+    text-align: center; /* Center the buttons */
+}
+
 iframe {
     width: 725px;
     height: 725px;
@@ -309,3 +313,30 @@ th {
     cursor: pointer;
     user-select: none; /* Prevents text selection */
 }
+
+/* graph slider css */
+.iframe-container.slider {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.slider-iframe {
+    width: 1150px;
+    height: 650px;
+}
+
+.graph-slider-prev, .graph-slider-next {
+    cursor: pointer;
+    /* position: absolute; */
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #ddd;
+    border: none;
+    padding: 5px 10px;
+}
+
+.graph-slider-prev { left: 0; }
+.graph-slider-next { right: 0; }
