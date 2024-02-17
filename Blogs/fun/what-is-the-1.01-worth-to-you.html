@@ -1,0 +1,253 @@
+<head>
+    <title>What is the 1.01 worth to you?</title>
+    <link rel="stylesheet" href="/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        // google analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>What is the 1.01 worth to you?</h1>
+            <div>
+                <p class="blog-p-tag" style="margin-top: 16px;">
+                    What is the first pick in your upcoming rookie draft worth to you? No, I'm no talking about
+                    player or draft capital value. I don't want to hear what in addition to Caleb or MHJ add up to
+                    JJet. I'm talking about what punishment are you willing to endure for the 1.01?
+                    How often has the punishment been worth the reward?
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Background</h2>
+            <div>
+                <p class="blog-p-tag">
+                    I just finished the second year of my East vs. West coast dynasty league. Our famous league, filled
+                    with rich rivalry is called <i>Dynasty</i> (yes, I think we need new commissioners too!).
+                </p>
+                <p class="blog-p-tag">
+                    The <i>Dynasty</i> - terrible league name - has had two seasons filled with twists and turns.
+                    Two different teams acquired bragging rights over the rest of the league. One team has had the pleasure
+                    of finishing as the winner (or should I say loser?) of the toilet bowl in back-to-back seasons.
+                </p>
+                <p class="blog-p-tag">
+                    I am that team. I am the proud owner of a team deep in the ashes of a burnt phoenix (a.k.a. I'm 
+                    delusional and think I can contend in year three, but realistically am rebuilding hard after a 
+                    shite startup draft).
+                </p>
+                <p class="blog-p-tag">
+                    So, how has life been at the bottom of the barrel? Well, I have some exciting pieces, like Herbert,
+                    Stroud and Pittman, amongst others, but has my tanking been worth the price?
+                </p>
+                <p class="blog-p-tag">
+                    I mean... how bad can a punishment really be?
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">The Punishment(s)</h2>
+            <div>
+                <p class="blog-p-tag">
+                    My league has a fun trait: we choose the punishment during the offseason.
+                </p>
+                <p class="blog-p-tag">
+                    That's right! That means that any lucky losers or tankers - like me, as a randomly chosen example -
+                    don't know how much of their soul (or pride) they have sold until after the 1.01 has been claimed.
+                </p>
+                <p class="blog-p-tag">
+                    Following my TANK FOR BIJAN campaign, I was rewarded with the task of creating an OnlyFans.
+                    For those of you who are getting excited, please settle down. The account exists, but I, thankfully,
+                    have not had to post (explicit) content. In fact, the account is currently empty. Perhaps one day
+                    I will post some NSFW fantasy football content - like my 60 point championship win in my redraft
+                    league.
+                </p>
+                <p class="blog-p-tag">
+                    So, was Bijan worth it?
+                </p>
+                <p class="blog-p-tag">
+                    Well... I wouldn't know... I traded away the 1.01 for Olave and JSN. Awkward.
+                </p>
+                <p class="blog-p-tag">
+                    Now, is the 1.01 worth it for this upcoming draft? Well this was moments before disaster struck:
+                </p>
+                <img src="/Analysis/images/what-is-the-1.01-worth-to-you/before.jpeg"
+                    style="display: block; margin-left: auto; margin-right: auto; margin-bottom: 30px;"
+                    height="600px" width="400px">
+                <p class="blog-p-tag">
+                    This is the image of a man who is contemplating his past decisions. A man who is reevaluating his entire
+                    belief system. A man who wonders if and how he will continue to play dynasty. A man who might have finally
+                    broken.
+                </p>
+                <p class="blog-p-tag">
+                    Now, a few hours later:
+                </p>
+                <img src="/Analysis/images/what-is-the-1.01-worth-to-you/punishment.jpeg"
+                    style="display: block; margin-left: auto; margin-right: auto; margin-bottom: 30px;"
+                    height="600px" width="400px">
+                <p class="blog-p-tag">
+                    You are witnessing a league who sentenced the owner of their Cinderella team to dye their hair the colors
+                    of their rival's team helmet.
+                </p>
+                <p class="blog-p-tag">
+                    Ladies and gentlemen, I am a Bears fan.
+                </p>
+                <p class="blog-p-tag">
+                    Let that sink in... as if suffering from that fandom couldn't get any worse. The Packers jersey is the 
+                    cherry on top of the mess I've stumbled into.
+                </p>
+                <p class="blog-p-tag">
+                    One more detail. This is me. Me for one month. Me at work. Me at restaurants. Me at airports.
+                    Me in public, for a month.
+                </p>
+                <p class="blog-p-tag">
+                    Our league originally agreed that a reset would occur after a team won three titles (yea, yea, I'm
+                    taking that up with the commissioners). Well, what about three (consecutive) toilet bowls?
+                </p>
+                <p class="blog-p-tag">
+                    I don't know if I can take another punishment.
+                </p>
+                <p class="blog-p-tag">
+                    Oh, one more thing. The dye was done by a salon, and it ran me about $300 plus tip. It was a great job
+                    by them, but maybe that payment was the real punishment.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Is tanking worth it?</h2>
+            <div style="margin-bottom: 100px;">
+                <p class="blog-p-tag">
+                    Time will tell, but I can say one thing for certain: the league has strongly deterred me from future
+                    tanking. This is especially the case, since punishments are going to get more creative and worse.
+                    Not to mention, in a completely unrelated note, I don't own my own first round pick next year.
+                </p>
+                <p class="blog-p-tag">
+                    Hopefully MHJ or Caleb can help turn this franchise around. I eagerly await their contributions for the 
+                    2024 season, and will be posting my worst to first documentary this time next year (more realistically
+                    my three-peat toilet bowl achievement). I need whoever I pick to be special in fantasy.
+                </p>
+                <p class="blog-p-tag">
+                    Anyway, I hope y'all enjoyed this post. It's a change-up from the analysis posts I normally write, but I
+                    thought people might find this amusing - lord knows people around me have. 
+                </p>
+                <p class="blog-p-tag">
+                    Cheers, <br/>
+                    Alex
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    $("#common-header").load("/header.html");;
+</script>
