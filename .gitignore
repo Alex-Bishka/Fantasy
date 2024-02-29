@@ -9,4 +9,4 @@ pca/
 nfldata/
 *.pkl
 template.html
-Analysis/nfldataexploration/Rushing Stability/Plotly Rushing - Finding Optimal Metrics.ipynb
+Analysis/Notebooks/nfldataexploration/Rushing Stability/Plotly Rushing - Finding Optimal Metrics.ipynb
