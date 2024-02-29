@@ -1,3 +1,4 @@
+import os
 import plotly.express as px
 
 
@@ -21,6 +22,15 @@ def prep_df_for_scatter_plot(df):
     return df
 
 
+def check_save_path(save_path):
+    """
+    Checks to see if a file already exists, so we avoid over-writing it
+    """
+    exists = os.path.exists(save_path)
+    if exists:
+        raise(FileExistsError(f"File '{save_path}' already exists! Please choose a different name for the file."))
+
+
 def create_scatter_plot(df, stat, start_index=-30, save_path=None,
                         three_tiers=False, four_tiers=False, custom_appendix=None):
     """
@@ -39,6 +49,8 @@ def create_scatter_plot(df, stat, start_index=-30, save_path=None,
         stat += "_" + custom_appendix
         title += f" {' '.join([s.capitalize() for s in custom_appendix.split('_')])}"
         y_axis_title += f" ({' '.join([s.capitalize() for s in custom_appendix.split('_')])})"
+        if save_path:
+            save_path = save_path.replace(".html", f"_{custom_appendix}.html")
     
     # scatter plot
     fig = px.scatter(df[start_index:], x="player_name", y=stat, color='Color')
@@ -119,5 +131,6 @@ def create_scatter_plot(df, stat, start_index=-30, save_path=None,
     )
 
     if save_path:
+        check_save_path(save_path)
         fig.write_html(save_path)
     fig.show()
