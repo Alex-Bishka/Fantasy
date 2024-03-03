@@ -1,120 +1,52 @@
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
-import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
-import seaborn as sns
-from models.player_season import Player_Season
-from typing import List
+import matplotlib.pyplot as plt
+import plotly.express as px
 
 
-def get_stats_array(player: Player_Season, stats: List[str]) -> List[float]:
+def create_per_df(df, subset_cols, div_col, div_col_name):
     """"""
-    player_data = list()
-    for stat in stats:
-        # total stats (non-qb)
-        if stat == "Total Yards":
-            player_data.append(float(player.receiving_yards + player.rushing_yards))
-        elif stat == "Yards Per Game":
-            player_data.append(float((player.receiving_yards + player.rushing_yards) / player.games))
-        elif stat == "Total TDs":
-            player_data.append(float(player.receiving_td + player.rushing_touchdowns))
-        elif stat == "TDs Per Game":
-            player_data.append(float((player.receiving_td + player.rushing_touchdowns) / player.games))
+    for i, col in enumerate(subset_cols):
+        # update df to have columns per X
+        df[f"{col}_per_{div_col_name}"] = df[col] / df[div_col]
 
-        # receiving stats
-        elif stat == "Receiving Yards":
-            player_data.append(float(player.receiving_yards))
-        elif stat == "Receiving Yards Per Game":
-            player_data.append(float(player.receiving_yards / player.games))
-        elif stat == "Receptions":
-            player_data.append(float(player.receiving_receptions))
-        elif stat == "Receptions Per Game":
-            player_data.append(float(player.receiving_receptions / player.games))
-        elif stat == "Receiving TDs":
-            player_data.append(float(player.receiving_td))
-        elif stat == "Receiving TDs Per Game":
-            player_data.append(float(player.receiving_td / player.games))
-        elif stat == "Targets":
-            player_data.append(float(player.receiving_targets))
-        elif stat == "Targets Per Game":
-            player_data.append(float(player.receiving_targets / player.games))
-        
-        # rushing stats
-        elif stat == "Rushing Yards":
-            player_data.append(float(player.rushing_yards))
-        elif stat == "Rushing Yards Per Game":
-            player_data.append(float(player.rushing_yards / player.games))
-        elif stat == "Carries":
-            player_data.append(float(player.rushing_attempts))
-        elif stat == "Carries Per Game":
-            player_data.append(float(player.rushing_attempts / player.games))
-        elif stat == "Yards Per Carry":
-            player_data.append(float(player.rushing_y_per_attempt))
-        elif stat == "Rushing Touchdowns":
-            player_data.append(float(player.rushing_touchdowns))
-        elif stat == "Rushing Touchdowns Per Game":
-            player_data.append(float(player.rushing_touchdowns / player.games))
-        elif stat == "Fumbles":
-            player_data.append(float(player.fumbles))
-        elif stat == "Fumbles Per Game":
-            player_data.append(float(player.fumbles / player.games))
+        # update subset columns
+        subset_cols[i] = f"{col}_per_{div_col_name}"
 
-        # passing stats
-        elif stat == "Interceptions":
-            player_data.append(float(player.passing_interceptions))
-        elif stat == "Interceptions Per Game":
-            player_data.append(float(player.passing_interceptions / player.games))
-        elif stat == "Passing TDs":
-            player_data.append(float(player.passing_touchdowns))
-        elif stat == "Passing TDs Per Game":
-            player_data.append(float(player.passing_touchdowns / player.games))
-        elif stat == "Passing Yards":
-            player_data.append(float(player.passing_yards))
-        elif stat == "Passing Yards Per Game":
-            player_data.append(float(player.passing_yards / player.games))
-        elif stat == "Attempts":
-            player_data.append(float(player.passing_attempts))
-        elif stat == "Attempts Per Game":
-            player_data.append(float(player.passing_attempts / player.games))
-        elif stat == "Completions":
-            player_data.append(float(player.passing_completions))
-        elif stat == "Completions Per Game":
-            player_data.append(float(player.passing_completions / player.games))
-
-        # error
-        else:
-            raise ValueError(f"Passed in stat - '{stat}' - is not available for stat array creation!")
-    return player_data
+    return df, subset_cols
 
 
-
-def create_cluster_data(players, stats):
+def create_subset_df(df, subset_cols, drop_fantasy=True, len_subset_df=30):
     """"""
-    data = list()
-    for player in players:
-        player_data = get_stats_array(player=player, stats=stats)
-        data.append(player_data)
+    assert("fantasy_points" in subset_cols[0])
+    col_to_sort_by = subset_cols[0]
+    
+    # sort our cluster df by fantasy points (per something)
+    subset_df = df[subset_cols].copy().dropna()
+    subset_df = subset_df.sort_values(by=col_to_sort_by)[-len_subset_df:]
 
-    X = np.array(data)
+    # optionally drop the fantasy production part
+    if drop_fantasy:
+        subset_df.drop(columns=col_to_sort_by, inplace=True)
+        subset_cols = subset_cols[1:]
+
+    return subset_df, subset_cols
+
+
+def create_cluster_vectors(df):
+    """"""
+    X = df.to_numpy()
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
 
     return X, X_scaled
 
 
-def create_vectors_advanced(subset_df):
-    """"""
-    X = subset_df.to_numpy()
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
-
-    return X, X_scaled
-
-
-def get_candidate_cluster_n_values(X_scaled):
-    """"""
-    # Elbow method
+def get_candidate_cluster_size(X_scaled):
+    """
+    TODO: explore alternative for optimal candidate size
+    """
     inertia = []
     for i in range(2, 11):  # consider clusters from 1 to 10
         kmeans = KMeans(n_clusters=i, algorithm='elkan', n_init=10).fit(X_scaled)
@@ -129,105 +61,51 @@ def get_candidate_cluster_n_values(X_scaled):
     return kmeans
 
 
-def create_clusters(cluster_num, X_scaled, players):
+def create_clusters(n, kmeans, X, X_scaled, df_review, subset_df, subset_cols):
     """"""
-    kmeans = KMeans(n_clusters=cluster_num, random_state=0, n_init=10).fit(X_scaled)
-    kmeans.labels_
-
-    cluster_ranking = dict()
-    for player, cluster_num in zip(players, kmeans.labels_):
-        cluster_ranking[player.player_name] = cluster_num
-
-    return [str(label) for label in kmeans.labels_], cluster_ranking
-
-
-def create_clusters_advanced(cluster_num, X_scaled, df):
-    """"""
-    kmeans = KMeans(n_clusters=cluster_num, random_state=0, n_init=10).fit(X_scaled)
-    kmeans.labels_
+    kmeans = KMeans(n_clusters=n, random_state=0, n_init=10).fit(X_scaled)
 
     cluster_ranking = dict()
     for i, cluster_num in enumerate(kmeans.labels_):
-        cluster_ranking[df.loc[df.index[i], 'name']] = cluster_num
+        cluster_ranking[df_review.loc[subset_df.index[i], 'player_name']] = cluster_num
 
-    return [str(label) for label in kmeans.labels_], cluster_ranking
+    labels = [str(label) for label in kmeans.labels_]
 
+    df_cluster = pd.DataFrame(X, columns=subset_cols)
+    df_cluster["Cluster"] = labels
 
-def create_cluster_df(labels, X, stats):
-    """"""
-    df = pd.DataFrame(X, columns=stats)
-    df["Cluster"] = labels
-
-    return df
+    return df_cluster, cluster_ranking
 
 
-def graph_pair_plot(df, stats, position, palette="bright", save_fig=True, save_suffix=""):
-    """"""
-    cluster_size = df["Cluster"].nunique()
-    sns.pairplot(df, hue='Cluster', palette=palette, vars=stats)
-    
-    # save the image
-    if save_fig:
-        save_path = f"./images/{position}/clustering-{cluster_size}"
-
-        if save_suffix:
-            save_path += f"-{save_suffix}"
-
-        save_path += ".png"
-        plt.savefig(save_path, format="png")
-
-    plt.show()
-
-
-import plotly.graph_objs as go
-
-def add_subplot_border(fig, positions, color='red', width=3):
-    # Calculate the domain of the subplot to add a border
-    # The positions are the fractions (0-1) of the subplot's location on the canvas
-    x0, x1, y0, y1 = positions
-    
-    # Add shapes to create the border effect
-    fig.add_shape(
-        type="rect",
-        xref="paper",
-        yref="paper",
-        x0=x0,
-        y0=y0,
-        x1=x1,
-        y1=y1,
-        line=dict(
-            color=color,
-            width=width
-        ),
-        layer="above"
-    )
-
-
-import plotly.express as px
-def graph_pair_plot_plotly(df: pd.DataFrame, cluster_rankings, stats,
-        position, save_fig: bool = True, save_suffix: str = "",
-        font_size: int = 12, marker_size: int = 4, diagonal_is_visible: bool = False,
-        width: int = 700, height: int = 700, showupperhalf: bool = False, legend_size: int = 14
-    ):
+import os
+def check_save_path(save_path):
     """
-    Create a pair plot using Plotly
+    Checks to see if a file already exists, so we avoid over-writing it
     """
+    exists = os.path.exists(save_path)
+    if exists:
+        raise(FileExistsError(f"File '{save_path}' already exists! Please choose a different name for the file."))
+    
+
+def create_cluster_plot(df_cluster, cluster_ranking, subset_cols,
+                        save_path=None, font_size=12, marker_size=4, diagonal_is_visible=False,
+                        width=1000, height=1000, showupperhalf=False, legend_size=14):
     # Convert dictionary keys to a list
-    name_list = list(cluster_rankings.keys())
+    name_list = list(cluster_ranking.keys())
 
     # Add the list as a new column to the dataframe
-    df['Names'] = name_list
+    df_cluster['Names'] = name_list
 
-    df.set_index('Names', inplace=True)
+    df_cluster.set_index('Names', inplace=True)
 
     fig = px.scatter_matrix(
-        data_frame=df,
-        dimensions=stats,
+        data_frame=df_cluster,
+        dimensions=subset_cols,
         color="Cluster",
-        hover_name=df.index,  # Assuming the player's name is the index
-        labels={col: col for col in stats}  # Optional if you want to customize axis labels
+        hover_name=df_cluster.index,  # Assuming the player's name is the index
+        labels={col: col for col in subset_cols}  # Optional if you want to customize axis labels
     )
-    
+
     # Customize the appearance (optional)
     fig.update_traces(diagonal_visible=diagonal_is_visible, showupperhalf=showupperhalf)
 
@@ -249,28 +127,10 @@ def graph_pair_plot_plotly(df: pd.DataFrame, cluster_rankings, stats,
     fig.update_traces(marker=dict(size=marker_size))  # Adjust marker size as needed
 
     fig.update_layout(legend=dict(font=dict(size=legend_size)))
-    # highligh a subplot by giving it a border
-    # col = 2
-    # row = 1
-    # num_plots_per_side = 5
-    # step = 1.0 / num_plots_per_side
-    # x0 = (col - 1) * step
-    # x1 = col * step
-    # y0 = 1 - row * step
-    # y1 = 1 - (row - 1) * step
-    # positions = (x0, x1, y0, y1)
-    # add_subplot_border(fig, positions)
-    # highlight_subplot_background(fig, rows=[1], cols=[1, 2, 3], color='rgba(255, 235, 238, 1)')  # A light red background color
 
     # Save the plot as HTML
-    if save_fig:
-        save_path = f"./interactive/{position}/clustering-{len(df['Cluster'].unique())}"
-
-        if save_suffix:
-            save_path += f"-{save_suffix}"
-
-        save_path += ".html"
+    if save_path:
+        check_save_path(save_path)
         fig.write_html(save_path)
 
     fig.show()
-
