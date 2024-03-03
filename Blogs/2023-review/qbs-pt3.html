@@ -1,0 +1,886 @@
+<head>
+    <title>2023 QB Review Pt. 3</title>
+    <link rel="stylesheet" href="/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        // google analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>2023 Quarterback Review Part Three</h1>
+
+
+            <h2>TL;DR</h2>
+            <p class="blog-p-tag">
+                <ul class="bullet-list">
+                    <li>Allen, Hurts, Jackson and Fields were really the only quarterbacks who put up exciting rushing numbers last year.</li>
+                    <li>Allen did this while also being by far and away the most efficient runner at QB.</li>
+                    <li>Murray showcased some signs of life in the run game - his per game numbers are encouraging for next season, and I think 
+                        he might be the next fifth QB who puts up exciting rushing numbers.
+                    </li>
+                    <li>Richardson is also in contention with Murray to be the next guy up, in terms of rushing production. Small sample size, 
+                        but his 25 carries in about two and a half games of play is mouth-watering from a fantasy perspective. Health is the only 
+                        question here.
+                    </li>
+                    <li>Purdy was the next most efficient rusher (per carry), of the QBs that are likely to start in 2024, after Allen. 
+                        He might not put up elite rushing numbers, but he definitely has mobility.
+                    </li>
+                </ul>
+            </p>
+
+To those still frequenting my page and the Dynasty subreddit, I appreciate you! I hope
+                    to see you and interact (<b>for reddit</b>)
+
+            <h2 class="h2-blog">Overview</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Welcome back everyone! In this analysis piece, we'll finish our 2023 recap on quarterbacks by taking a look
+                    at the rushing numbers. The rushing analysis should go pretty quickly, since there aren't many rushing quarterbacks
+                    as of now. So, while the NFL is trending towards mobile quarterbacks, I don't think we can call this
+                    <i>the age of the rushing quarterback</i>, yet.
+                </p>
+                <p class="blog-p-tag">
+                    After breaking down the rushing numbers, we'll dive into a final recap, which will essentially be a soft ranking
+                    and holistic evaluation of the quarterback position heading into the early stages of the offseason. This will 
+                    draw upon numbers and points made in part <a href="/Blogs/2023-review/qbs.html">one</a> and 
+                    <a href="/Blogs/2023-review/qbs-pt2.html">two</a> of the 2023 QB review series.
+                </p>
+                <p class="blog-p-tag">
+                    Also, as a reminder, the data used excludes any QB that played less than five games. This serves as a proxy to 
+                    reduce fluctuations from injury. I want to point out that this means my Richardson comments are just by hand comparison
+                    - he is not actually in the numbers analyzed below.
+                </p>
+                <p class="blog-p-tag">
+                    With that out of the way, let's dive in!
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Basic Rushing Stats</h2>
+            <div>
+                <p class="blog-p-tag">
+                    We'll start simple with a slider on rushing yards covering season totals, per game, and per carry numbers:
+                </p>
+                <div class="iframe-container slider" id="slider1">
+                    <iframe class="slider-iframe" src="/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_yards.html"></iframe>
+
+                    <div>
+                        <button class="graph-slider-prev" onclick="changeIframeSrc('slider1', -1)">&#10094;</button>
+                        <button class="graph-slider-next" onclick="changeIframeSrc('slider1', 1)">&#10095;</button>
+                    </div>
+                </div>
+                <p class="blog-p-tag">
+                    The top four QBs on the season numbers are the guys that would come to mind for rushing production: Jackson, Fields, Hurts,
+                    and Allen. They have a pretty big gap over the rest of the pack, with Josh Allen's 524 yards on the season being over 100
+                    yards more than Dobbs' 421. This is a large reason why I put Allen in his own QB tier in dynasty. His production in the air
+                    can rival the best of them, but seemingly none of the elite fantasy passers can compete with his rushing production.
+                </p>
+                <p class="blog-p-tag">
+                    From a season total perspective, it is nice to see TLaw, Young and Love all as QB1s. Some positives to take for the rough season
+                    the former two had, and more to build on for Love. Moreover, Mahomes getting some work on the ground is good to see from a fantasy
+                    perspective. The 389 rushing yards is a career high for Mahomes. He can get it done on the ground, with how he manipulates defenses,
+                    so it would be nice to see him utilize his legs a bit more, from a fantasy perspective. I wouldn't bet on that, especially if KC
+                    addresses their wide receiver core this offseason.
+                </p>
+                <p class="blog-p-tag">
+                    If we slide over to the per game numbers, it's clear that there are two running backs in disguise playing quarterback: Jackson and 
+                    Fields. These guys can really run the ball (the sky is blue!), which provides them with a solid fantasy floor and a high ceiling.
+                    However, you have to wonder how much longer Fields will keep a starting job, given the little interest Chicago has had for him this
+                    offseason, and the fact that we seem to be nearing an explicit "Bears will draft Caleb" message.
+                </p>
+                <p class="blog-p-tag">
+                    Outside of those two, it is nice to see Danny dimes as QB4 on this list. You have to wonder what he could do if he had an oline.
+                    I don't think he'd like up the world, but I can see him as a serviceable QB2 if the Giants could keep him upright and healthy.
+                </p>
+                <p class="blog-p-tag">
+                    Furthermore, it's good to see Kyler at QB7 for rushing yards per game. By the numbers, it seems like he's returning to Kyler pre-injury,
+                    which was a guy who put up elite fantasy production. I still find him to be decent value for his current KTC ranking of QB11, but the
+                    buy-low window on him is definitely slammed shut at this point.
+                </p>
+                <p class="blog-p-tag">
+                    Lastly, and more for fun, let's slide over to the yards per carry numbers. I find this to be a little encouraging for Bryce Young.
+                    His passing might not have been exciting last year, but there might be a QB2 there boosted by production from his legs. Going back 
+                    to Kyler, it is encouraging to see him next to Lamar in the yards per carry numbers. I want to note that there probably isn't too 
+                    much weight to this stat: Allen is firmly in QB2 range and Hurts isn't even on this list (push tush is not efficient!).
+                </p>
+
+                <p class="blog-p-tag">
+                    Moving onto the season total and per game carry numbers:
+                </p>
+                <div class="iframe-container slider" id="slider3">
+                    <iframe class="slider-iframe" src="/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_carries.html"></iframe>
+
+                    <div>
+                        <button class="graph-slider-prev" onclick="changeIframeSrc('slider3', -1)">&#10094;</button>
+                        <button class="graph-slider-next" onclick="changeIframeSrc('slider3', 1)">&#10095;</button>
+                    </div>
+                </div>
+                <p class="blog-p-tag">
+                    Again, it adds up that our top four quarterbacks, by total carries on the season are: Hurts, Jackson, Fields and Allen.
+                    At this point, it should be pretty expected that these guys will top 100 carries in a season, which gives them such strong
+                    floors and high ceilings in any game. I think the hope is that Richardson will join this group - likely replacing Fields - 
+                    and be a 100-plus carry a season guy. He had 25 carries in about two and a half total games this season, so the only question 
+                    for him is health, especially since his passing appears to be acceptable at a minimum - I know, small sample size.
+                </p>
+                <p class="blog-p-tag">
+                    It is interesting to see Mahomes so high up with 75 carries this season - this is another career high for him, so probably
+                    an outlier than a sign of things to come. Also, good to see TLaw with 70 carries. At this point, it seems like 65-70 carries
+                    and 300 or so yards will be a consistent stat line in his career. Hopefully, he can figure out how to protect the ball better
+                    and improve his consistency as a passer.
+                </p>
+                <p class="blog-p-tag">
+                    Sliding over, not too much changes on a per game basis. We do see Danny Dimes and Kyler Murray sneak up into the QB1 range,
+                    which is encouraging for both, but overall the picture remains largely the same on a per game basis.
+                </p>
+
+                <p class="blog-p-tag">
+                    Rounding out with season total and per game rushing touchdown numbers:
+                </p>
+                <div class="iframe-container slider" id="slider2">
+                    <iframe class="slider-iframe" src="/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_tds.html"></iframe>
+
+                    <div>
+                        <button class="graph-slider-prev" onclick="changeIframeSrc('slider2', -1)">&#10094;</button>
+                        <button class="graph-slider-next" onclick="changeIframeSrc('slider2', 1)">&#10095;</button>
+                    </div>
+                </div>
+                <p class="blog-p-tag">
+                    Being a big QB or having brotherly love leads to a lot of touchdowns. Who would've guessed?
+                </p>
+                <p class="blog-p-tag">
+                    Sarcasm aside, I find it a little hard to Allen to repeat his 15 rushing touchdowns next year, considering that was the first
+                    time he broke 10 in a year. I will double down on this if the Bills bring in a veteran back for goal line work. So, I would
+                    expect a little regression here - maybe to 10 or so.
+                </p>
+                <p class="blog-p-tag">
+                    The 15 for Hurts was also a season high, but he had 13 in 2022 and 10 in 2021, so I'd expect him to hover a bit higher than Allen.
+                    Although, if Kelce retires, the "tush push" might end up being less effective next year, and maybe that will cause a further dip
+                    for Hurts' rushing touchdown production next year. Something to think about.
+                </p>
+                <p class="blog-p-tag">
+                    Outside of these two, touchdowns don't come often for the other quarterbacks in the league on the ground. This is where I could 
+                    see Anthony Richardson really establishing himself in fantasy. His size and athleticism, paired with the creativity of that 
+                    offense could very easily lead to 10 or so rushing touchdowns next year, again provided he stays healthy.
+                </p>
+                <p class="blog-p-tag">
+                    From a per game perspective, I want to point out that Kyler is number 3 (of the fantasy QBs/starters that we are considering 
+                    relevant to this conversation) in touchdowns per game, with a little over 1 every three games. It's still far from Allen and Hurts,
+                    but if the Cardinals add some more talent around him, I think 5-7 touchdowns on the ground is a pretty safe and reasonable
+                    expectation from him. If he returns to his inspired 2020 form, then 10 might be reachable.
+                </p>
+            </div>
+
+            <h2 class="h2-blog">Basic Rushing Stats Clustering</h2>
+            <div>
+                <div>
+                    <p class='blog-p-tag'>
+                        Switching over to clustering, we will go ahead and tier quarterbacks based on the following season total stats:
+                        rushing yards, rushing touchdowns, and carries. Note that the number of clusters created for the plot below, and for 
+                        other plots in this piece are based on the
+                        <a href="https://www.analyticsvidhya.com/blog/2021/01/in-depth-intuition-of-k-means-clustering-algorithm-in-machine-learning/">elbow method</a>,
+                        which allows us to find the optimal number of clusters from the given data.
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Analysis/interactive-2.0/QB/2023-review-pt3/cluster_basic.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        Here's a brief summary of each cluster:
+                    </p>
+                    <ul class='bullet-list'>
+                        <li><b>Cluster 0 (Dark Blue):</b> There's a modest amount of rushing production amongst this group of QBs. Most have over 50 carries, 240 rushing yards and 3 touchdowns.</li>
+                        <li><b>Cluster 1 (Purple):</b> Hurts and Allen: rushing touchdown machines. They back this by also being top four in carries and rushing yards, amongst QBs.</li>
+                        <li><b>Cluster 2 (Red):</b> Non-rushers: little to no rushing production across the board.</li>
+                        <li><b>Cluster 3 (Green):</b> Fields and Jackson: yardage hogs. These guys run frequently and eat up yardage. The hope is for their touchdown production to get closer to 10 a year, and consistently so.</li>
+                    </ul>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Dark Blue)</b>
+                            <ul class='bullet-list'>
+                                <li>Taysom Hill</li>
+                                <li>Kyler Murray</li>
+                                <li>Desmond Ridder</li>
+                                <li>Joshua Dobbs</li>
+                                <li>Justin Herbert</li>
+                                <li>Sam Howell</li>
+                                <li>Russell Wilson</li>
+                                <li>Trevor Lawrence</li>
+                                <li>Patrick Mahomes</li>
+                                <li>Jordan Love</li>
+                                <li>Dak Prescott</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 1 (Purple)</b>
+                            <ul class='bullet-list'>
+                                <li>Jalen Hurts</li>
+                                <li>Josh Allen</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 2 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Zach Wilson</li>
+                                <li>Aidan O'Connell</li>
+                                <li>Jake Browning</li>
+                                <li>Joe Burrow</li>
+                                <li>Kirk Cousins</li>
+                                <li>Bryce Young</li>
+                                <li>Gardner Minshew</li>
+                                <li>Geno Smith</li>
+                                <li>Derek Carr</li>
+                                <li>Matthew Stafford</li>
+                                <li>Tua Tagovailoa</li>
+                                <li>C.J. Stroud</li>
+                                <li>Baker Mayfield</li>
+                                <li>Jared Goff</li>
+                                <li>Brock Purdy</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 3 (Green)</b>
+                            <ul class='bullet-list'>
+                                <li>Justin Fields</li>
+                                <li>Lamar Jackson</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="blog-p-tag">
+                        My observations on the clusters:
+                    </p>
+                    <ul class='bullet-list'>
+                        <li><b>Cluster 0 (Dark Blue):</b> It's nice to see some of the more traditional pass first guys use their legs for more than just buying time in the pocket, specifically Mahomes and TLaw, but it's unlikely any of these guys will turn in great rushing production seasons. The exception here, due to injury, is Murray.</li>
+                        <li><b>Cluster 1 (Purple):</b> Again, maybe some touchdown regression is due for these two? They should still have around 550-600 rushing yards next season, but it will be tough to match 15 rushing touchdowns.</li>
+                        <li><b>Cluster 2 (Red):</b> This cluster can largely be ignored.</li>
+                        <li><b>Cluster 3 (Green):</b> The only improvement these two need to make on the ground game is getting into the endzone. I do find this to be unlikely as Jackson has a career high of 7 rushing touchdowns in a season, whereas Fields has 8 and he might not be in a starting job much longer. Fantastic production otherwise. </li>
+                    </ul>
+                </div>
+                <p class="blog-p-tag">
+                    For the per game version of the basic clustering plot above, please check out the <a href="javascript:void(0);" onclick="scrollToParagraph('basic-stat-clustering-(per-game-variation)-0', 10)">appendix</a>.
+                    I haven't added explicit commentary to it, since the tiers are quite similar, but I've posted it in the appendix for those who
+                    are interested.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Advanced Rushing Stats</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Onto the advanced stats, where we'll be looking at rushing epa on a season total, per game, and per carry level.
+                    For those unfamiliar with epa, and any other stats, please check out the
+                    <a href="javascript:void(0);" onclick="scrollToParagraph('glossary-0', 10)">glossary</a> below.
+                </p>
+                <div class="iframe-container slider" id="slider4">
+                    <iframe class="slider-iframe" src="/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_epa.html"></iframe>
+
+                    <div>
+                        <button class="graph-slider-prev" onclick="changeIframeSrc('slider4', -1)">&#10094;</button>
+                        <button class="graph-slider-next" onclick="changeIframeSrc('slider4', 1)">&#10095;</button>
+                    </div>
+                </div>
+                <p class="blog-p-tag">
+                    What's interesting to me here is how much Josh Allen separates himself form the rest of the pack. His 54.38 rushing epa for the
+                    season is almost 30 more than second place Fields with 25.81. What does this mean? Well, Allen's rushing ability generates 
+                    a lot of value for his team. More specifically than just value, his rushing contributes significantly to the scoreboard for the
+                    Bills. 
+                </p>
+                <p class="blog-p-tag">
+                    Now you might be thinking, so what? Hurts also scored 15 touchdowns. While that's true, Hurts has a measly 21.28 rushing epa
+                    on the season, which means his rushing was not even half as valuable to the scoreline as Allen's. When you pair this with the fact
+                    that <a href="/Blogs/2023-review/qbs-pt2.html#advanced-passing-stats-0">Allen was also top four for passing epa</a>,
+                    it really highlights how valuable he is to the Bills and how much of an impact he has on the score of a game.
+                </p>
+                <p class="blog-p-tag">
+                    The latter portion of that is critical to fantasy, as total epa has a
+                    <a href="javascript:void(0);" onclick="scrollToParagraph('total-epa-and-fantasy-points-correlation-0', 10)">decent-to-strong correlation with fantasy points</a>.
+                    So, if we know which players are likely to have a high epa, we have a pretty good indicator that their fantasy production
+                    will also be high. The only problem here is that epa is a difficult stat to predict from season to season, but that's a different
+                    discussion.
+                </p>
+                <p class="blog-p-tag">
+                    I feel like I have to keep apologizing with how much I focus on Allen in these reviews, but he's production is absolutely insane!
+                    It also feels difficult to get across just how good he is, and it's not just in passing or rushing, but in both areas of fantasy
+                    production! There's no one else like him right now, this is what you hope QBs with rushing upside end up like.
+                </p>
+                <p class="blog-p-tag">
+                    Sliding over to the per game variation, the numbers Bryce Young and Howell display here are redeeming. They are both awkward fantasy
+                    assets to hold right now, but I think this rushing analysis has shown they can put up some decent rushing production. It is more a 
+                    matter of can their passing improve to stay in the NFL long term? Admittedly, this applies a little more to Howell than Young currently.
+                </p>
+                <p class="blog-p-tag">
+                    Moreover, it is interesting to see Lamar so low on this list. I'd like to attribute that to his lack of touchdowns, but it might be possible
+                    that his runs haven't contributed to the Ravens' scoreline (much) more than the average expectation. Curious. The same observation applies 
+                    to his rushing epa per carry numbers, where he is in tier 3...
+                </p>
+                <p class="blog-p-tag">
+                    Now, the per carry numbers are mostly for fun, like above, but I want to point out that Purdy is number two amongst QBs that we know are starters
+                    next year, behind Allen. He doesn't run a lot, but he has legitimate mobility, and when he does take off it is usually effective.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Advanced Rushing Stats Clustering</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Our last section before going over the QB review as a whole will be another cluster plot, with the following season
+                    total stats: rushing epa and rushing first downs - I realize it's not the craziest group of stats. Note, the 
+                    <a href="javascript:void(0);" onclick="scrollToParagraph('advanced-stat-clustering-(per-game-variation)-0', 10)">per game</a> and
+                    <a href="javascript:void(0);" onclick="scrollToParagraph('advanced-stat-clustering-(per-carry-variation)-0', 10)">per carry</a> versions can be
+                    found in the appendix. While there are some differences, I didn't feel they were worth drawing serious attention to.
+                </p>
+			    <div>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Analysis/interactive-2.0/QB/2023-review-pt3/cluster_advanced.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        A quick breakdown of the tiers:
+                    </p>
+                    <ul class='bullet-list'>
+                        <li><b>Cluster 0 (Dark Blue):</b> Middle of the pack on epa and first downs - their rushing abilities offer some value to their team.</li>
+                        <li><b>Cluster 1 (Red):</b> Highly negative epa, with few first downs. These players actively hurt their team when they run the ball.</li>
+                        <li><b>Cluster 2 (Orange):</b> Josh Allen: elite at both.</li>
+                        <li><b>Cluster 3 (Purple):</b> The pack behind Josh Allen. There's a bit of distance from this cluster to Allen, but it is clearly the second tier. Surprisingly Russel Wilson is here.</li>
+                        <li><b>Cluster 4 (Green):</b> These QBs don't hurt or help their team when rushing the ball, and they grab the occasional first down with their legs.</li>
+                    </ul>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Dark Blue)</b>
+                            <ul class='bullet-list'>
+                                <li>Taysom Hill</li>
+                                <li>Jake Browning</li>
+                                <li>Kyler Murray</li>
+                                <li>Bryce Young</li>
+                                <li>Joshua Dobbs</li>
+                                <li>Justin Herbert</li>
+                                <li>Sam Howell</li>
+                                <li>Trevor Lawrence</li>
+                                <li>C.J. Stroud</li>
+                                <li>Patrick Mahomes</li>
+                                <li>Brock Purdy</li>
+                                <li>Dak Prescott</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 1 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Zach Wilson</li>
+                                <li>Desmond Ridder</li>
+                                <li>Derek Carr</li>
+                                <li>Tua Tagovailoa</li>
+                                <li>Baker Mayfield</li>
+                                <li>Jared Goff</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 2 (Orange)</b>
+                            <ul class='bullet-list'>
+                                <li>Josh Allen</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 3 (Purple)</b>
+                            <ul class='bullet-list'>
+                                <li>Justin Fields</li>
+                                <li>Russell Wilson</li>
+                                <li>Lamar Jackson</li>
+                                <li>Jalen Hurts</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 4 (Green)</b>
+                            <ul class='bullet-list'>
+                                <li>Aidan O'Connell</li>
+                                <li>Joe Burrow</li>
+                                <li>Kirk Cousins</li>
+                                <li>Gardner Minshew</li>
+                                <li>Geno Smith</li>
+                                <li>Matthew Stafford</li>
+                                <li>Jordan Love</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="blog-p-tag">
+                        Again, there are some differences between this cluster plot and the ones in the appendix; however, I felt that the
+                        previous discussion covered the majority of the relevant information with its focus on epa. So, if you are curious
+                        to see the other plots, please help yourself to the
+                        <a href="javascript:void(0);" onclick="scrollToParagraph('appendix-0', 10)">appendix</a>.
+                    </p>
+                </div>
+            </div>
+
+
+            <h2 class="h2-blog">Final Thoughts</h2>
+            <div>
+                <p class="blog-p-tag">
+                    That will wrap up my analysis on quarterback rushing production and general production in 2023. Before ending this
+                    piece I want to leave off with a few final thoughts reflecting my overall findings:
+                </p>
+                <ul class="bullet-list">
+                    <li>Josh Allen is the only quarterback who can put up elite passing and rushing numbers. For that reason, he is my fantasy QB1,
+                        in his own tier.
+                    </li>
+                    <li>Even though Mahomes had a rough fantasy season, he was still highly effective at passing the ball. He also put up his best 
+                        rushing production season ever. I expect his QB8 finish to be an outlier, and not the norm going forward, especially if KC
+                        address their wide receiver woes this offseason.
+                    </li>
+                    <li>There's a lot of young QB talent in the league right now that should excite the fantasy community: Stroud, Love, and Purdy
+                        all finished as QB1s on the season. There are pretty big price discrepancies between these young bucks, which likely means
+                        there is a good opportunity to land a trade that will be lopsided in a few years.
+                    </li>
+                    <li>Prescott and Lamar had excellent 2023 seasons. That being said, they are my sell high candidates, as the Cowboys had 
+                        an easier 2023 schedule, and Lamar has yet to show us year-to-year consistency, even if that is largely attributed to 
+                        injuries (to him or the team around him).
+                    </li>
+                    <li>Herbert and Burrow are my buy lows due to their injury riddled 2023. Burrow might fit better here as coach and draft
+                        hype (a la Nabers to the Chargers) could pop the bubble on Herbert's buy low window. Kyler Murray is a name worth mentioning
+                        here, but I do believe his true buy low window was about 6-12 months ago.
+                    </li>
+                    <li>Fields is still an outlier in the passing game, and not in a good way. It seems like he'll have at least one more season
+                        as a starter somewhere in the league, but he may not be a starter for long if his passing does not improve. As long as 
+                        Fields plays he is fantasy relevant due to his rushing capabilities. That being said, I do not like Fields long term, as
+                        I don't think he will progress enough as a passer to keep an NFL job.
+                    </li>
+                    <li>Purdy had a ridiculously efficient 2023 season. That season lands him in the same tier as some amazing quarterbacks in the past 
+                        15 years or so. The worst of the bunch, at least for fantasy purposes, is probably Philip Rivers. Make of that what you will,
+                        but as long as he is tied to the 49ers and Shanahan, I struggle to see him finish lower than QB10.
+                    </li>
+                    <li>I like Richardson's upside. I think he's already shown more than Fields in the passing game, and his athleticism is off the 
+                        charts. Pair that with Shane Steichen, and that sounds like a recipe for success to me.
+                    </li>
+                    <li>I'm struggling to see TLaw and Tua as solid QB1s going forward. The former appears too inconsistent and needs to protect 
+                        the football more. The latter has no rushing production and doesn't put up enough passing touchdowns to compensate. I'm 
+                        willing to give both another year to see if they can turn my opinion on this.
+                    </li>
+                    <li>There's quite a few vet quarterbacks who look to be good bang for your buck at the QB position next year. Kirk and Stafford
+                        should both be serviceable starters (the latter more so in super flex formats). Wilson might also be in this conversation -
+                        practically free and likely to be a starter somewhere. Mayfield, and Goff are other names that might have a "vet 
+                        discount" (i.e. under-priced due to age).
+                    </li>
+                </ul>
+                <p class="blog-p-tag">
+                    Thanks for reading!
+                </p>
+                <p class="blog-p-tag">
+                    Cheers, <br />
+                    Alex
+                </p>
+            </div>
+            
+
+            <h2 class="h2-blog">Glossary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    EPA definition:
+                </p>
+                <ul class="bullet-list">
+                    <li id="epa-definition"><b>EPA (expected points added):</b> this version of EPA is actually <i>rushing_epa</i>. Expected points added on rush attempts (incl. scrambles and kneel downs). EPA quantifies how a team performs compared to what is expected. If the points a team is expected to score increases on a play, then EPA would increase, and vice versa.</li>
+                </ul>
+                <p class="blog-p-tag">
+                    For more stat definitions, check out the data dictionary of the python library I use <a href="https://cran.r-project.org/web/packages/nflreadr/vignettes/dictionary_player_stats.html">here</a>.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Appendix</h2>
+            <div>
+                <div>
+                    <h3 class="h3-blog">Total EPA and Fantasy Points Correlation</h3>
+                    <p class='blog-p-tag'>
+                        Depending on what data range you use the correlation value of total epa to fantasy points, in the same season, varies a little
+                        bit. However, when looking at the quarterback data from 2012-2022 (inclusive), there is a correlation of 0.724 between the two
+                        stats. So, if could predict future total epa accurately, we should be able to have a good idea of what future fantasy production
+                        looks like, at least for quarterbacks.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="h3-blog">Basic Stat Clustering (Per Game Variation)</h3>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Analysis/interactive-2.0/QB/2023-review-pt3/cluster_basic_per_game.html'></iframe>
+                    </div>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Dark Blue)</b>
+                            <ul class='bullet-list'>
+                                <li>Gardner Minshew</li>
+                                <li>Nick Mullens</li>
+                                <li>Derek Carr</li>
+                                <li>Joe Burrow</li>
+                                <li>Geno Smith</li>
+                                <li>Tua Tagovailoa</li>
+                                <li>Baker Mayfield</li>
+                                <li>Matthew Stafford</li>
+                                <li>Jared Goff</li>
+                                <li>Brock Purdy</li>
+                                <li>Kirk Cousins</li>
+                                <li>Joe Flacco</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 1 (Purple)</b>
+                            <ul class='bullet-list'>
+                                <li>Justin Fields</li>
+                                <li>Lamar Jackson</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 2 (Green)</b>
+                            <ul class='bullet-list'>
+                                <li>Easton Stick</li>
+                                <li>Deshaun Watson</li>
+                                <li>Joshua Dobbs</li>
+                                <li>Trevor Lawrence</li>
+                                <li>Russell Wilson</li>
+                                <li>Patrick Mahomes</li>
+                                <li>Kyler Murray</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 3 (Orange)</b>
+                            <ul class='bullet-list'>
+                                <li>Jalen Hurts</li>
+                                <li>Josh Allen</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 4 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Taylor Heinicke</li>
+                                <li>Sam Howell</li>
+                                <li>Jake Browning</li>
+                                <li>Justin Herbert</li>
+                                <li>C.J. Stroud</li>
+                                <li>Jordan Love</li>
+                                <li>Dak Prescott</li>
+                            </ul>
+                        </div>
+                    </div>
+                    </br>
+                    </br>
+                    </br>
+                </div>
+
+                <div>
+                    <h3 class="h3-blog">Advanced Stat Clustering (Per Carry Variation)</h3>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Analysis/interactive-2.0/QB/2023-review-pt3/cluster_advanced_per_carry.html'></iframe>
+                    </div>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Trevor Lawrence</li>
+                                <li>Will Levis</li>
+                                <li>Mac Jones</li>
+                                <li>Baker Mayfield</li>
+                                <li>Justin Herbert</li>
+                                <li>Ryan Tannehill</li>
+                                <li>Joe Burrow</li>
+                                <li>Gardner Minshew</li>
+                                <li>Geno Smith</li>
+                                <li>Jordan Love</li>
+                                <li>Nick Mullens</li>
+                                <li>Aidan O'Connell</li>
+                                <li>Joe Flacco</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 1 (Dark Blue)</b>
+                            <ul class='bullet-list'>
+                                <li>Josh Allen</li>
+                                <li>Patrick Mahomes</li>
+                                <li>Bryce Young</li>
+                                <li>Bailey Zappe</li>
+                                <li>Taylor Heinicke</li>
+                                <li>Jake Browning</li>
+                                <li>Sam Howell</li>
+                                <li>Dak Prescott</li>
+                                <li>C.J. Stroud</li>
+                                <li>Brock Purdy</li>
+                                <li>Kirk Cousins</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 2 (Orange)</b>
+                            <ul class='bullet-list'>
+                                <li>Logan Thomas</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 3 (Green)</b>
+                            <ul class='bullet-list'>
+                                <li>Derek Carr</li>
+                                <li>Tua Tagovailoa</li>
+                                <li>Jared Goff</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 4 (Purple)</b>
+                            <ul class='bullet-list'>
+                                <li>Davis Mills</li>
+                                <li>Matthew Stafford</li>
+                            </ul>
+                        </div>
+                    </div>
+                    </br>
+                    </br>
+                    </br>
+                </div>
+
+
+                <div>
+                    <h3 class="h3-blog">Advanced Stat Clustering (Per Game Variation)</h3>
+                    <div class='iframe-container'>
+                        <iframe class='large-iframe' data-src='/Analysis/interactive-2.0/QB/2023-review-pt3/cluster_advanced_per_game.html'></iframe>
+                    </div>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Taylor Heinicke</li>
+                                <li>Deshaun Watson</li>
+                                <li>Sam Howell</li>
+                                <li>Jake Browning</li>
+                                <li>Patrick Mahomes</li>
+                                <li>Justin Herbert</li>
+                                <li>C.J. Stroud</li>
+                                <li>Kyler Murray</li>
+                                <li>Brock Purdy</li>
+                                <li>Dak Prescott</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 1 (Dark Blue)</b>
+                            <ul class='bullet-list'>
+                                <li>Gardner Minshew</li>
+                                <li>Nick Mullens</li>
+                                <li>Joe Burrow</li>
+                                <li>Geno Smith</li>
+                                <li>Baker Mayfield</li>
+                                <li>Matthew Stafford</li>
+                                <li>Trevor Lawrence</li>
+                                <li>Kirk Cousins</li>
+                                <li>Jordan Love</li>
+                                <li>Joe Flacco</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 2 (Orange)</b>
+                            <ul class='bullet-list'>
+                                <li>Justin Fields</li>
+                                <li>Jalen Hurts</li>
+                                <li>Josh Allen</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 3 (Purple)</b>
+                            <ul class='bullet-list'>
+                                <li>Derek Carr</li>
+                                <li>Tua Tagovailoa</li>
+                                <li>Jared Goff</li>
+                            </ul>
+                        </div>
+    
+                        <div>
+                            <b>Cluster 4 (Green)</b>
+                            <ul class='bullet-list'>
+                                <li>Easton Stick</li>
+                                <li>Joshua Dobbs</li>
+                                <li>Russell Wilson</li>
+                                <li>Lamar Jackson</li>
+                            </ul>
+                        </div>
+                    </div>
+                    </br>
+                    </br>
+                    </br>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function scrollToParagraph(paragraphId, headerOffset=100) {
+        let element = document.getElementById(paragraphId);
+        // let headerOffset = 100;  // Change this value according to your needs
+        let elementPosition = element.getBoundingClientRect().top;
+        let offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+        });
+    }
+</script>
+<script>
+    const iframeSources = {
+        slider1: [
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_yards.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_yards_per_game.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_yards_per_carry.html",
+        ],
+        slider2: [
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_tds.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_tds_per_game.html"
+        ],
+        slider3: [
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_carries.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_carries_per_game.html",
+        ],
+        slider4: [
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_epa.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_epa_per_game.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_epa_per_carry.html",
+        ],
+    };
+
+    function changeIframeSrc(sliderId, direction) {
+        const iframe = document.querySelector(`#${sliderId} .slider-iframe`);
+        const sources = iframeSources[sliderId];
+
+        // Extract the relative path from the iframe's full URL
+        const currentPath = new URL(iframe.src).pathname;
+
+        // Find the index of the current path in the sources array
+        let currentIndex = sources.findIndex(src => currentPath.endsWith(src));
+
+        if (currentIndex === -1) {
+            currentIndex = 0; // Default to the first source if the current src is not found
+        }
+
+        let nextIndex = (currentIndex + direction + sources.length) % sources.length; // Calculate the next index, looping around if necessary
+        iframe.src = sources[nextIndex]; // Set the new src
+    }
+</script>
+<script>
+    $("#common-header").load("/header.html");;
+</script>
