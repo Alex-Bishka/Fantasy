@@ -22,7 +22,7 @@ $(document).on('click', '#closeBtn', function () {
 // rediction function for specifc blog
 function redirectToBlog(blogName) {
     // Redirect to the specific blog page
-    window.location.href = "/Blogs/" + blogName;
+    window.location.href = "/Blogs" + blogName;
 }
 
 // Intercept anchor tag clicks to handle /Blogs specially
