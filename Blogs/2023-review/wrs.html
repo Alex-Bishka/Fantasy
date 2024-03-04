@@ -1,0 +1,360 @@
+<head>
+    <title>2023 WR Review</title>
+    <link rel="stylesheet" href="/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        // google analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>2023 Wide Receiver Review</h1>
+
+
+            <h2>TL;DR</h2>
+            <div>
+                <ul class="bullet-list">
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                </ul>
+            </div>
+
+
+            <h2 class="h2-blog">Overview</h2>
+            <div>
+                <p class="blog-p-tag">
+                    TODO
+                </p>
+                <p class="blog-p-tag">
+                </p>
+                <p class="blog-p-tag">
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Basic Stats</h2>
+            <div>
+                <p class="blog-p-tag">
+                    TODO
+                </p>
+                <div class="iframe-container slider" id="slider2">
+                    <iframe class="slider-iframe" src="/Analysis/interactive-2.0/WR/2023-review/scatter_fantasy_points_ppr.html"></iframe>
+
+                    <div>
+                        <button class="graph-slider-prev" onclick="changeIframeSrc('slider2', -1)">&#10094;</button>
+                        <button class="graph-slider-next" onclick="changeIframeSrc('slider2', 1)">&#10095;</button>
+                    </div>
+                </div>
+                <p class="blog-p-tag">
+                </p>
+                <p class="blog-p-tag">
+                </p>
+
+                <p class="blog-p-tag">
+                    TODO
+                </p>
+                <div class="iframe-container slider" id="slider3">
+                    <iframe class="slider-iframe" src="/Analysis/interactive-2.0/WR/2023-review/scatter_fantasy_points_ppr_per_reception.html"></iframe>
+
+                    <div>
+                        <button class="graph-slider-prev" onclick="changeIframeSrc('slider3', -1)">&#10094;</button>
+                        <button class="graph-slider-next" onclick="changeIframeSrc('slider3', 1)">&#10095;</button>
+                    </div>
+                </div>
+                <p class="blog-p-tag">
+                </p>
+                <p class="blog-p-tag">
+                </p>
+
+                <p class="blog-p-tag">
+                    TODO
+                </p>
+                <div class="iframe-container slider" id="slider4">
+                    <iframe class="slider-iframe" src="/Analysis/interactive-2.0/WR/2023-review/scatter_receptions.html"></iframe>
+
+                    <div>
+                        <button class="graph-slider-prev" onclick="changeIframeSrc('slider4', -1)">&#10094;</button>
+                        <button class="graph-slider-next" onclick="changeIframeSrc('slider4', 1)">&#10095;</button>
+                    </div>
+                </div>
+                <p class="blog-p-tag">
+                </p>
+                <p class="blog-p-tag">
+                </p>
+
+                <p class="blog-p-tag">
+                    TODO
+                </p>
+                <div class="iframe-container slider" id="slider5">
+                    <iframe class="slider-iframe" src="/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_yards.html"></iframe>
+
+                    <div>
+                        <button class="graph-slider-prev" onclick="changeIframeSrc('slider5', -1)">&#10094;</button>
+                        <button class="graph-slider-next" onclick="changeIframeSrc('slider5', 1)">&#10095;</button>
+                    </div>
+                </div>
+                <p class="blog-p-tag">
+                </p>
+                <p class="blog-p-tag">
+                </p>
+
+                <p class="blog-p-tag">
+                    TODO
+                </p>
+                <div class="iframe-container slider" id="slider6">
+                    <iframe class="slider-iframe" src="/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_tds.html"></iframe>
+
+                    <div>
+                        <button class="graph-slider-prev" onclick="changeIframeSrc('slider6', -1)">&#10094;</button>
+                        <button class="graph-slider-next" onclick="changeIframeSrc('slider6', 1)">&#10095;</button>
+                    </div>
+                </div>
+                <p class="blog-p-tag">
+                </p>
+                <p class="blog-p-tag">
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Header</h2>
+            <div>
+                <p class="blog-p-tag">
+                </p>
+                <p class="blog-p-tag">
+                </p>
+                <p class="blog-p-tag">
+                </p>
+                <p class="blog-p-tag">
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Final Thoughts</h2>
+            <div>
+                <p class="blog-p-tag">
+                    TODO
+                </p>
+                <ul class="bullet-list">
+                    <li></li>
+                </ul>
+                <p class="blog-p-tag">
+                    Thanks for reading!
+                </p>
+                <p class="blog-p-tag">
+                    Cheers, <br />
+                    Alex
+                </p>
+            </div>
+            
+
+            <h2 class="h2-blog">Glossary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    This is the glossary
+                </p>
+                <ul class="bullet-list">
+                    <li></li>
+                </ul>
+                <p class="blog-p-tag">
+                    These terms, and other stat definitions, are defined <a href="https://cran.r-project.org/web/packages/nflreadr/vignettes/dictionary_player_stats.html">here</a>.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Appendix</h2>
+            <div>
+                <p class="blog-p-tag">
+                    This is the appendix.
+                </p>
+                <div class="iframe-container slider" id="slider1">
+                    <iframe class="slider-iframe" src="/Analysis/interactive-2.0/WR/2023-review/scatter_fantasy_points.html"></iframe>
+
+                    <div>
+                        <button class="graph-slider-prev" onclick="changeIframeSrc('slider1', -1)">&#10094;</button>
+                        <button class="graph-slider-next" onclick="changeIframeSrc('slider1', 1)">&#10095;</button>
+                    </div>
+                </div>
+            </div>
+            </br>
+            </br>
+            </br>
+        </div>
+    </div>
+</body>
+<script>
+    function scrollToParagraph(paragraphId, headerOffset=100) {
+        let element = document.getElementById(paragraphId);
+        // let headerOffset = 100;  // Change this value according to your needs
+        let elementPosition = element.getBoundingClientRect().top;
+        let offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+        });
+    }
+</script>
+<script>
+    const iframeSources = {
+        slider1: [
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_fantasy_points.html",
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_fantasy_points_per_game.html",
+        ],
+        slider2: [
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_fantasy_points_ppr.html",
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_fantasy_points_ppr_per_game.html",
+        ],
+        slider3: [
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_fantasy_points_ppr_per_reception.html",
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_fantasy_points_ppr_per_target.html",
+        ],
+        slider4: [
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_receptions.html",
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_receptions_per_game.html",
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_targets.html",
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_targets_per_game.html",
+        ],
+        slider5: [
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_yards.html",
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_yards_per_game.html",
+        ],
+        slider6: [
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_tds.html",
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_tds_per_game.html",
+        ],
+    };
+
+    function changeIframeSrc(sliderId, direction) {
+        const iframe = document.querySelector(`#${sliderId} .slider-iframe`);
+        const sources = iframeSources[sliderId];
+
+        // Extract the relative path from the iframe's full URL
+        const currentPath = new URL(iframe.src).pathname;
+
+        // Find the index of the current path in the sources array
+        let currentIndex = sources.findIndex(src => currentPath.endsWith(src));
+
+        if (currentIndex === -1) {
+            currentIndex = 0; // Default to the first source if the current src is not found
+        }
+
+        let nextIndex = (currentIndex + direction + sources.length) % sources.length; // Calculate the next index, looping around if necessary
+        iframe.src = sources[nextIndex]; // Set the new src
+    }
+</script>
+<script>
+    $("#common-header").load("/header.html");;
+</script>

@@ -1,6 +1,7 @@
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from yellowbrick.cluster import SilhouetteVisualizer
+from .utils import check_save_path
 import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.express as px
@@ -100,16 +101,6 @@ def create_clusters(n, kmeans, X, X_scaled, df_review, subset_df, subset_cols):
 
     return df_cluster, cluster_ranking
 
-
-import os
-def check_save_path(save_path):
-    """
-    Checks to see if a file already exists, so we avoid over-writing it
-    """
-    exists = os.path.exists(save_path)
-    if exists:
-        raise(FileExistsError(f"File '{save_path}' already exists! Please choose a different name for the file."))
-    
 
 def create_cluster_plot(df_cluster, cluster_ranking, subset_cols,
                         save_path=None, font_size=12, marker_size=4, diagonal_is_visible=False,
