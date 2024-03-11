@@ -50,12 +50,16 @@ Make sure to add the new jupyter kernel env to the gitignore!
     - [ ] TEs
 - [ ] Individual player reviews?
 - [ ] Buys/Sells?
+- [ ] How important is a competent QB?
+    - [ ] To wr success?
+    - [ ] To rb success?
+    - [ ] To te success?
 - [ ] 
 
 
 ## Tooling/Site Upgrades on Deck:
 
-- [ ] Re-write clustering notebook
+- [x] Re-write clustering notebook
 - [ ] Improve ML re-usability
     - [ ] Create modeling pipeline
     - [ ] Create data pipeline

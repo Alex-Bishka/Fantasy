@@ -1,4 +1,4 @@
-import os
+from .utils import check_save_path
 import plotly.express as px
 
 
@@ -22,15 +22,6 @@ def prep_df_for_scatter_plot(df):
     return df
 
 
-def check_save_path(save_path):
-    """
-    Checks to see if a file already exists, so we avoid over-writing it
-    """
-    exists = os.path.exists(save_path)
-    if exists:
-        raise(FileExistsError(f"File '{save_path}' already exists! Please choose a different name for the file."))
-
-
 def create_scatter_plot(df, stat, start_index=-30, save_path=None,
                         three_tiers=False, four_tiers=False, custom_appendix=None):
     """
@@ -43,9 +34,16 @@ def create_scatter_plot(df, stat, start_index=-30, save_path=None,
     title = f"2023 {position} {' '.join([s.capitalize() for s in stat.split('_')])}"
     title = title.replace("Epa", "EPA")
     title = title.replace("Tds", "TDs")
+    title = title.replace("Ppr", "PPR")
+    title = title.replace("Tgt", "Target")
+    title = title.replace("Sh", "Share")
+
     y_axis_title = f"{' '.join([s.capitalize() for s in stat.split('_')])}"
     y_axis_title = y_axis_title.replace("Epa", "EPA")
     y_axis_title = y_axis_title.replace("Tds", "TDs")
+    y_axis_title = y_axis_title.replace("Ppr", "PPR")
+    y_axis_title = y_axis_title.replace("Tgt", "Target")
+    y_axis_title = y_axis_title.replace("Sh", "Share")
     
     if custom_appendix in df.columns[-2]:
         stat += "_" + custom_appendix

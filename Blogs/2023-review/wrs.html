@@ -1,0 +1,761 @@
+<head>
+    <title>2023 WR Review</title>
+    <link rel="stylesheet" href="/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        // google analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>2023 Wide Receiver Review</h1>
+
+
+            <h2>TL;DR</h2>
+            <div>
+                <ul class="bullet-list">
+                    <li>Lamb's excellent 2023 season vaults him up into the tier one of wide receivers for me. He's in the Jefferson-Chase tier.</li>
+                    <li>Amon-Ra also had a superb 2023 season, but his lack of high-end explosive fantasy games prevents me from placing him in tier one. I place him alongside AJ Brown in tier two.</li>
+                    <li>Puka Nacua's rookie year was historic in more ways than one. I think there's a strong argument for him being valued around WR6, and certainly within the WR6-10 range.</li>
+                    <li>While the young talent showcased sensational seasons in 2023, the old guys continue to get the job done. Allen, Evans, Cooper, Diggs, and Adams all represent solid options for contenders to load up on. Outside of injuries (or off-field drama in Diggs' case), I think most of these guys will be flirting around WR2 territory in 2024, especially since the advanced metrics look to be in their favor.</li>
+                    <li>Tyreek Hill has to be the most valuable vet. He still appears to be at the top of his game, and, quite possibly, more importantly is part of a very high powered passing offense.</li>
+                    <li>The 2022 receiving class still lacks volume compared to other elite wide receivers. Outside of Wilson, this class doesn't seem to get targeted enough to consistently contend for WR1 territory. Although, the three that have shown the most so far have been hampered by poor quarterback play. London, the fourth most productive, has been plagued by the same problem. Perhaps Wilson and Cousins resolve Pickens' and London's woes.</li>
+                    <li>Outside of Puka, 2023 didn't showcase a historic or elite level player, yet. However, there's a lot to like here, including Dell, Reed, Addison, Flowers, and others. The 2024 class is going to make the wide receiver position insanely competitive from a talent perspective.</li>
+                </ul>
+            </div>
+
+
+            <h2 class="h2-blog">Overview</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Hello, fantasy enthusiasts! Welcome to our deep dive into the world of wide receivers in 2023!
+                </p>
+                <p class="blog-p-tag">
+                    In this installment, we'll peel back the layers on how wideouts have fared this past season, employing a mix of basic stats
+                    like receptions and yards, alongside more nuanced figures such as target share and dominator. Moreover, we shall utilize these
+                    stats in part two to create cluster plots, placing wide receivers into tiers based on their production during 2023. This provides us with
+                    even more insight about how players fare against each other.
+                </p>
+                <p class="blog-p-tag">
+                    The aim, as usual, is to sift through the noise and spotlight surprising information, which ideally allows us to make more informed
+                    decisions on wide receivers (i.e. if a player is undervalued, overvalued, great value, etc.).
+                </p>
+                <p class="blog-p-tag">
+                    Overall, this review will closely mimic the quarterback series. So, buckle up as we navigate the highs and lows, the expected and
+                    the surprises of the wide receiver landscape, all while gearing up for what these insights might mean for your next fantasy season!
+                </p>
+                <p class="blog-p-tag">
+                    Let's get to it!
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Basic Stats</h2>
+            <div>
+                <p class="blog-p-tag">
+                    It's always great to begin with first principles: fantasy points. It's good to refresh ourselves with what numbers players put up. 
+                    For those who play in standard leagues still, please check out the <a href="javascript:void(0);" onclick="scrollToParagraph('appendix-0', 10)">appendix for the season total and per game 
+                    slider</a>. My analysis will be based on PPR scoring. 
+                </p>
+                <p class="blog-p-tag">
+                    We start with season and per game PPR fantasy numbers:
+                </p>
+                <div class="iframe-container slider" id="slider2">
+                    <iframe class="slider-iframe" src="/Analysis/interactive-2.0/WR/2023-review/scatter_fantasy_points_ppr.html"></iframe>
+
+                    <div>
+                        <button class="graph-slider-prev" onclick="changeIframeSrc('slider2', -1)">&#10094;</button>
+                        <button class="graph-slider-next" onclick="changeIframeSrc('slider2', 1)">&#10095;</button>
+                    </div>
+                </div>
+                <p class="blog-p-tag">
+                    There's quite a few wide receiver names that deserve praise here, and with so many impressive seasons, you'll have to excuse me
+                    if I don't specifically name someone.
+                </p>
+                <p class="blog-p-tag">
+                    Three names to me particularly standout: CD Lamb, Amon-Ra, and Puka. They finished as WR1, WR3, and WR4 on the season, respectively.
+                    Additionally, their per game numbers were equally impressive as WR1, WR4 and WR6, respectively.
+                </p>
+                <p class="blog-p-tag">
+                    What do I take away from this?
+                </p>
+                <p class="blog-p-tag">
+                    Well, CD's season puts him in, or damn near close the Jefferson and Chase tier for my money. They're all the same age, and CD just
+                    showed he can have a truly elite season. I think some may argue that Chase might be the worst of these three, at least based on
+                    season stats, but I would blame injuries to him and Burrow for decreased production. Even with the injuries, Chase still has the
+                    highest ceiling in any one game out of these three receivers. I think Tyreek might be the closest to his explosive fantasy scoring
+                    ability, but being 30 years old keeps him a bit further away from the value of these three studs.
+                </p>
+                <p class="blog-p-tag">
+                    Moving onto Amon-Ra, I would place him below CD, Jefferson, and Chase. He's in the same tier as AJ Brown for me (to round out the 
+                    current top five wide receivers in dynasty), but I would rather have Amon-Ra. The man delivers 100 yard games very consistently - 
+                    he only had four games under 90 yards last year. Additionally,
+                    his <a href="https://www.espn.com/nfl/story/_/id/38743246/lions-wr-amon-ra-st-brown-driven-great">work ethic seems to be
+                        about as good as it gets</a>. Pair that with his young age, and being in a high powered offense, the Sun God is easily WR4
+                    for me right now. The one thing missing from his fantasy game are explosive games. He hasn't shown a high ceiling as often as the 
+                    three above him, but his floor is about as good as it gets.
+                </p>
+                <p class="blog-p-tag">
+                    So, my big five at this position has two tiers. Tier one: Jefferson, Chase and Lamb. Tier two: Amon-Ra and AJ Brown.
+                    Tier one is murky to me, and Chase is the most in danger of dropping to tier two. Tier two has a clear leader, in my eyes, with
+                    Amon-Ra.
+                </p>
+                <p class="blog-p-tag">
+                    Now, after those five guys, the position rankings become really murky for me. Puka's rookie season was
+                    <a href="https://www.nfl.com/news/rams-wr-puka-nacua-sets-new-rookie-record-for-receiving-yards-receptions">historic</a>
+                    and it does put him in the discussion for next best receiver. Furthermore, he did finish above AJ Brown in both points per game and 
+                    season total points. I'm just not ready to put him above Brown, or in the same tier as Puka had a lengthy injury history in
+                    college (this is why he fell from being a 2nd or 3rd round pick to the 5th) and I feel Brown's quarterback situation is better.
+                    So, I have to put Puka in that next tier with players like Wilson, Hill (only here because he's 30), and Olave. Note, I think there's 
+                    a lot of room for debate here with guys like Aiyuk, Waddle, Smith, etc.
+                </p>
+                <p class="blog-p-tag">
+                    Some more points I want to dive into, but we still have a long way to go on this analysis, so bullets to try and be concise:
+                </p>
+                <ul class="bullet-list">
+                    <li>Evans and Allen are ageless vets. Evans finished as WR7 on the season and WR10 on a points per game basis. Allen 
+                        was WR3 on a points per game basis. I would look to acquire them as a contending team.
+                    </li>
+                    <li>Amari Cooper would be the budget version of the two vets above, finishing as WR18 on a per game basis.</li>
+                    <li>Diggs also deserves a consideration as a contender vet purchase, but his disappearance at the end of the season would make
+                        me a bit more nervous.</li>
+                    <li>Hill is the premium vet to acquire.</li>
+                    <li>The Texans wide receiver duo looks legit. Dell and Collins both finished as top ten wide receivers on a per game basis.</li>
+                    <li>Olave produced more than Smith and Waddle on a per game basis. Carr is probably the only thing holding him back.</li>
+                    <li>Wilson did regress, but he had even worse quarterback play this year. 1000-plus yards in back-to-back season with the 
+                        QBs he's had is impressive.
+                    </li>
+                    <li>I'd argue the season Pickens had is also quite impressive for the same reason. He finished just behind Wilson in total points, 
+                        despite having worse (hard to say if I'm honest, both had horrible QBs) quarterback play.
+                    </li>
+                    <li>Higgins and Ridley were both WR3s on a per game basis this season. Not ideal. Maybe another year of football helps Ridley.
+                        Higgins needs to stay healthy, along with Burrow.
+                    </li>
+                </ul>
+
+                <p class="blog-p-tag">
+                    That about does it for the fantasy points observations, again a lot to cover, so I'm sure I missed something somewhere. At the end 
+                    of the day, there are a lot of wide receivers to like, and it feels hard to know who's going to round out the WR1 category outside
+                    of the 5-6 high end studs, especially with another (theoretically) loaded wide receiver class coming in. I think if you're high on 
+                    anyone who finished in that WR2-3 range who is young and has talent (i.e. Olave, Flowers, Reed, etc.), I'd make an offer before
+                    their price explodes.
+                </p>
+                <p class="blog-p-tag">
+                    I think this influx of talent also makes the older, but reliable guys drop to affordable prices. Pittman and 
+                    Metcalf are two examples of this to me. Really solid pieces on just about any fantasy team.
+                </p>
+                <p class="blog-p-tag">
+                    Next, we check out fantasy points per reception and per target:
+                </p>
+                <div class="iframe-container slider" id="slider3">
+                    <iframe class="slider-iframe" src="/Analysis/interactive-2.0/WR/2023-review/scatter_fantasy_points_ppr_per_reception.html"></iframe>
+
+                    <div>
+                        <button class="graph-slider-prev" onclick="changeIframeSrc('slider3', -1)">&#10094;</button>
+                        <button class="graph-slider-next" onclick="changeIframeSrc('slider3', 1)">&#10095;</button>
+                    </div>
+                </div>
+                <p class="blog-p-tag">
+                    I thought these plots might lead to some interesting insights, but that doesn't appear to be the case. They appear to favor deep
+                    threat or explosive play wide receivers, which aren't really the same as elite (fantasy) wide receivers.
+                </p>
+                <p class="blog-p-tag">
+                    I will say it is impressive to see Deebo in the top 12 on both of these plots. Also, maybe Shakir being 10th in points per target
+                    might be a good selling point if you're trying to move him - even if it doesn't really mean anything. In the words of Homer Simpson,
+                    "Oh, people can come up with statistics to prove anything Kent".
+                </p>
+
+                <p class="blog-p-tag">
+                    Pivoting away from fantasy points, let us examine the reception and target numbers for wide receivers:
+                </p>
+                <div class="iframe-container slider" id="slider4">
+                    <iframe class="slider-iframe" src="/Analysis/interactive-2.0/WR/2023-review/scatter_receptions.html"></iframe>
+
+                    <div>
+                        <button class="graph-slider-prev" onclick="changeIframeSrc('slider4', -1)">&#10094;</button>
+                        <button class="graph-slider-next" onclick="changeIframeSrc('slider4', 1)">&#10095;</button>
+                    </div>
+                </div>
+                <p class="blog-p-tag">
+                    So starting off, I just want to mention how impressive CeeDee Lamb's numbers are. They're pretty ridiculous with 135 catches in 2023,
+                    and it's no coincidence that he had that many catches and was number one in Fantasy Points PPR on the season numbers and also on the
+                    per-game numbers. Truly an amazing season, and that's why he's jumped into that Jefferson, Chase tier in my eyes. 
+                </p>
+                <p class="blog-p-tag">
+                    Afterwards, we also see Amon Ra in third place with 119 catches, tied with Tyreek Hill. I think, again, another reason why Amon Ra is in that second tier,
+                    with AJ Brown just below that tier one. Moreover this also contributes to Hill likely being the best vet wide receiver in dynasty right now.
+                </p>
+                <p class="blog-p-tag">
+                    In an impressive showing for the 2023 season, Michael Pittman demonstrated notable resilience and potential, even in the absence of playing alongside Anthony Richardson
+                    for the majority of the season. Finishing as wide receiver four in receptions on the season and wide receiver nine in total targets. His ability to consistently secure
+                    receptions makes him an exciting prospect for future fantasy football considerations. While he might be more fitting as a second-choice wide receiver due to his current body of
+                    work, the potential for growth and increased performance under AR makes him a player to watch closely.
+                </p>
+                <p class="blog-p-tag">
+                    Turning our attention to a remarkable debut, Puka Nacua emerged as a formidable presence. Achieving top 12 status in receptions, receptions per game, targets, and targets per game,
+                    Nacua's consistency and reliability were on full display throughout his rookie year. He is an integral part of that Rams offense going forward, and he is strongly in discussion for being 
+                    the best wide receiver outside of my big five.
+                </p>
+                <p class="blog-p-tag">
+                    Adam Thielen's performance in 2023 stands out as particularly noteworthy, in or flirting with Tier 1 in receptions and targets on a per game and season basis. I know he fell off towards
+                    the end of the season, but his perceived volume (targets) and actual volume (receptions) were quite high. I'm skeptical of him replicating this, as I imagine Carolina brings in more talent.
+                </p>
+                <p class="blog-p-tag">
+                    However, Thielen represents the motif of productive veteran. Diggs and Allen produced phenomenal per game numbers, with both strongly earning the label of target hog from me. I know Diggs
+                    had some disappearances toward the end of the year, but I would be a little surprised if he wasn't a valuable fantasy asset next year. Additionally, players like Mike Evans and Amari Cooper,
+                    despite receiving less volume than Diggs and Allen, still manage significant contributions, underscoring the depth of talent amongst vets in the league. 
+                </p>
+                <p class="blog-p-tag">
+                    The 2022 wide receiver class, featuring talents such as Garrett Wilson, Chris Olave, and Drake London, presents a mixed picture. While there's undeniable talent, the transition to
+                    high-end volume and production has been slower than possibly anticipated, especially after some year one flashes. I think this is largely because outside of Wilson and Olave, none of these
+                    are really touching good-to-elite volume. I would also argue you could critique Wilson and Olave for their current actual volume. One last note here: I suspect the difference in Wilson being 
+                    priced higher than Olave is partially because of how many more targets Wilson gets.
+                </p>
+
+                <p class="blog-p-tag">
+                    Moving onto the receiving yards numbers:
+                </p>
+                <div class="iframe-container slider" id="slider5">
+                    <iframe class="slider-iframe" src="/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_yards.html"></iframe>
+
+                    <div>
+                        <button class="graph-slider-prev" onclick="changeIframeSrc('slider5', -1)">&#10094;</button>
+                        <button class="graph-slider-next" onclick="changeIframeSrc('slider5', 1)">&#10095;</button>
+                    </div>
+                </div>
+                <p class="blog-p-tag">
+                    Tyreek Hill's extraordinary tally of 1,799 receiving yards and CeeDee Lamb's impressive 1,749 yards underscore their elite status and significant impact in fantasy.
+                    This is why Hill is the best wide receiver vet to own and Lamb catapults himself into that Jefferson, Chase tier. 
+                </p>
+                <p class="blog-p-tag">
+                    Amon-Ra St. Brown, who, despite finishing as WR3 here with a commendable 1,515 yards, lacks the explosive play-making seen in Hill and Lamb, positioning him more as a beacon of 
+                    consistency rather than someone who might break a fantasy matchup any given week. Still a fantasy super star my eyes, but I would need to see more high end fantasy games from him 
+                    before considering putting him in that tier one of dynasty wide receivers.
+                </p>
+                <p class="blog-p-tag">
+                    Puka Nacua's rookie season performance, nearly reaching 1,500 yards, is nothing short of remarkable - I know I've been highlighting him a lot throughout this analysis, but he 
+                    deserves this level of attention. We need to see year two before we can put him in the big five, but I would be very excited owning him in fantasy right now.
+                </p>
+                <p class="blog-p-tag">
+                    Focusing on the high end talent in the league on a per game basis, the spotlight from 2023 naturally falls on Justin Jefferson and Keenan Allen, who stand out as the second and
+                    fourth-ranked wide receivers on the per game plot, respectively. Jefferson still cracked 1000 yards despite the quarterback carousel in Minnesota and his own injuries, which cements
+                    him as the WR1 in dynasty currently. Allen was outproducing Amon-Ra on per game numbers, on a putrid Chargers team. He's a sneaky buy for contenders heading into this offseason, as I
+                    suspect his age will net a discount.
+                </p>
+                <p class="blog-p-tag">
+                    DJ Moore and Brandon Aiyuk both had career best years, each cracking that 1300 yard mark. Assuming Aiyuk stays in SF - there have been some trade rumors - I see both as really strong 
+                    WR2s, and okay WR1s going forward.
+                </p>
+                <p class="blog-p-tag">
+                    I think that last statement and the fact that 28 wide receivers broke 1000 yards is a testament to the depth of talent in the league. There's still young talented wide receivers who 
+                    haven't cracked this mark, like London, Rice, Flowers, Addison, etc. The current NFL landscape is indeed brimming with wide receiver talent, with the rich pool of young emerging talent
+                    and longevity of several vets, it's an exciting time to be alive!
+                </p>
+                <p class="blog-p-tag">
+                    This abundance of talent also underscores the critical importance of securing a superstar wide receiver for your fantasy team. Wide receivers like Jefferson, Chase, and Lamb represent
+                    more than just high-scoring options; they offer value that significantly surpasses what you might expect from the average wide receiver, even the average WR1. This 
+                    "value above replacement" is crucial in fantasy football, where the difference between a good and a great team can hinge on having one of these elite talents. It is fully worth paying
+                    up for these superstars.
+                </p>
+
+                <p class="blog-p-tag">
+                    Hope you're still bearing with me here, we are almost done with the basic stat analysis. Our last stat to look at is touchdowns:
+                </p>
+                <div class="iframe-container slider" id="slider6">
+                    <iframe class="slider-iframe" src="/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_tds.html"></iframe>
+
+                    <div>
+                        <button class="graph-slider-prev" onclick="changeIframeSrc('slider6', -1)">&#10094;</button>
+                        <button class="graph-slider-next" onclick="changeIframeSrc('slider6', 1)">&#10095;</button>
+                    </div>
+                </div>
+                <p class="blog-p-tag">
+                    I won't be putting too much stock into these numbers as touchdowns are a very fluky stat (in other words they are highly unpredictable from year-to-year).
+                    That being said, the high touchdown counts for players like Mike Evans and Tyreek Hill, each securing 13 touchdowns in 2023, alongside CeeDee Lamb's notable
+                    performance, are prime examples of numbers that are going to be difficult to replicate.
+                </p>
+                <p class="blog-p-tag">
+                    I think Addison, Sutton, and Amon-Ra could also be candidates to regress a little here, with each of them finishing the year on ten touchdowns.
+                    It's also possible we see more of Puka and Olave in the redzone next year, as each finished with a low amount of five touchdowns.
+                </p>
+                <p class="blog-p-tag">
+                    Again, touchdowns are a fluky stat, so it's hard to say what will change. My general approach to this follows the idea that really high and low totals will trend towards the norm.
+                    What is the norm? Also a difficult question to answer... My current belief is somewhere around seven touchdowns for fantasy relevant wide receivers based on the fact it serves as the 
+                    bridge between tier three and tier two here.
+                </p>
+                <p class="blog-p-tag">
+                    For those interested in YAC stats, please check out the appendix - the basic stat analysis has already grown into quite the read.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Advanced Stats</h2>
+            <div>
+                <p class="blog-p-tag">
+                    In the advanced stat section, we will be covering the following stats: receiving air yards, EPA,
+                    target share, a flavor of WOPR, and W8dom. For more information, the definitions of each of 
+                    these stats can be found in the <a href="javascript:void(0);" onclick="scrollToParagraph('glossary-0', 10)">glossary</a>.
+                </p>
+                <p class="blog-p-tag">
+                    We will start out with receiving air yards, which will hopefully shed some more light into
+                    a player's season:
+                </p>
+                <div class="iframe-container slider" id="slider8">
+                    <iframe class="slider-iframe" src="/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_air_yards.html"></iframe>
+
+                    <div>
+                        <button class="graph-slider-prev" onclick="changeIframeSrc('slider8', -1)">&#10094;</button>
+                        <button class="graph-slider-next" onclick="changeIframeSrc('slider8', 1)">&#10095;</button>
+                    </div>
+                </div>
+                <p class="blog-p-tag">
+                    The more receiving air yards a player has, the better. It suggests that there 
+                    is potential for more receiving yards, especially if the player is targeted often.
+                </p>
+                <p class="blog-p-tag">
+                    So, it's interesting to see three veterans at the top of the list: Hopkins, Evans and Adams.
+                    All three, and Keenan Allen, are in the top tier when looking at the per game version. 
+                    This is encouraging to me for two reasons: <b>1)</b> their teams involve these guys on their offense
+                    heavily and <b>2)</b> there's a lot more room to increase efficiency next year, as their air yards per game 
+                    - bar Allen - are all significantly (50-60 yards) lower than their receiving yards per game.
+                </p>
+                <p class="blog-p-tag">
+                    I will mention
+                    that point two could be seen the other way as well: these guys are not as effective at converting their targets
+                    or potential yardage into actual yardage. This might also be, in part, a quarterback stat - hard to say 
+                    without further research.
+                </p>
+                <p class="blog-p-tag">
+                    Ridley with 1771 air yards on the season and Zay Jones with 96.8 air yards per game is pretty telling of the 
+                    Jags inconsistencies this year, where TLaw was let down by his receivers on many an occasion. This leads me to believe 
+                    there is still hope for strong fantasy relevancy in that Jaguars offense, outside of just Etienne, as those numbers tell
+                    me there was high inefficiency in Jacksonville last year.
+                </p>
+                <p class="blog-p-tag">
+                    On the other hand, someone like Ceedee Lamb seems like a strong regression candidate to me. 1722 air yards on the season, while
+                    having 1749 total yards is a display of hyper-efficiency. While it does accentuate Lamb's yards after catch ability (<a href="javascript:void(0);" onclick="scrollToParagraph('yards-after-catch-0', 10)">first in the league
+                    with 680</a>), that kind of efficiency seems unlikely to be replicated, let alone improved upon. Happy to be proven wrong, but this 
+                    might be another sign of selling Lamb high. I wouldn't, unless I was in a deep rebuild and desperately needed more pieces, as players 
+                    of this quality are hard to come by, even if their highs are not consistently achievable.  
+                </p>
+                <p class="blog-p-tag">
+                    Again, there's a bunch of great players here that I simply can't focus on in this review, so I'll wrap up this section by pointing out
+                    one more player: Tank Dell. Tank finished as WR10, when looking at air yards per game, with 107. He may never be a dominant wide receiver
+                    or get the job done in the traditional fashion, but so long as he can stay healthy, it seems the Texans will be running their offense through 
+                    him frequently.
+                </p>
+                
+                <p class="blog-p-tag">
+                    Let's now take a look at EPA:
+                </p>
+                <div class="iframe-container slider" id="slider7">
+                    <iframe class="slider-iframe" src="/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_epa.html"></iframe>
+
+                    <div>
+                        <button class="graph-slider-prev" onclick="changeIframeSrc('slider7', -1)">&#10094;</button>
+                        <button class="graph-slider-next" onclick="changeIframeSrc('slider7', 1)">&#10095;</button>
+                    </div>
+                </div>
+                <p class="blog-p-tag">
+                    Lamb's 102.5 EPA puts him at 28th overall of qualifying wide receiver seasons since 2005 (to qualify players must have played at least five games).
+                    So, he had an extremely efficient year, comparable to Purdy at QB.
+                </p>
+                <p class="blog-p-tag">
+                    Every stat I'm digging into continues to emphasize the level of talent this guy has,
+                    but at the same time makes me consider him a pretty strong regression candidate. Now, that might mean he <i>only</i> has 1500 yards and 6 touchdowns
+                    next year. That's still phenomenal!
+                </p>
+                <p class="blog-p-tag">
+                    For those, who treat fantasy like stocks, now would be the time to sell in my eyes, but, again, you should almost
+                    never sell a player of this ability, especially at this age. Concisely, I love him and his long term upside in dynasty, but might be avoiding his
+                    price tag in redraft.
+                </p>
+                <p class="blog-p-tag">
+                    Highlighting some other names, Aiyuk, Amon-Ra, Nico Collins, Puka Nacua, Mike Evans, and Keenan Allen were all in tier one for 
+                    season EPA totals. More reason to trust these rising stars and aging vets heading into next year.
+                </p>
+                <p class="blog-p-tag">
+                    One last name I would like to point out is Khalil Shakir. He finished as WR15 for season total EPA and WR17 on a per game basis
+                    That's insanely effective and efficient! However, there appears to be a bit of dissonance here. EPA and fantasy points correlate 
+                    very strongly within the same season, at about 0.737. So, finishing this high on an EPA ranking, but not even as a WR4 is odd.
+                </p>
+                <p class="blog-p-tag">
+                    Of the 452 wide receivers to play at least five games since 2005 and have at least 40 EPA, Shakir's fantasy numbers would rank in
+                    the bottom 30 of that group. The average fantasy points put up by this group was 147.89. Between this and watching some of his 
+                    highlights towards the end of the season, Shakir strikes me as someone with an excellent sleeper profile. In fact, these numbers suggest 
+                    that his opportunity may not even have to increase, provided his efficiency remains about the same, to be a fantasy relevant asset.
+                </p>
+
+                <p class="blog-p-tag">
+                    Now we move onto target share:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Analysis/interactive-2.0/WR/2023-review/scatter_tgt_sh.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Target share is another stat that has a strong correlation with fantasy points, at about 0.836. So, a higher target share generally 
+                    leads to more fantasy production.
+                </p>
+                <p class="blog-p-tag">
+                    As a result, I find this to be more evidence of veterans, like Diggs, Allen, and Adams, remaining as key fantasy figures next season,
+                    since it currently seems unlikely their target share will change much - pending free agency and the draft.
+                </p>
+                <p class="blog-p-tag">
+                    I know NFL production can drop off in an instance, but for what is it worth, since 2005, wide receivers who played at least five games
+                    and had a target share of at least 0.27, scored an average of 269.83 total points in PPR. Furthermore, qualifying wide receivers in the same time 
+                    span who had a target share between 0.20 and 0.25 averaged 198.35 total points in PPR, which is WR3 territory. For that reason, I believe these vets should still 
+                    serve as valuable pieces for contenders, even if they may not be guaranteed WR1 or WR2 status.
+                </p>
+                <p class="blog-p-tag">
+                    I want to also point out the volume issue for the class of 2022. Outside of Wilson, who has a target share of about 0.279, no one in that class 
+                    commands targets on their team. Olave is getting there with a target share of about 0.239, but everyone else is under 0.225. Wide receivers from 2005 
+                    with a target share from 0.20 to 0.225 averaged 186.75, which is WR4 territory these days. You have to imagine London can overcome this threshold with
+                    a better QB and offensive coordinator. Maybe Pickens can too now, with the QB upgrade to Russell Wilson?
+                </p>
+
+                <p class="blog-p-tag">
+                    Pivoting slightly, I want to discuss WOPR, which is a weighted metric that contextualizes total fantasy usage in a more meaningful way than just 
+                    target share or air yards:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Analysis/interactive-2.0/WR/2023-review/scatter_wopr_x.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    WOPR and fantasy points in a season correlate extraordinarily highly, at about 0.929 - looking at the same time span as the other correlations above.
+                    So, being at the front of this graph is a very good sign for wide receiver fantasy production.
+                </p>
+                <p class="blog-p-tag">
+                    At WR1 on this list Adams continues to show he is the heartbeat of the Raiders' passing game. Bar a trade, complete fall-off, or more receiver competition, 
+                    it feels safe to say that Adams will be around WR2 territory from volume alone. As an aside, the worst season from a receiver with a WOPR of greater than 
+                    12 in the past 10 years is from DJ Moore in 2022, when he still finished as a low-end WR2. Adams has yet to have a WOPR under 13 while being a Raider.
+                </p>
+                <p class="blog-p-tag">
+                    To a lesser degree, it seems the same can be said for Hopkins and Evans. Two more vets who should continue to produce in 2024, even if it's a slightly lower 
+                    level than now.
+                </p>
+                <p class="blog-p-tag">
+                    The other player that jumps of this plot for me is Wilson. The man just needs a QB. His volume, viewed from any sort of metric, is commanding. The bad news 
+                    is that the Jets don't seem to have a long term answer at QB. The good news is that Wilson appears to be a low-end WR2, high-end WR3, or so on volume alone.
+                </p>
+                <p class="blog-p-tag">
+                    One more note on the 2022 class: Olave and Pickens have a near identical WOPR. Pickens doesn't get as many targets, but he is targeted more often on longer 
+                    throws. I think with the upgrade to Wilson, Pickens might make some more noise as the third best wide receiver of that class, especially if Diontae Johnson is 
+                    traded too.
+                </p>
+
+                <p class="blog-p-tag">
+                    Lastly, we focus on W8dom, which is a weighted dominator score, in favor or receiving yards:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Analysis/interactive-2.0/WR/2023-review/scatter_w8dom.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Once again, this is another stat with a high correlation to fantasy points, at about 0.887, so players who have a higher W8dom
+                    should generally have higher fantasy production.
+                </p>
+                <p class="blog-p-tag">
+                    DJ Moore and Tyreek Hill hit a rare threshold of 0.40 W8dom. There have only been 16 seasons with this kind of wide receiver production since 2005.
+                    Furthermore, since 2018, the only other player to hit this mark is Cooper Kupp in 2022, who was putting up about 22 points a game in PPR formats 
+                    before his season finished early due to injury. I think this would get be very excited as a Moore owner, especially with the expectation of the Bears
+                    getting Caleb Williams, who I see as a large passing upgrade on Fields.
+                </p>
+                <p class="blog-p-tag">
+                    One final note: George Pickens has the highest W8dom of any 2022 wide receiver by quite a bit. Wilson is second from that class with about 0.301 W8dom.
+                    Pickens is at about 0.344. If the Steelers pass more or if Wilson is a better QB than Pickett/Rudolph, I wouldn't be surprised to see Pickens flirt with
+                    the Olave-Wilson tier.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Summary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    The depth of wide receiver talent in the NFL right now is impressive, and if the 2024 wide receiver draft class pans out, it's about to become a whole 
+                    lot more competitive.
+                </p>
+                <p class="blog-p-tag">
+                    This makes it all the more important to have one of those superstar fantasy pieces, in order to have a positional advantage over your league mates. Someone
+                    in that top tier, like Jefferson, Chase, or Lamb would make a large impact on any fantasy team. 
+                </p>
+                <p class="blog-p-tag">
+                    Lamb's 2023 confirms his spot in that tier one group of wide receivers. Amon-Ra's 2023 does the same for him, but brings him to the tier just below, joining AJ Brown.
+                    Again, the only thing holding him back from the top tier is the ability to deliver high-end explosive games.
+                </p>
+                <p class="blog-p-tag">
+                    There are still several high end vet options, with Hill, Evans, Allen, Adams, and Diggs all appearing to be WR1s on their team in 2024 still. Some carry a little more
+                    risk than others, but any of these options feel very serviceable on a contending team in 2024.
+                </p>
+                <p class="blog-p-tag">
+                    In addition to aging vets highlighting their value, 2023 showcased a lot of young talent. The 2022 wide receiver class seems to have stars in Olave and Wilson, held back
+                    by quarterback play. The same could be extended for their fellow '22 draftees in Pickens and London, although these two have yet to hit the same highs as the former two.
+                </p>
+                <p class="blog-p-tag">
+                    2023 also has many exciting names, like Puka, Flowers, Rice, Dell and Reed, amongst others. 
+                </p>
+                <p class="blog-p-tag">
+                    As a result, it makes it pretty difficult to dislike a player within the top 40 or so wide receivers. Yes, may have weaknesses and concerns, but they also tend to have a lot
+                    to like, more often being a victim of situation than talent. So, it's only a matter of not liking a price. That being said, with how competitive the position has become from a 
+                    fantasy production perspective, I would argue it becomes far more worth it to spend on a superstar, in order to out-compete your league at the position, especially if depth is
+                    not an issue for your team.
+                </p>
+                <p class="blog-p-tag">
+                    With those final notes, I'll wrap up this analysis.
+                </p>
+                <p class="blog-p-tag">
+                    Thanks for reading!
+                </p>
+                <p class="blog-p-tag">
+                    Cheers, <br />
+                    Alex
+                </p>
+            </div>
+            
+
+            <h2 class="h2-blog">Glossary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Stat terms used in this article:
+                </p>
+                <ul class="bullet-list">
+                    <li><b>EPA:</b> For our usage, we refer to receiving EPA as EPA in this article, which is the total EPA on plays where this receiver was targeted. For more information on EPA, please refer to this <a href="https://www.nfeloapp.com/analysis/expected-points-added-epa-nfl/">article</a>.</li>
+                    <li><b>Air yards:</b> How many yards the football travels in the air, from the line of scrimmage, regardless of whether the pass was completed. For more info, please check out this <a href="https://www.ftnfantasy.com/air-yards?fppg=PPR&years=2023">article</a>.</li>
+                    <li><b>Target share:</b> Player's share of team receiving targets.</li>
+                    <li><b>WOPR:</b> <a href="https://www.nbcsports.com/fantasy/football/news/article-numbers-why-receiver-air-yards-matter">Weighted OPportunity Rating</a> - 1.5 x target_share + 0.7 x air_yards_share - a weighted average that contextualizes total fantasy usage.</li>
+                    <li><b>W8dom:</b> dominator rating, but weighted in favor of receiving yards over TDs. <a href="https://www.pff.com/news/fantasy-football-predicting-breakout-rookie-wide-receivers-using-pff-grades-and-dominator-rating">Dominator rating</a> is the percentage of team receiving production.</li>
+                    <li><b>RACR (receiving air yards conversion):</b> Receiving (yards) Air (yards) Conversion Ratio - the number of receiving yards per air yards targeted per game.</li>
+                </ul>
+                <p class="blog-p-tag">
+                    For other stat definitions, please check out this <a href="https://cran.r-project.org/web/packages/nflreadr/vignettes/dictionary_player_stats.html">data stat page</a>.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Appendix</h2>
+            <div>
+                <h3 class="h3-blog">Fantasy Points</h3>
+                <div class="iframe-container slider" id="slider1">
+                    <iframe class="slider-iframe" src="/Analysis/interactive-2.0/WR/2023-review/scatter_fantasy_points.html"></iframe>
+
+                    <div>
+                        <button class="graph-slider-prev" onclick="changeIframeSrc('slider1', -1)">&#10094;</button>
+                        <button class="graph-slider-next" onclick="changeIframeSrc('slider1', 1)">&#10095;</button>
+                    </div>
+                </div>
+
+                <h3 class="h3-blog">Yards After Catch</h3>
+                <div class="iframe-container slider" id="slider9">
+                    <iframe class="slider-iframe" src="/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_yards_after_catch.html"></iframe>
+
+                    <div>
+                        <button class="graph-slider-prev" onclick="changeIframeSrc('slider9', -1)">&#10094;</button>
+                        <button class="graph-slider-next" onclick="changeIframeSrc('slider9', 1)">&#10095;</button>
+                    </div>
+                </div>
+
+                <h3 class="h3-blog">RACR</h3>
+                <div class="iframe-container slider" id="slider10">
+                    <iframe class="slider-iframe" src="/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_air_yards_conversion.html"></iframe>
+
+                    <div>
+                        <button class="graph-slider-prev" onclick="changeIframeSrc('slider10', -1)">&#10094;</button>
+                        <button class="graph-slider-next" onclick="changeIframeSrc('slider10', 1)">&#10095;</button>
+                    </div>
+                </div>
+            </div>
+            </br>
+            </br>
+            </br>
+        </div>
+    </div>
+</body>
+<script>
+    function scrollToParagraph(paragraphId, headerOffset=100) {
+        let element = document.getElementById(paragraphId);
+        // let headerOffset = 100;  // Change this value according to your needs
+        let elementPosition = element.getBoundingClientRect().top;
+        let offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+        });
+    }
+</script>
+<script>
+    const iframeSources = {
+        slider1: [
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_fantasy_points.html",
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_fantasy_points_per_game.html",
+        ],
+        slider2: [
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_fantasy_points_ppr.html",
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_fantasy_points_ppr_per_game.html",
+        ],
+        slider3: [
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_fantasy_points_ppr_per_reception.html",
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_fantasy_points_ppr_per_target.html",
+        ],
+        slider4: [
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_receptions.html",
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_receptions_per_game.html",
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_targets.html",
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_targets_per_game.html",
+        ],
+        slider5: [
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_yards.html",
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_yards_per_game.html",
+        ],
+        slider6: [
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_tds.html",
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_tds_per_game.html",
+        ],
+        slider7: [
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_epa.html",
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_epa_per_game.html",
+        ],
+        slider8: [
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_air_yards.html",
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_air_yards_per_game.html",
+        ],
+        slider9: [
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_yards_after_catch.html",
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_yards_after_catch_per_game.html",
+        ],
+        slider10: [
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_air_yards_conversion.html",
+            "/Analysis/interactive-2.0/WR/2023-review/scatter_receiving_air_yards_conversion_per_game.html",
+        ],
+    };
+
+    function changeIframeSrc(sliderId, direction) {
+        const iframe = document.querySelector(`#${sliderId} .slider-iframe`);
+        const sources = iframeSources[sliderId];
+
+        // Extract the relative path from the iframe's full URL
+        const currentPath = new URL(iframe.src).pathname;
+
+        // Find the index of the current path in the sources array
+        let currentIndex = sources.findIndex(src => currentPath.endsWith(src));
+
+        if (currentIndex === -1) {
+            currentIndex = 0; // Default to the first source if the current src is not found
+        }
+
+        let nextIndex = (currentIndex + direction + sources.length) % sources.length; // Calculate the next index, looping around if necessary
+        iframe.src = sources[nextIndex]; // Set the new src
+    }
+</script>
+<script>
+    $("#common-header").load("/header.html");;
+</script>
