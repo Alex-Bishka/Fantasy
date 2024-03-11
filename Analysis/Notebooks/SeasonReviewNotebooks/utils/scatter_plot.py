@@ -35,11 +35,15 @@ def create_scatter_plot(df, stat, start_index=-30, save_path=None,
     title = title.replace("Epa", "EPA")
     title = title.replace("Tds", "TDs")
     title = title.replace("Ppr", "PPR")
+    title = title.replace("Tgt", "Target")
+    title = title.replace("Sh", "Share")
 
     y_axis_title = f"{' '.join([s.capitalize() for s in stat.split('_')])}"
     y_axis_title = y_axis_title.replace("Epa", "EPA")
     y_axis_title = y_axis_title.replace("Tds", "TDs")
     y_axis_title = y_axis_title.replace("Ppr", "PPR")
+    y_axis_title = y_axis_title.replace("Tgt", "Target")
+    y_axis_title = y_axis_title.replace("Sh", "Share")
     
     if custom_appendix in df.columns[-2]:
         stat += "_" + custom_appendix
