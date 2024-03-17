@@ -1,0 +1,479 @@
+<head>
+    <title>Draft Capital and Wide Receiver Success</title>
+    <link rel="stylesheet" href="/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        // google analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>Draft Capital and Wide Receiver Success</h1>
+
+
+            <h2>TL;DR</h2>
+            <div>
+                <ul class="bullet-list">
+                    <li>40.54% of wide receivers drafted in round 1 deliver a WR1 season at some point in their career.</li>
+                    <li>Not all round 1 wide receivers has the same success rate. Top ten picks and picks 21-32 have historically
+                        been surer bets.
+                    </li>
+                    <li>No other round offers has that kind of success, but 63.53% of receivers taken in round 2 have been 
+                        usable fantasy assets at some point in their career.
+                    </li>
+                    <li>This number plummets to 45.83% four round 3 receivers and about 25% for receivers drafted in round 4.</li>
+                    <li>Interestingly enough, round 5 has a slightly better hit rate than round 4 receivers, at about 29.17%.</li>
+                    <li>Receivers taken in round 6 and 7 are rarely useful in fantasy.</li>
+                </ul>
+            </div>
+
+
+            <h2 class="h2-blog">Overview</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Welcome back to another edition of our fantasy football analysis!
+                </p>
+                <p class="blog-p-tag">
+                    Today, we're diving into the world of the NFL Draft, with a targeted focus of wide receiver draft capital.
+                    We'll sift through the data, exploring patterns and correlations to uncover insights the NFL draft provides 
+                    us for our Fantasy Football rookie drafts. This will be the first such blog post that dives into NFL Draft 
+                    information - combine data will be included in follow-up posts as well!
+                </p>
+                <p class="blog-p-tag">
+                    The data includes drafts from the year 2000; however, the data source I'm using appears to have missing 
+                    information from some of the earlier drafts during this time period, so some of the percentages might not be
+                    fully accurate. Additionally, it includes players who are still active. This means rookies and other young 
+                    wide receivers who may still deliver a career best year.
+                    That being said, I believe this exploration should serve as a solid basis for understanding the 
+                    relationship between NFL Draft capital and Fantasy Football success rate.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Fantasy Success By Round</h2>
+            <div>
+                <p class="blog-p-tag">
+                    When looking at fantasy success, we must first define what we call fantasy success. For the purposes of the upcoming 
+                    tables and plots, fantasy success is for a wide receiver to post at least one WR4 or higher season. In other words, 
+                    a player will be marked as tier 1 if their best season in their fantasy career is a WR1 finish, tier 2 if their best 
+                    season in their fantasy career is a WR2 finish, and so on.
+                    Not the highest bar, but that means they had at least one season where they were useful as a flex play in most leagues.
+                </p>
+                <p class="blog-p-tag">
+                    If we break down the data by round and success tiers, we end up with the following success rate stats:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 700px; height: 650px;" src="/Analysis/interactive-2.0/WR/draft-capital/success-by-round-table.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    You are likely getting a decent wide receiver in round 1, as there's about a 40.54% chance they end up with at least one
+                    WR1 season and about 14.86% chance they end up with at least one WR2 season. So, if you draft a wide receiver with 
+                    first round draft capital, they chances of them putting up at least one WR1 or WR2 season is about 55.45%. Not
+                    horrible from an otherwise blind perspective - you still have a better shot than a dart throw of getting a useful player
+                    in fantasy there.
+                </p>
+                <p class="blog-p-tag">
+                    Now, while the overall success odds decrease a little bit in round 2 - the success rate is spread out a little more,
+                    with about a 24.71% chance of getting a WR1 season and about a 14.12% chance of getting a WR2 season. Overall, you have 
+                    roughly a 63.53% chance of getting at least one useful fantasy season here. Not horrible, but also not ideal.
+                </p>
+                <p class="blog-p-tag">
+                    Round 3 is where the dart throw might not be worth it. You still have about a 16.67% chance of getting a WR1 season, but
+                    your overall success rate has dropped to 45.83%. We need more information to be successful when drafting from this crop
+                    of players.
+                </p>
+                <p class="blog-p-tag">
+                    Rounds 4 and 5 are were the chances of success drastically diminish. Less than one out of three wide receivers taken
+                    here in the NFL draft have a useful fantasy season.
+                </p>
+                <p class="blog-p-tag">
+                    Interestingly enough, you have a higher chance of a successful fantasy wide receiver if they were drafted in round 5
+                    instead of round 4. This not only applies to higher end talent, i.e. players who had at least one WR1, but also to 
+                    overall success rate. So, 10.41% of wide receivers in round 5 put up at least one WR1 season, compared to 4.69% in 
+                    round 4, and 29.16% of round 5 wide receivers succeed compared to 25.01% of round 4 receivers that succeed.
+                </p>
+                <p class="blog-p-tag">
+                    So, I guess the glimmer of hope is that for the fantasy cost of a wide receiver taken in rounds 4 or 5, you might get
+                    some good bang for your buck, as one out of 4 in each round should have at least one useful season.
+                </p>
+                <p class="blog-p-tag">
+                    Round 6 and 7 wide receivers almost never succeed, with about 12.73% succeeding in round 6 and 9.3% in round 7. That being
+                    said, your odds of getting a WR1 season out of a round 7 pick is higher than round 6 and almost equal to round 4 - the 
+                    difference being about 0.036%.
+                </p>
+
+                <p class="blog-p-tag">
+                    A summarized table of success and bust rate by round:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 400px; height: 275px;" src="/Analysis/interactive-2.0/WR/draft-capital/busts-by-round-table.html"></iframe>
+                </div>
+
+                <p class="blog-p-tag">
+                    For those who are more visual learners and would like to see success rate against draft round:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 500px;" src="/Analysis/interactive-2.0/WR/draft-capital/hit-rate-v-round.html"></iframe>
+                </div>
+
+                <p class="blog-p-tag">
+                    Alternatively, success rate against the best finish to a season a wide receiver has:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 500px;" src="/Analysis/interactive-2.0/WR/draft-capital/hit-rate-v-tier-by-round.html"></iframe>
+                </div>
+
+                <p class="blog-p-tag">
+                    Lastly, a bar plot of bust rate:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 500px;" src="/Analysis/interactive-2.0/WR/draft-capital/bust-rate-v-round.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    So, if we are blind to all other information, your best bet of getting a fantasy relevant wide receiver is by far 
+                    from grabbing a receiver drafted in rounds 1 or 2. You will also have slightly less than a 50% chance to find 
+                    useful fantasy receivers that were drafted in round 3. The rest, without any other data, is pretty much a crapshoot.
+                </p>
+                <p class="blog-p-tag">
+                    For alternative visuals of the two plots above, please visit the <a href="TODO">appendix</a>.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Fantasy Success By Position</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Given the first, second, and third round offer decent chances of getting at least one season of a fantasy relevant
+                    player, let's dive deeper and see what the breakdown of success rate is by draft position.
+                </p>
+                <p class="blog-p-tag">
+                    Let's start with a table breaking down draft position in just the first round:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 700px; height: 490px;" src="/Analysis/interactive-2.0/WR/draft-capital/round1.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    A wide receiver taken in the top 3 picks of the draft has always delivered a WR1 season. It's a small sample size of 4,
+                    but that is so information that bears relevance for this upcoming draft. I don't think I would shy away from MHJ
+                    if he were taken at 3 by the Patriots - I still would prefer he lands in Arizona or with the Chargers.
+                </p>
+                <p class="blog-p-tag">
+                    The distribution spreads out a lot more for picks 4 and 5, with the hit rate of a WR1 season dropping to 50%.
+                    A wide receiver taken here still has delivered at least a WR3 season, so it seems a receiver taken at 4 or 5
+                    still provides a fantasy starter - not bad. It must be noted the sample is also tiny here, at 6.
+                </p>
+                <p class="blog-p-tag">
+                    Picks 6-10 drop in quality a bit, but the chances of getting a WR3 season or better from a player here is about
+                    78.57%, and the chances of getting at least a WR2 season is about 50%. Still likely to get a quality starter here at 
+                    some point, based on the historical data. Sample size of 14 is also a bit better here, but not ideal.
+                </p>
+                <p class="blog-p-tag">
+                    Things get interesting at the 11-15 picks. The overall success rate drastically drops to about 55.56%, which is 
+                    the worst percentage until picks 81-96, of the bins created. It is a pretty noticeable outlier. Makes me wonder if 
+                    this is the range where teams tend to reach for players.
+                </p>
+                <p class="blog-p-tag">
+                    Pick bins 16-20 and 21-32 are pretty similar to 6-10. The overall success rate of both of these bins is lower than
+                    the 6-10 range, but in both cases it at or above 70%, which is only a 15% drop, or so, from the 6-10 range. Also, the
+                    odds of a WR1 season drop a bit in both of these bins, but the WR2 season percentage is higher, again compared to 
+                    the 6-10 range. The sample size for picks 21-32 is quite good at 31 samples.
+                </p>
+                <p class="blog-p-tag">
+                    If we were to combine some of the bins to get larger samples sizes, we get the following table:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 700px; height: 360px;" src="/Analysis/interactive-2.0/WR/draft-capital/round1-better-samples.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    A top ten pick is still likely to deliver excellence in fantasy. Picks 11-20 drop off quite a bit, although 
+                    there's a higher than 50% chance of getting a WR1 or WR2 season from a receiver drafted here. The tail-end of the 
+                    first round, picks 21-32, offer better success odds overall and for a WR1 season. So, there does seem to be something
+                    happening with those mid-first-round wide receiver picks.
+                </p>
+
+                <p class="blog-p-tag">
+                    Now looking at rounds two and three:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 700px; height: 490px;" src="/Analysis/interactive-2.0/WR/draft-capital/round2-3.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Round two seems to have a good overall success rate in both pick ranges 33-48 and 49-64, with the former being 
+                    as about 64.10% and the later at 62.22%. It seems like the back half of round two offers more elite talent, with
+                    more WR1 seasons and a better hit rate than the first half of round two. That being said, picks 33-48 are more
+                    balanced and offer success across the board.
+                </p>
+                <p class="blog-p-tag">
+                    The first half of round three is pretty comparable to all of round two, with a total success rate of about 59.38%.
+                    It seems that the chances of a WR1 and WR3 season are lower here, but this pick range has a higher chance of getting
+                    a WR2 season, than any of the round two ranges, with 18.75%. Additionally, a WR4 season is equally likely. A fantasy
+                    asset does seem somewhat likely to come out of the first half of round three.
+                </p>
+                <p class="blog-p-tag">
+                    The second half of round 3, with picks 81-96, offers about a 30% chance of getting a WR1 or WR2 season, but the
+                    overall success rate drops to a little under 42%. For a receiver drafted here, that's not a terrible risk for 
+                    such a high reward.
+                </p>
+                
+                <p class="blog-p-tag">
+                    It seems there is good value to be had from wide receivers drafted from late round one, round two and round three.
+                    To better see the overall success and bust rates from these pick ranges, here is a summarized table of hit rates
+                    and bust rates for the bins analyzed above:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 500px; height: 315px;" src="/Analysis/interactive-2.0/WR/draft-capital/positions-summarized.html"></iframe>
+                </div>
+                <div class="iframe-container">
+                    <iframe style="width: 500px; height: 150px;" src="/Analysis/interactive-2.0/WR/draft-capital/positions-summarized-better-samples.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Those hit rates are encouraging for round 1 and 2 picks. I would even feel somewhat confident grabbing a receiver 
+                    that is drafted in the first half of round 3.
+                </p>
+
+
+                <p class="blog-p-tag">
+                    For a more visual perspective, a plot displaying hit rate against draft position:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 500px;" src="/Analysis/interactive-2.0/WR/draft-capital/hit-rate-v-draft-pos.html"></iframe>
+                </div>
+
+                <p class="blog-p-tag">
+                    Additionally, hit rate against best fantasy season:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 500px;" src="/Analysis/interactive-2.0/WR/draft-capital/hit-rate-v-tier.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    There's confidence to be had with taking a receiver that has been drafted in the first two rounds. Moreover, there 
+                    is value in early third round guys. Useful information to know.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Final Thoughts</h2>
+            <div>
+                <p class="blog-p-tag">
+                    With that, the analysis on draft capital for wide receivers has been completed. I think there's a few things 
+                    to mention and summarize before ending the article.
+                </p>
+                <p class="blog-p-tag">
+                    First, round one wide receivers, specifically top ten wide receivers, usually turn into usable fantasy 
+                    asset at some point in their career. That being said, not all round one wide receivers are the same. It 
+                    seems that the top five picks are safe assets, and the same can be said for picks 6-10. Picks 11-15, for 
+                    some reason, appear to be just slightly better than a 50-50 bet. From 16 onward, the wide receiver tends to 
+                    be a safe asset, offering opportunities for good value picks in rookie drafts.
+                </p>
+                <p class="blog-p-tag">
+                    Second, round two and the first half of round three receivers have solid hit rates, once again providing an
+                    opportunity for good value in rookie drafts. The remaining rounds are very much a crapshoot, but round five 
+                    does tend to offer more value than round four - again, another chance to capitalize on arbitrage.
+                </p>
+                <p class="blog-p-tag">
+                    Lastly, I would like to point out that these are correlations and historic patterns that I am observing. 
+                    I am not proving or showing causation. Although there might be some degree of causation involved, as NFL
+                    teams are more likely to spend higher draft capital on better talent, that evaluation process is not entirely
+                    objective.
+                </p>
+                <p class="blog-p-tag">
+                    So, these numbers should serve more as useful information and factors to take into account, rather 
+                    than deciding how you should select and evaluate your rookies. As a proxy, blind draft capital appears 
+                    to be a valid strategy for hitting on players; however, the goal will be to use this as a building block
+                    to obtain more interesting and valid indicators of potential success for rookies.
+                </p>
+                <p class="blog-p-tag">
+                    I hope to see you all in the next piece, thanks for reading!
+                </p>
+                <p class="blog-p-tag">
+                    Cheers, <br />
+                    Alex
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Appendix</h2>
+            <div>
+                <h3 class="h3-blog">Success Rate vs. Round Alt.</h3>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 500px;" src="/Analysis/interactive-2.0/WR/draft-capital/hit-rate-v-round-alternative.html"></iframe>
+                </div>
+
+                <h3 class="h3-blog">Success Rate vs. Tier Alt.</h3>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 500px;" src="/Analysis/interactive-2.0/WR/draft-capital/hit-rate-v-tier-by-round-alternative.html"></iframe>
+                </div>
+            </div>
+            </br>
+            </br>
+            </br>
+        </div>
+    </div>
+</body>
+<script>
+    function scrollToParagraph(paragraphId, headerOffset=100) {
+        let element = document.getElementById(paragraphId);
+        // let headerOffset = 100;  // Change this value according to your needs
+        let elementPosition = element.getBoundingClientRect().top;
+        let offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+        });
+    }
+</script>
+<script>
+    const iframeSources = {
+        slider1: [
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_yards.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_yards_per_game.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_yards_per_carry.html",
+        ],
+        slider2: [
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_tds.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_tds_per_game.html"
+        ],
+        slider3: [
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_carries.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_carries_per_game.html",
+        ],
+        slider4: [
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_epa.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_epa_per_game.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_epa_per_carry.html",
+        ],
+    };
+
+    function changeIframeSrc(sliderId, direction) {
+        const iframe = document.querySelector(`#${sliderId} .slider-iframe`);
+        const sources = iframeSources[sliderId];
+
+        // Extract the relative path from the iframe's full URL
+        const currentPath = new URL(iframe.src).pathname;
+
+        // Find the index of the current path in the sources array
+        let currentIndex = sources.findIndex(src => currentPath.endsWith(src));
+
+        if (currentIndex === -1) {
+            currentIndex = 0; // Default to the first source if the current src is not found
+        }
+
+        let nextIndex = (currentIndex + direction + sources.length) % sources.length; // Calculate the next index, looping around if necessary
+        iframe.src = sources[nextIndex]; // Set the new src
+    }
+</script>
+<script>
+    $("#common-header").load("/header.html");;
+</script>
