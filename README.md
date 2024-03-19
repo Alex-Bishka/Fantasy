@@ -32,6 +32,8 @@ Make sure to add the new jupyter kernel env to the gitignore!
 
 - [ ] 2023 review series
     - [ ] Wide receiver 2023 review
+        - [x] Wide receiver 2023 review pt. 1
+        - [ ] Wide receiver 2023 review pt. 2
     - [ ] Tight end 2023 review
     - [ ] Running back 2023 review
 - [ ] Modeling Explorations
@@ -47,6 +49,7 @@ Make sure to add the new jupyter kernel env to the gitignore!
     - [ ] QBs
     - [ ] RBs
     - [ ] WRs
+        - [x] Draft capital
     - [ ] TEs
 - [ ] Individual player reviews?
 - [ ] Buys/Sells?
@@ -67,6 +70,7 @@ Make sure to add the new jupyter kernel env to the gitignore!
     - [ ] Stats for college teams
     - [ ] Combine numbers
     - [ ] Draft picks/order
+        - [ ] parse this [site](https://www.drafthistory.com/positions/wr.html) for draft order - Pypi???
 - [ ] S3 buckets for CSV data?
 - [ ] PCA analysis when?
 - [ ] Computer vision when?
