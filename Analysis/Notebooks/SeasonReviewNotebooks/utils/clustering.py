@@ -160,6 +160,15 @@ num_2_word = {
     6: "Six",
     7: "Seven"
 }
+legend_color_dict = {
+    0: "Dark Blue",
+    1: "Red",
+    2: "Green",
+    3: "Purple",
+    4: "Orange",
+    5: "Teal",
+    6: "Pink"
+}
 STARTING_INDENT = 3
 
 
@@ -183,7 +192,7 @@ def html_breaking_down_clusters(keys):
     print(f"{indent(STARTING_INDENT + 1)}</p>")
     print(f"{indent(STARTING_INDENT + 1)}<ul class='bullet-list'>")
     for key in keys:
-        print(f"{indent(STARTING_INDENT + 2)}<li><b>Cluster {key}:</b> TODO</li>")
+        print(f"{indent(STARTING_INDENT + 2)}<li><b>Cluster {key} ({legend_color_dict[int(key)]}):</b> TODO</li>")
         
     print(f"{indent(STARTING_INDENT + 1)}</ul>")
 
@@ -206,7 +215,7 @@ def create_cluster_html_tiers(df: pd.DataFrame) -> None:
         names = cluster_dict[key]
         
         print(f"{indent(STARTING_INDENT + 2)}<div>")
-        print(f"{indent(STARTING_INDENT + 3)}<b>Cluster {key} ()</b>")
+        print(f"{indent(STARTING_INDENT + 3)}<b>Cluster {key} ({legend_color_dict[int(key)]})</b>")
         print(f"{indent(STARTING_INDENT + 3)}<ul class='bullet-list'>")
         for name in names:
             print(f"{indent(STARTING_INDENT + 4)}<li>{name}</li>")
@@ -218,4 +227,8 @@ def create_cluster_html_tiers(df: pd.DataFrame) -> None:
     print(f"""{indent(STARTING_INDENT + 1)}<p class="blog-p-tag">
     {indent(STARTING_INDENT + 2)}TODO
     {indent(STARTING_INDENT + 1)}</p>""")
+    print(f"{indent(STARTING_INDENT + 1)}<ul class='bullet-list'>")
+    for key in keys:
+        print(f"{indent(STARTING_INDENT + 2)}<li><b>Cluster {key} ({legend_color_dict[int(key)]}):</b> TODO</li>")
+    print(f"{indent(STARTING_INDENT + 1)}</ul>")
     print(f"{indent(STARTING_INDENT)}</div>")
