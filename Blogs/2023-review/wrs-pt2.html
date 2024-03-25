@@ -1,0 +1,958 @@
+<head>
+    <title>2023 WR Review</title>
+    <link rel="stylesheet" href="/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        // google analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>2023 Wide Receiver Review</h1>
+
+
+            <h2>TL;DR</h2>
+            <div>
+                <ul class="bullet-list">
+                    <li>Chicago should have two WR2s in Moore and Allen next year. I find it hard to believe they will be able to replicate their 2023 seasons, but with how Geno paired
+                        with Waldron performed in 2022, I think Caleb Williams will easily be able to support two 100+ target wide receivers. If he's anything close to what 
+                        Stroud was last year, Chicago might turn into a very prolific fantasy team. I think it will be difficult for either to turn into anything better low-end WR1s, 
+                        even in the best case scenario.
+                    </li>
+                    <li>Similar to Allen going to Chicago, Ridley hurts his and Hopkins' fantasy value in 2024. However, I am more pessimistic on this wide receiver pairing as 
+                        I do not believe in Levis. Furthermore, both were far less efficient than either Allen or Moore in 2023, and put up their fantasy points mostly through volume.
+                    </li>
+                    <li>The majority of the class of 2022 and 2023 need more volume to contend for WR1 status. Far too few of them have a target share of over 25% - only Wilson and 
+                        Nacua. Outside of Collins (21.9%) and Evans (23.9%), every receiver who finished as a WR1 in 2023 had a target share of at least 25%. Olave and Flowers are the
+                        other two above 23%, at about 23.9% and 23.2%, respectively.
+                    </li>
+                    <li>The Texans don't need to add another receiver - there are not many better receivers than Dell and Collins at the moment. Tank groups with Jefferson, Hill, 
+                        and Allen when looking at advanced stats like EPA and volume metrics, on a per game basis. Collins is no slouch either, as he is grouped with Lamb, Amon-Ra,
+                        and Brown, with the same comparison.
+                    </li>
+                    <li>There's a lot of talented wide receivers right now, and if the 2024 class shapes up like it should, a lot of these players might end up falling down 
+                        fantasy value boards.
+                    </li>
+                </ul>
+            </div>
+
+
+            <h2 class="h2-blog">Overview</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Hello to all! Welcome back to another review piece for the 2023 season! This piece is a continuation of 
+                    <a href="/Blogs/2023-review/wrs-pt2.html">our 2023 wide receiver analysis</a>.
+                </p>
+                <p class="blog-p-tag">
+                    Today, we'll be creating cluster plots based on several basic and advanced stats to get an idea of what
+                    wide receivers are similar to each other. Furthermore, this will provide us some idea of how to tier receivers
+                    and then rank those tiers. So, our end goal is to develop some guide to the value of receivers heading into 
+                    2024. For more details on how we cluster players, please check out the <a href="javascript:void(0);" onclick="scrollToParagraph('glossary-0', 10)">glossary</a>.
+                </p>
+                <p class="blog-p-tag">
+                    For those interested in the quarterback version of the 2023 review series, you can find parts 
+                    <a href="/Blogs/2023-review/qbs.html">one</a>, <a href="/Blogs/2023-review/qbs-pt2.html">two</a>, and <a href="/Blogs/2023-review/qbs-pt3.html">three</a> linked.
+                </p>
+                <p class="blog-p-tag">
+                    Without further ado, let's dive into our clustering exploration!
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Basic Stat Clustering</h2>
+            <div>
+                <p class="blog-p-tag">
+                    This section will break down basic stats for receiver performance in 2023. We will be creating cluster plots based 
+                    on season total and per game numbers of the following stats: fantasy points (PPR), receptions, targets, receiving 
+                    yards, and receiving touchdowns.
+                </p>
+
+                <h3 class="h3-blog">Season Totals</h3>
+                <p class="blog-p-tag">
+                </p>
+                <div>
+                    <p class='blog-p-tag'>
+                        The tiers based on season total numbers:
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe style="width: 1420px;" class='large-iframe' data-src='/Analysis/interactive-2.0/WR/2023-review-pt2/basic-cluster.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        Breaking down what each tier is good at:
+                    </p>
+                    <ul class='bullet-list'>
+                        <li><b>Cluster 0 (Dark Blue):</b> Ahead of the worst group - Cluster 3 (green) - at everything, but essentially second-to-last in all other stats.</li>
+                        <li><b>Cluster 1 (Red):</b> The next best group after Cluster 4 (orange). Second best at everything, except touchdowns, where they are slightly worse than Cluster 3 (purple).</li>
+                        <li><b>Cluster 2 (Green):</b> This cluster is at the bottom of every stat above, except touchdowns, where they are on the middle-to-lower end of the scale. </li>
+                        <li><b>Cluster 3 (Purple):</b> A better version of Cluster 0 (Dark Blue), due to their increased prevalence of getting into the endzone. Otherwise, these two groups are nearly identical.</li>
+                        <li><b>Cluster 4 (Orange):</b> Elite wide receiver seasons. Each of these players were at or near the top in each of the stat categories in the plots above. Monsters. </li>
+                    </ul>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Dark Blue)</b>
+                            <ul class='bullet-list'>
+                                <li>Terry McLaurin</li>
+                                <li>Chris Olave</li>
+                                <li>Tyler Lockett</li>
+                                <li>Jaylen Waddle</li>
+                                <li>George Pickens</li>
+                                <li>Chris Godwin</li>
+                                <li>Drake London</li>
+                                <li>Justin Jefferson</li>
+                                <li>Garrett Wilson</li>
+                                <li>Amari Cooper</li>
+                                <li>Adam Thielen</li>
+                                <li>Zay Flowers</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 1 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Mike Evans</li>
+                                <li>A.J. Brown</li>
+                                <li>Keenan Allen</li>
+                                <li>Stefon Diggs</li>
+                                <li>Davante Adams</li>
+                                <li>Ja'Marr Chase</li>
+                                <li>D.J. Moore</li>
+                                <li>Michael Pittman</li>
+                                <li>Puka Nacua</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 2 (Green)</b>
+                            <ul class='bullet-list'>
+                                <li>Romeo Doubs</li>
+                                <li>Brandin Cooks</li>
+                                <li>Tank Dell</li>
+                                <li>Cooper Kupp</li>
+                                <li>Gabe Davis</li>
+                                <li>Rashid Shaheed</li>
+                                <li>Curtis Samuel</li>
+                                <li>Josh Downs</li>
+                                <li>Diontae Johnson</li>
+                                <li>Darius Slayton</li>
+                                <li>Christian Kirk</li>
+                                <li>Jaxon Smith-Njigba</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 3 (Purple)</b>
+                            <ul class='bullet-list'>
+                                <li>Nico Collins</li>
+                                <li>Jayden Reed</li>
+                                <li>Deebo Samuel</li>
+                                <li>Calvin Ridley</li>
+                                <li>DeVonta Smith</li>
+                                <li>DK Metcalf</li>
+                                <li>DeAndre Hopkins</li>
+                                <li>Jordan Addison</li>
+                                <li>Jakobi Meyers</li>
+                                <li>Rashee Rice</li>
+                                <li>Courtland Sutton</li>
+                                <li>Brandon Aiyuk</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 4 (Orange)</b>
+                            <ul class='bullet-list'>
+                                <li>Tyreek Hill</li>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>CeeDee Lamb</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="blog-p-tag">
+                        Highlights from each group:
+                    </p>
+                    <ul class='bullet-list'>
+                        <li><b>Cluster 0 (Dark Blue):</b> Every player in this group had at least 100 targets. Almost all of them had 1000+ yards receiving in 2023. The 
+                            disappointment comes from the lack of touchdowns. Not a single player in this group broke five touchdowns. Potential for some positive regression? <br/><br/>
+
+                            From a specific player perspective, there are two names that worry me in this group: Lockett and Thielen. Both are getting older, and have younger players
+                            ready to jump into their roles, JSN and DJ, respectively. I am not confident that either of these players breaks 100 targets in 2024, or for any season
+                            for the rest of their career. Sell if you can, or ride out one or two more usable flex seasons. <br/><br/>
+
+                            There's a lot of young talent in this group to get excited about: Olave, Pickens, London, Wilson, and Flowers. I see Pickens and London both improving on
+                            their 2023 seasons due to better incoming QBs and OCs. Additionally, Pickens doesn't have another serious option to contend with him for targets right now,
+                            so he might end up having a spectacular 2024. Wilson's growth depends on what Rodgers looks like in 2024. Could be very exciting, but it doesn't seem long 
+                            term. Olave probably had the best 2023 of these five, but Carr does not inspire confidence long term. Flowers might have the highest ceiling in the next 
+                            three years since he's tied to the best QB and flashed a lot in 2023. That being said the Ravens rarely support WR1 seasons, historically. So, long story
+                            short, I think all five of these players can become consistent stars in fantasy, but each of their situations are a little murky for 2024 and beyond. 
+                            I do think Pickens and London are going to have the two best seasons, of the five, in 2024 though. <br/><br/>
+
+                            The middle aged players here are all WR2/3s, at worst. Scary Terry, Cooper and Godwin are reasonably priced assets for contenders. Waddle feels like a buy low
+                            currently, due to his large dip in production from 2022 to 2023, and the fact that Hill is going to be around for a while. Jefferson made this tier despite 
+                            playing only 10 games last year. Superstar. <br/><br/>
+                        </li>
+                        <li><b>Cluster 1 (Red):</b> This tier has mostly established wide receiver stats. The vets should remain quite usable in 2024, as each of them appear to have a 
+                            clear path to over 100 targets. <br/><br/>
+                            
+                            Yes, I believe Chicago will have two 100 target wide receivers in Allen and Moore. Between Waldron and Williams, that 
+                            team will air the ball more. That being said, I can understand the potential doubt there, but I think it would be silly for Poles to add all these weapons
+                            for Caleb Williams and then proceed to not run the ball. For reference, Geno threw the ball 572 times in 2022 under Waldron. Metcalf had 141 targets and 
+                            Lockett had 117. I think Williams is far more talented than Geno, even 2022 Geno, but busts do happen. Additionally, the Bears attempted 513 passes in 
+                            2023.<br/><br/>
+                        </li>
+                        <li><b>Cluster 2 (Green):</b>  Despite this group being pretty poor on the plots above, there are some names that will be highlighted more 
+                            when we talk about per game numbers, like Dell and Kupp. The problem with most of this group lies in their inconsistency. 
+                            Some of that strays from situation, rather than talent. <br/><br/>
+
+                            I would keep my eye on DJ. I expect him to be peppered with targets in Carolina. He's finished no worse than WR30 in PPR when breaking 
+                            100 targets. <br/><br/>
+
+                            Another player here who sparks some interest for me, that didn't have an injury, is Curtis Samuel. 
+                            Pretty much always a WR3/4 in fantasy, I think his situation in Buffalo could change that. 
+                            Although, I probably wouldn't bet on that since Davis never surpassed 93 targets while being a Bill. 
+                            That profiles for Samuel being a solid WR3, based on his career history. Yes, QB play will be the best he's ever had, 
+                            but there's only so much you can do with less than 100 targets. 
+                            There's a correlation of 0.96 between PPR fantasy points and targets in the same season, and it's tough to be a fantasy relevant asset if you 
+                            have less than 100 targets. Only Deebo, Jayden Reed, and Courtland Sutton were in the top 36 receivers for PPR fantasy points in 2023, 
+                            with less than 100 targets (89, 94, and 90, respectively). <br/><br/>
+                        
+                            Gabe Davis epitomizes the lack of consistency in this group. I find it hard for him to break 100 targets in Jacksonville next year, so I would 
+                            expect more of the same from him - boom/bust option. <br/><br/> 
+
+                            The last thing to mention about this tier: the young ones. JSN, Doubs, and Downs all showed flashes this year, and should excite any fantasy owner.
+                            JSN and Downs will both have opportunities to snag the 
+                            WR2 role in their offenses this year, which could see each of them flirt with WR2/3 territory. Doubs might be the only one I'm a little pessimistic 
+                            on, because he does not have a clear path to the WR2 role in his offense, but he does seem like a steady option for any QB.<br/><br/>
+                        </li>
+                        <li><b>Cluster 3 (Purple):</b>  Like with Cluster 0 (dark blue), there's a lot to be excited about with this group of players. <br/><br/>
+
+                            I would be quite excited about the young stars in this group: Collins, Reed, Addison and Rice. Collins might be the most exciting, after posting nearly 
+                            1300 yards, despite missing a few games. I am slightly concerned about his targets though, as 109 probably is not enough to consistently repeat the 
+                            season he had last year. Reed might be the best receiver in Green Bay, but it is hard to tell. If he can eclipse 100 targets this year, I would be very 
+                            excited. Additionally, he needs to stay healthy, as he was limited in a few games due to injury. His 10 total touchdowns might be hard to repeat. 
+                            Rice has survived the offseason so far, but if KC takes a wide receiver in the first or second round, he might not be able to progress as desired. I don't
+                            think Brown will impact him much. Addison
+                            has to have the biggest question mark of these four by far. He's quite talented, but what's his QB situation going to look like? He's the only one of the
+                            four not tied to a QB that is or looks like a star. <br/><br/>
+
+                            Of the rest of the players in this tier, I'm worried about Sutton, Ridley and Hopkins. Sutton looks due for touchdown regression, since he had 10 in 2023,
+                            but more important, who's going to be throwing to him in 2024? I'm not sure both Denver and Minnesota will be able to acquire their guy in the draft... do 
+                            one of these teams try to acquire Herbert? Who knows? Ridley and Hopkins only take hits for me because they are now on the same team, and I think Levis is 
+                            likely to bust - see this 
+                            <a href="https://www.reddit.com/r/DynastyFF/comments/1bk3x5i/with_2_stats_you_could_correctly_predict_95_of_qb/">Reddit post</a> for why (I'll have a blog post 
+                            diving deeper on this later too). <br/><br/>
+
+                            For those who have not been mentioned yet, I'm not sure they will improve per se, but I think - bar Meyers - they will all be solid WR2 options, with upside 
+                            for a WR1 season. Meyers seems more like a safe WR3 with reachable WR2 upside to me, but if Adams moves he will get bumped to WR2 for me. <br/><br/>
+                        </li>
+                        <li><b>Cluster 4 (Orange):</b> Lamb, Amon-Ra, and Hill were the three best wide receivers in fantasy last year, and probably the 
+                            three best in the NFL in 2023. 
+                            These guys are all target hogs - at least 119 catches on a minimum of 164 targets - and produce with their volume. 
+                            I think the floor for these guys is 1300-1400 yards and 6 or so touchdowns. The ceiling for them results in new record books. 
+                            Need I say more? <br/><br/></li>
+                    </ul>
+                </div>
+
+                <h3 class="h3-blog">Per Game</h3>
+                <p class="blog-p-tag">
+                </p>
+                <div>
+                    <p class='blog-p-tag'>
+                        The tiers based on the per game numbers: 
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe style="width: 1420px;" class='large-iframe' data-src='/Analysis/interactive-2.0/WR/2023-review-pt2/basic-cluster-per-game.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        Details about the tiers: 
+                    </p>
+                    <ul class='bullet-list'>
+                        <li><b>Cluster 0 (Dark Blue):</b> In contention with Cluster 1 (red) for the second best group of the bunch. This group scores frequently and puts up high yardage numbers, but does not consist of target hogs.</li>
+                        <li><b>Cluster 1 (Red):</b> A good complement to Cluster 0 (dark blue). This group doesn't score as often, but they are target hogs and provide similar yardage numbers to Cluster 0.</li>
+                        <li><b>Cluster 2 (Green):</b> In contention with Cluster 4 (orange) for the worst tier on these plots. Akin to Cluster 1 (red), but with worse numbers across the board.</li>
+                        <li><b>Cluster 3 (Purple):</b> The best wide receivers in fantasy, on a per game basis, in 2023. This group leads all stats above.</li>
+                        <li><b>Cluster 4 (Orange):</b> Like the worse version of Cluster 0 (dark blue) - serving as the analog for worst group with Cluster 2 (green).</li>
+                    </ul>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Dark Blue)</b>
+                            <ul class='bullet-list'>
+                                <li>DeAndre Hopkins</li>
+                                <li>Cooper Kupp</li>
+                                <li>Nico Collins</li>
+                                <li>DK Metcalf</li>
+                                <li>DeVonta Smith</li>
+                                <li>Mike Evans</li>
+                                <li>Tank Dell</li>
+                                <li>Calvin Ridley</li>
+                                <li>Brandon Aiyuk</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 1 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Chris Olave</li>
+                                <li>Amari Cooper</li>
+                                <li>Michael Pittman</li>
+                                <li>Stefon Diggs</li>
+                                <li>Ja'Marr Chase</li>
+                                <li>D.J. Moore</li>
+                                <li>A.J. Brown</li>
+                                <li>Puka Nacua</li>
+                                <li>Davante Adams</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 2 (Green)</b>
+                            <ul class='bullet-list'>
+                                <li>Jaylen Waddle</li>
+                                <li>Marquise Brown</li>
+                                <li>Adam Thielen</li>
+                                <li>Chris Godwin</li>
+                                <li>Josh Palmer</li>
+                                <li>Tyler Lockett</li>
+                                <li>Terry McLaurin</li>
+                                <li>Zay Flowers</li>
+                                <li>Garrett Wilson</li>
+                                <li>Christian Kirk</li>
+                                <li>George Pickens</li>
+                                <li>Drake London</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 3 (Purple)</b>
+                            <ul class='bullet-list'>
+                                <li>CeeDee Lamb</li>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>Tyreek Hill</li>
+                                <li>Keenan Allen</li>
+                                <li>Justin Jefferson</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 4 (Orange)</b>
+                            <ul class='bullet-list'>
+                                <li>Rashid Shaheed</li>
+                                <li>Brandin Cooks</li>
+                                <li>Demarcus Robinson</li>
+                                <li>Jordan Addison</li>
+                                <li>Tee Higgins</li>
+                                <li>Deebo Samuel</li>
+                                <li>Rashee Rice</li>
+                                <li>Courtland Sutton</li>
+                                <li>Kendrick Bourne</li>
+                                <li>Jakobi Meyers</li>
+                                <li>Jayden Reed</li>
+                                <li>Christian Watson</li>
+                                <li>Diontae Johnson</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="blog-p-tag">
+                        My takeaways for each group: 
+                    </p>    
+                    <ul class='bullet-list'>
+                        <li><b>Cluster 0 (Dark Blue):</b> This is a good group to be in, with solid fantasy receivers across the board. <br/><br/>
+                            
+                            I am again concerned about Ridley and Hopkins being on the same team. Both have about 8 targets a game in 2023. I'm not sure that's going to 
+                            repeat in 2024, and if does, then consider Burks a useless fantasy asset in 2024, and maybe dynasty. <br/><br/>
+
+                            The rest of this group seems poised to put up similar numbers to 2023. I would be a bit more hopeful with the two Texans, as they might be able 
+                            to get in better sync with Stroud and stay healthier. <br/><br/>
+                        </li>
+                        <li><b>Cluster 1 (Red):</b> The target hogs. DJ Moore had the least amount of targets in this group, with 8 a game. He might not be able to keep that exact
+                            pace in 2024, but I still expect him to see a lot of targets. Puka and Cooper might also have a bit of a dip here, due to Kupp and Juedy, respectively,
+                            but I don't think it should impact them much. Diggs might be my biggest fear here, but that's only if the end of his 2023 follows into the start of 2023
+                            and the Bills hit on a round one receiver. <br/><br/>
+                        </li>
+                        <li><b>Cluster 2 (Green):</b> This tier is a little polarizing. There's a lot of talent here, and most of these receivers have flashed big games. However,
+                            the consistency for those big games, for whatever reason, has been lacking. <br/><br/> 
+
+                            For me, there's two groups here, and I'm splitting them on age. The first one consists of Flowers, Wilson, Pickens, London, Waddle, and Palmer. I'll admit,
+                            one of these is not exactly like the other, but I included Palmer since he's likely to be at least the WR2 on his team and is only 24. All of these guys 
+                            are 25 or under, and at least the WR2 on their team. However, they all faced situational difficulties in 2023, whether that's poor QB play, poor coaching, 
+                            or too much competition for targets. Of the bunch, I like Pickens and London most for 2024. Both have large upgrades at QB and OC. Additionally, Pickens
+                            appears to have even less competition for targets this year. Palmer might surprise some people next year, but it will likely be due to necessity.<br/><br/> 
+
+                            The second group consists of solid vets. I think Brown stands to have the largest value jump in 2024, playing with KC could benefit his game a lot. 
+                            What being said, what's realistic for him? Outside of Rice and Kelce, there's something like 170-220 targets available to the rest of the KC receiving 
+                            core. I think Brown could take a significant amount of that since he would be much closer to Rice and Kelce than any of the other "threats" on that
+                            team. <br/><br/>
+
+                            Thielen stands to lose the most value due to the addition of DJ. His days of being a fantasy asset are ending, and soon. Lockett probably suffers 
+                            similarly, but I think there's hope for another season or two of production from him, depending on how JSN develops. <br/><br/>
+                        </li>
+                        <li><b>Cluster 3 (Purple):</b> This tier is on another level. These five guys all had at least 10 targets and 94 yards a game in 2023. <br/><br/>
+                            Of the bunch, 
+                            I think Allen would concern most people for two reasons: 1) his age and 2) the trade to Chicago. Do I think Allen will put up these crazy numbers in 
+                            2024? Probably not, unless Caleb Williams turns out to have a rookie season like Stroud. That being said, Allen was on pace for, by far, his best season 
+                            in 2023, on a dysfunctional Chargers team. I still believe he eclipses 100 targets in Chicago and turns out to be a rock solid WR2 in fantasy. Again, Waldron
+                            had Geno put up an excellent 2022, with two receivers over 115 targets - I think Caleb can hit at least that. Although, based on these numbers, I think 
+                            it's going to be really hard to predict who will be the number one in Chicago. <br/><br/>
+                        </li>
+                        <li><b>Cluster 4 (Orange):</b> This group of players does quite a bit with a little. The lack of targets for the majority of players in this tier really 
+                            prevents them from turning into serious fantasy assets. <br/><br/>
+
+                            From the bunch here, I would be most happy to have Addison, Higgins, Deebo, Rice, Meyers, Reed, and DJ. We know what Higgins, Deebo, Meyers and DJ are.
+                            Higgins might have a lot of upside, if he does get traded. DJ has the upgraded situation. Deebo and Meyers appear to have set roles in their offenses that 
+                            cause them to be solid options for fantasy. <br/><br/>
+                            
+                            Addison, Rice, and Reed all flashed, but Addison and Reed concern me slightly due to their situation. I do think Reed and Wicks will win out as the WR1 and 
+                            WR2 in that Packers offense, but there's still a lot of competition there for me to fully trust him, even though I love what he did in 2023. All eyes will be
+                            on the Vikings to see what they do at QB this offseason. Trade up in the draft maybe? Trade for Herbert? Whatever happens, it's a little hard to know what 
+                            Addison will be in 2024, but like Reed, I love his talent and what he did in 2023. <br/><br/>
+                            
+                            The rest don't seem like great long term options to me, bar potentially Watson, but I don't love his health. If you can flip any of those pieces for draft 
+                            re-rolls or as sweeteners, I would not hesitate.<br/><br/>
+                        </li>
+                    </ul>
+                </div>
+                <p class="blog-p-tag">
+                    That does it for our clustering based on basic stats. Like the first review, I think it's going to be pretty tough to distinguish exactly how a lot of these 
+                    receivers will turn out as fantasy assets in 2024. There's a lot of talent, and still many situation questions that need to be answered, but I do think there 
+                    are about 30 guys, who in the right situation, can deliver really strong fantasy seasons.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Advanced Stat Clustering</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Similar to the section above, the following section will break down advanced stats for receiver performance in 2023.
+                    The cluster plots below will have season total and per game numbers of the following stats: receiving EPA, 
+                    receiving air yards, target share (tgt_sh), weighted opportunity rating (wopr_x), and weighted dominator rating
+                    (w8dom). For definitions and more information on these stats, please check out the
+                    <a href="javascript:void(0);" onclick="scrollToParagraph('glossary-0', 10)">glossary</a> below.
+                </p>
+                <p class='blog-p-tag'>
+                    For those who don't want to travel to the glossary, players in the upper right of each plot are better. The upper right of each plot will 
+                    mean better efficiency, more volume, and more opportunity.
+                </p>
+                
+                <h3 class="h3-blog">Season Totals</h3>
+                <div>
+                    <p class='blog-p-tag'>
+                        The season total version of the cluster plot: 
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe style="width: 1420px;" class='large-iframe' data-src='/Analysis/interactive-2.0/WR/2023-review-pt2/advanced-cluster.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        A breakdown of each tier: 
+                    </p>
+                    <ul class='bullet-list'>
+                        <li><b>Cluster 0 (Dark Blue):</b> Probably the next most efficient tier, but typically third in the volume metrics.</li>
+                        <li><b>Cluster 1 (Red):</b> The least efficient tier and the tier with the lowest volume, across the board.</li>
+                        <li><b>Cluster 2 (Green):</b> Slightly less efficient than Cluster 0 (dark blue), but has typically scores higher than Cluster 0 on volume metrics.</li>
+                        <li><b>Cluster 3 (Purple):</b> The most efficient tier. Also, probably the one with the most volume.</li>
+                        <li><b>Cluster 4 (Orange):</b> About as ineffective as Cluster 1 (red), but with more volume.</li>
+                    </ul>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Dark Blue)</b>
+                            <ul class='bullet-list'>
+                                <li>Ja'Marr Chase</li>
+                                <li>Nico Collins</li>
+                                <li>Diontae Johnson</li>
+                                <li>Adam Thielen</li>
+                                <li>DK Metcalf</li>
+                                <li>George Pickens</li>
+                                <li>Justin Jefferson</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 1 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Jaxon Smith-Njigba</li>
+                                <li>Deebo Samuel</li>
+                                <li>Rashee Rice</li>
+                                <li>Romeo Doubs</li>
+                                <li>Jayden Reed</li>
+                                <li>Brandin Cooks</li>
+                                <li>Curtis Samuel</li>
+                                <li>Rashid Shaheed</li>
+                                <li>Darius Slayton</li>
+                                <li>Christian Kirk</li>
+                                <li>Gabe Davis</li>
+                                <li>Josh Downs</li>
+                                <li>Tank Dell</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 2 (Green)</b>
+                            <ul class='bullet-list'>
+                                <li>Stefon Diggs</li>
+                                <li>Chris Olave</li>
+                                <li>Davante Adams</li>
+                                <li>DeAndre Hopkins</li>
+                                <li>Amari Cooper</li>
+                                <li>Michael Pittman</li>
+                                <li>Calvin Ridley</li>
+                                <li>Mike Evans</li>
+                                <li>Garrett Wilson</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 3 (Purple)</b>
+                            <ul class='bullet-list'>
+                                <li>Keenan Allen</li>
+                                <li>D.J. Moore</li>
+                                <li>A.J. Brown</li>
+                                <li>Puka Nacua</li>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>CeeDee Lamb</li>
+                                <li>Tyreek Hill</li>
+                                <li>Brandon Aiyuk</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 4 (Orange)</b>
+                            <ul class='bullet-list'>
+                                <li>Drake London</li>
+                                <li>Jordan Addison</li>
+                                <li>Jakobi Meyers</li>
+                                <li>Chris Godwin</li>
+                                <li>Cooper Kupp</li>
+                                <li>Zay Flowers</li>
+                                <li>Terry McLaurin</li>
+                                <li>Tyler Lockett</li>
+                                <li>Jaylen Waddle</li>
+                                <li>Courtland Sutton</li>
+                                <li>DeVonta Smith</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="blog-p-tag">
+                        My notes on the groups: 
+                    </p>
+                    <ul class='bullet-list'>
+                        <li><b>Cluster 0 (Dark Blue):</b> This is an interesting collection of wide receivers. <br/><br/>
+                            
+                            Jefferson and Chase are probably not in this group if they were healthy and healthy QBs in 2023. <br/><br/>
+
+                            It is interesting to see both Steelers wide receivers in this group. Pickens might actually be able to build on his efficiency numbers, as they were 
+                            towards the bottom of this group, and he should have quite the upgrade at QB. Furthermore, I think his volume will significantly increase. I am excited 
+                            for what he can do in 2024. DJ, on the other hand, should see a great rise in opportunity (similar to Thielen in 2023), but I don't know that Young will 
+                            be an upgrade on Pickett in 2024 (Young had a horrific passing EPA of -160.33, whereas Pickett had a passing EPA of -40.24) for DJ's efficiency. <br/><br/>
+
+                            I think more of the same, or so, can be expected from Collins and Metcalf. <br/><br/>
+
+                            Thelien might have one more usable season left in him, but the arrival of DJ does not bode well for someone who made his living in fantasy as a result of 
+                            being a target hog. <br/><br/>
+                        </li>
+                        <li><b>Cluster 1 (Red):</b> This group of receivers concerns me in 2024 due to the lack of volume, across all of the metrics in the plots. Relying on efficiency
+                            is not a safe bet for fantasy success, as EPA from season to season is difficult to predict. <br/><br/>
+                        
+                            If one of the younger players can crack 100-115 targets next year, I think their value will increase. Although, more importantly will be cracking a target 
+                            share of 21%. Only Deebo, Addison, Meyers, and Reed cracked WR2 territory with a lower target share percentage. Collins and Evans were the only WR1s below a 
+                            25% share, at about 21.1% and 23.9%, respectively. <br/><br/>
+
+                            I suspect this means positive news for Kirk, as Ridley going to Tennessee frees 136 targets up in Jacksonville. He's a sneaky pick to finish as a WR1 in 
+                            2024, provided he stays healthy and the Jags don't make any big moves to their receiving core. <br/><br/>
+                        </li>
+                        <li><b>Cluster 2 (Green):</b> The reason I find it hard to believe most of these receivers aren't safe WR2s is because their target share is insane. 
+                            Even if they are not the most efficient bunch, the lowest share of this group is over 21.9%. <br/><br/>
+
+                            Now, for that reason, I think Ridley and Hopkins are both going to take a hit in fantasy in 2024. I don't see Levis being able to support the kinda of volume
+                            they both had in 2023. I would not feel confident depending on either as a WR2 in 2024. <br/><br/>
+                        </li>
+                        <li><b>Cluster 3 (Purple):</b> Everyone, except Aiyuk (WR14), was a a WR1 in this group last year. Every receiver in this tier should be at worst a WR2 next year.<br/><br/>
+                            
+                            While Aiyuk has the worst volume numbers in this group, he was the third best when looking at receiving EPA. What I takeaway from this? Aiyuk is definitely talented,
+                            but the lack of opportunity in SF will likely prevent him from consistently producing fantasy seasons of this caliber. His efficiency was great, not outrageous, so 
+                            regression isn't guaranteed. That being said, if I had to bet on what happens to Aiyuk in 2024, I probably wouldn't push him into the top 12 receivers in fantasy, 
+                            given the current situation he is in. <br/><br/>
+
+                            I think there's also a good chance Puka does not repeat his rookie year in 2024, especially if Kupp is back to full health. <br/><br/>
+
+                            Lastly, Moore and Allen will probably both see a decline in volume, due to being on the same offense. I still see them as strong WR2s in 2024, but 
+                            I would be extremely surprised if we saw both in this tier again next year. <br/><br/>
+                        </li>
+                        <li><b>Cluster 4 (Orange):</b> Of the players here, I see London and Kupp as the two most likely value risers in 2024. <br/><br/>
+                            
+                            A healthy Kupp might be able to regain some more target 
+                            share in that Rams offense and improve upon what he delivered in 2023. London's value should increase with the OC and QB upgrade. I think this will lead 
+                            to more targets and better efficiency. <br/><br/>
+
+                            I think Scary Terry could deliver his best season ever in 2024, if the Commanders hit on a QB in this draft. A similar point could be made for Addison, if 
+                            the Vikings are able to pull off a big move at QB, with all of the assets they have. <br/><br/>
+
+                            A bit hard for me to see more value gain with the rest of this group. Zay will probably get better, and I see him as a strong candidate to break 1000 yards,
+                            but I find it hard to put him in the discussion for a WR1 season, at least for 2024. <br/><br/>
+                        </li>
+                    </ul>
+                </div>
+
+                <h3 class="h3-blog">Per Game</h3>
+                <div>
+                    <p class='blog-p-tag'>
+                        Our final cluster plot of the piece, the per game advanced stats:
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe style="width: 1420px;" class='large-iframe' data-src='/Analysis/interactive-2.0/WR/2023-review-pt2/advanced-cluster-per-game.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        A quick rundown of the groups:
+                    </p>
+                    <ul class='bullet-list'>
+                        <li><b>Cluster 0 (Dark Blue):</b> The second most efficient, but on par with Cluster 4, despite being consistently behind Cluster 4 in volume. Middle of the pack or slightly higher on volume metrics.</li>
+                        <li><b>Cluster 1 (Red):</b> Likely the least efficient group, but on decent volume.</li>
+                        <li><b>Cluster 2 (Green):</b> Middle of the pack efficiency, while being the worst group on each volume metric.</li>
+                        <li><b>Cluster 3 (Purple):</b> In contention with Cluster 1 (red) for the least efficient group. Splits second to last with Cluster 1 across the volume stats.</li>
+                        <li><b>Cluster 4 (Orange):</b> Probably the most efficient group of the five. Tends to lead in the volume metrics. All around, the strongest group by advanced metrics.</li>
+                    </ul>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Dark Blue)</b>
+                            <ul class='bullet-list'>
+                                <li>CeeDee Lamb</li>
+                                <li>DK Metcalf</li>
+                                <li>Jaylen Waddle</li>
+                                <li>Amari Cooper</li>
+                                <li>Brandon Aiyuk</li>
+                                <li>Ja'Marr Chase</li>
+                                <li>D.J. Moore</li>
+                                <li>Mike Evans</li>
+                                <li>Nico Collins</li>
+                                <li>Puka Nacua</li>
+                                <li>Amon-Ra St. Brown</li>
+                                <li>A.J. Brown</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 1 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Diontae Johnson</li>
+                                <li>Christian Watson</li>
+                                <li>Demarcus Robinson</li>
+                                <li>Kendrick Bourne</li>
+                                <li>Christian Kirk</li>
+                                <li>Josh Palmer</li>
+                                <li>Cooper Kupp</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 2 (Green)</b>
+                            <ul class='bullet-list'>
+                                <li>Jakobi Meyers</li>
+                                <li>Deebo Samuel</li>
+                                <li>Jayden Reed</li>
+                                <li>Adam Thielen</li>
+                                <li>Rashee Rice</li>
+                                <li>Rashid Shaheed</li>
+                                <li>Jordan Addison</li>
+                                <li>Zay Flowers</li>
+                                <li>Brandin Cooks</li>
+                                <li>Drake London</li>
+                                <li>Tee Higgins</li>
+                                <li>Chris Godwin</li>
+                                <li>Courtland Sutton</li>
+                                <li>Tyler Lockett</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 3 (Purple)</b>
+                            <ul class='bullet-list'>
+                                <li>George Pickens</li>
+                                <li>Terry McLaurin</li>
+                                <li>Marquise Brown</li>
+                                <li>Stefon Diggs</li>
+                                <li>Michael Pittman</li>
+                                <li>Davante Adams</li>
+                                <li>Garrett Wilson</li>
+                                <li>Chris Olave</li>
+                                <li>DeVonta Smith</li>
+                                <li>DeAndre Hopkins</li>
+                                <li>Calvin Ridley</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 4 (Orange)</b>
+                            <ul class='bullet-list'>
+                                <li>Tank Dell</li>
+                                <li>Justin Jefferson</li>
+                                <li>Keenan Allen</li>
+                                <li>Tyreek Hill</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="blog-p-tag">
+                        Our final notes on players:
+                    </p>
+                    <ul class='bullet-list'>
+                        <li><b>Cluster 0 (Dark Blue):</b> All of the players here provide good-to-great fantasy assets. They do not solely rely on volume or efficiency for 
+                            their fantasy production, but instead have high volume and efficiency. There is not an asset here I would want to move off of, unless a great 
+                            offer came along. <br/><br/>
+                        </li>
+                        <li><b>Cluster 1 (Red):</b> The lack of efficiency, while being propped up by volume is a concern for each of these players. That being said, 
+                            DJ, Kirk, Palmer, and Kupp are all likely to get more volume next year, so their value might increase, in spite of the inefficiencies.  <br/><br/>
+
+                            This is a large concern for Watson - low efficiency and poor volume. Not sure either changes in 2024 due to the receiving room in Green Bay.  <br/><br/>
+                        </li>
+                        <li><b>Cluster 2 (Green):</b> Low volume and opportunity hurts these players, but they are efficient when given the ball. So, whoever is likely for a volume 
+                            increase should seen an increase in value next year. London is the only obvious candidate to me. I expect him to be Kirk's favorite target, and to be 
+                            used correctly with a competent OC.  <br/><br/>   
+                        </li>
+                        <li><b>Cluster 3 (Purple):</b> This group is a bit more ineffective than you would like. Volume could be a bit better, but it doesn't seem to be the 
+                            hindering factor. At least, assuming the conversion of targets increases. These players have high air yards, like Cluster 0 and 4, but their EPA 
+                            is closer to Cluster 1. That seems like an issue with the connection between a QB and the receiver.  <br/><br/>
+
+                            Of this bunch of players, I think Pickens, Brown and Terry would be the highest value risers, as all appear - assuming the Commanders hit on QB - an 
+                            upgrade at QB.  <br/><br/>
+
+                            It's possible Pittman could join those three, depending on how AR pans out. Smith could also have a great 2024 if the Eagles offense is back on track. <br/><br/>
+
+                            This is another reason why I don't see Hopkins and Ridley working out in fantasy. I don't think Levis will greatly improve in 2024, if at all, and 
+                            two target hogs with poor efficiency will hurt each other, in terms of fantasy production.  <br/><br/>
+                        </li>
+                        <li><b>Cluster 4 (Orange):</b> Jefferson, Allen, Hill... those are quite some names, each could be argued as the pinnacle of the wide receiver position,
+                            at least based on the 2023 numbers. Which is why I would be ecstatic about Tank Dell being in the same per-game cluster as them, on the advanced metrics.
+                            The Texans receivers are legit.  <br/><br/>    
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <h2 class="h2-blog">Final Thoughts</h2>
+            <div>
+                <p class="blog-p-tag">
+                    That's a wrap for the 2023 review on wide receivers! Thanks to those of you who made it this far in the analysis.
+                </p>
+                <p class="blog-p-tag">
+                    I have a feeling 2024 will continue to raise the bar for WR1 territory, especially with a new crop of talented wide receivers and QBs coming into 
+                    the league. There's a lot of great wide receivers to love, both from an NFL and fantasy perspective, so it is tough picking out standouts from 
+                    a group of about 30 players.
+                </p>
+                <p class="blog-p-tag">
+                    That being said for me, there are a few players I want to highlight three players for next season, that I feel pretty confident about, relative
+                    to their current value:
+                </p>
+                <ul class="bullet-list">
+                    <li>Drake London: An obvious choice, Kirk is a massive upgrade at QB, and the coach staff looks much better too. Drake might finally deliver on his 
+                        draft capital. I think 1100-1200 yards or so, with about 6-8 touchdowns is very realistic. Book him as a WR2 for 2024.
+                    </li>
+                    <li>George Pickens: Another obvious choice, for similar reasons to London, I think Pickens will provide a great 2024. 1140 yards on 63 catches with the QBs 
+                        he had to work with is very impressive. The advanced stats show someone who was not on the same page as his QB, due to the mismatch in air yards compared 
+                        to EPA. Russ and/or Fields should fix that issue, especially in comparison to Pickett. Additionally, with DJ leaving, 87 targets have been freed up. Do the 
+                        Steelers add a receiver or two in the draft? I think so. That being said, I think Pickens is in line to break 120 targets in 2024. I'm seeing his floor at 
+                        1200 yards. He might be the first receiver of the 2022 class to crack WR1 territory.
+                    </li>
+                    <li>Tank Dell: his per game numbers, specifically the advanced metrics, show a very productive wide receiver. If he can stay healthy, he should be a strong 
+                        WR2 in 2024.
+                    </li>
+                </ul>
+                <p class="blog-p-tag">
+                    That does it for this one! Thanks for reading!
+                </p>
+                <p class="blog-p-tag">
+                    Cheers, <br />
+                    Alex
+                </p>
+            </div>
+            
+
+            <h2 class="h2-blog">Glossary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Stat terms used in this article:
+                </p>
+                <ul class="bullet-list">
+                    <li><b>EPA:</b> For our usage, we refer to receiving EPA as EPA in this article, which is the total EPA on plays where this receiver was targeted. For more information on EPA, please refer to this <a href="https://www.nfeloapp.com/analysis/expected-points-added-epa-nfl/">article</a>.</li>
+                    <li><b>Air yards:</b> How many yards the football travels in the air, from the line of scrimmage, regardless of whether the pass was completed. For more info, please check out this <a href="https://www.ftnfantasy.com/air-yards?fppg=PPR&years=2023">article</a>.</li>
+                    <li><b>Target share:</b> Player's share of team receiving targets.</li>
+                    <li><b>WOPR:</b> <a href="https://www.nbcsports.com/fantasy/football/news/article-numbers-why-receiver-air-yards-matter">Weighted OPportunity Rating</a> - 1.5 x target_share + 0.7 x air_yards_share - a weighted average that contextualizes total fantasy usage.</li>
+                    <li><b>W8dom:</b> dominator rating, but weighted in favor of receiving yards over TDs. <a href="https://www.pff.com/news/fantasy-football-predicting-breakout-rookie-wide-receivers-using-pff-grades-and-dominator-rating">Dominator rating</a> is the percentage of team receiving production.</li>
+                    <li><b>RACR (receiving air yards conversion):</b> Receiving (yards) Air (yards) Conversion Ratio - the number of receiving yards per air yards targeted per game.</li>
+                </ul>
+                <p class="blog-p-tag">
+                    For other stat definitions, please check out this <a href="https://cran.r-project.org/web/packages/nflreadr/vignettes/dictionary_player_stats.html">data stat page</a>.
+                </p>
+                <p>
+                    Clustering is done via <a href="https://en.wikipedia.org/wiki/K-means_clustering">k-means</a> and optimal cluster size is 
+                    decided by a combination of the <a href="https://builtin.com/data-science/elbow-method">elbow and silhouette method</a>. 
+                </p>
+            </div>
+            </br>
+            </br>
+            </br>
+        </div>
+    </div>
+</body>
+<script>
+    function scrollToParagraph(paragraphId, headerOffset=100) {
+        let element = document.getElementById(paragraphId);
+        // let headerOffset = 100;  // Change this value according to your needs
+        let elementPosition = element.getBoundingClientRect().top;
+        let offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+        });
+    }
+</script>
+<script>
+    const iframeSources = {
+        slider1: [
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_yards.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_yards_per_game.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_yards_per_carry.html",
+        ],
+        slider2: [
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_tds.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_tds_per_game.html"
+        ],
+        slider3: [
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_carries.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_carries_per_game.html",
+        ],
+        slider4: [
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_epa.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_epa_per_game.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_epa_per_carry.html",
+        ],
+    };
+
+    function changeIframeSrc(sliderId, direction) {
+        const iframe = document.querySelector(`#${sliderId} .slider-iframe`);
+        const sources = iframeSources[sliderId];
+
+        // Extract the relative path from the iframe's full URL
+        const currentPath = new URL(iframe.src).pathname;
+
+        // Find the index of the current path in the sources array
+        let currentIndex = sources.findIndex(src => currentPath.endsWith(src));
+
+        if (currentIndex === -1) {
+            currentIndex = 0; // Default to the first source if the current src is not found
+        }
+
+        let nextIndex = (currentIndex + direction + sources.length) % sources.length; // Calculate the next index, looping around if necessary
+        iframe.src = sources[nextIndex]; // Set the new src
+    }
+</script>
+<script>
+    $("#common-header").load("/header.html");;
+</script>
