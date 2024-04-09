@@ -1,0 +1,509 @@
+<head>
+    <title>Draft Capital and Quarterback Success</title>
+    <link rel="stylesheet" href="/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        // google analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>Draft Capital and Wide Receiver Success</h1>
+
+
+            <h2>TL;DR</h2>
+            <div>
+                <ul class="bullet-list">
+                    <li>It usually isn't worth drafting a QB who doesn't have round 1 capital - QBs drafted in round one have at least one QB1 season in their careers about 55.56% of the time. The next closest hit rate is 33.33% from round two and seven (note, seven has a really small sample size).</li>
+                    <li>QBs in round two historically hit at least a QB1 or QB2 season 55.56% of the time. It's slightly better than a coin toss to get at least a usable fantasy season out of these players.</li>
+                    <li>94.4% (17/18) of QBs that post a sack rate of under 8.7% and are over 6.5 adjusted air yards in their rookie season post a QB1 season. The 1/18 QB is Mac Jones - the only one taken after pick 10 and named a started from day one. This builds off the work from this <a href="https://www.reddit.com/r/DynastyFF/comments/1bk3x5i/with_2_stats_you_could_correctly_predict_95_of_qb/">Reddit post</a> - I am simply changing the definition of success from a second contract to at least one QB1 finish.</li>
+                    <li>If QBs fail the sack rate threshold, their bust rate is around 65%, so a QB is not doomed to fail if they have a sack rate of 8.7% or higher in their rookie year. However, depending on how one classifies Bortles, Fields and Smith, the bust rate could increase to 80%.</li>
+                    <li>If a QB passes the sack rate threshold, but fails the adjusted air yards threshold, things become more murky. The bust rate is around 53.3%, again, using at least one QB1 season as a success metric. However, we if are narrower with what we call a success - filter out Vince Young, Mark Sanchez, Josh Freeman, Joe Flacco, and Daniel Jones, as these players either had super short careers or rarely put up QB1 seasons - the bust rate increases to 70%.</li>
+                </ul>
+            </div>
+
+
+            <h2 class="h2-blog">Overview</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Welcome to another draft capital analysis piece! 
+                </p>
+                <p class="blog-p-tag">
+                    Like in the <a href="/Blogs/draft-capital/wrs.html">wide receiver version</a>, our goal is to see any patterns related to draft capital 
+                    for QBs and their success in fantasy football. This serves as preliminary analysis for an upcoming model, it is a way for us to develop some
+                    intuition for what may matter for a predictive model.
+                </p>
+                <p class="blog-p-tag">
+                    Now, in addition to this analysis, I will be building off of this <a href="https://www.reddit.com/r/DynastyFF/comments/1bk3x5i/with_2_stats_you_could_correctly_predict_95_of_qb/">insightful Reddit post</a>,
+                    which shows how with sack rate and adjusted yards gained you can predict which rookies are going to be successful at a very high rate.
+                </p>
+                <p class="blog-p-tag">
+                    Before diving in, I do want to mention that the data includes drafts from the year 2000; however, similar to the wide receiver piece, my 
+                    data source has some missing information about earlier drafts during this time. As a result of that, and using active players, these 
+                    percentages are not going to be exact. Nonetheless, they should serve as a historical barometer of how QBs tend to pan out.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Fantasy Success By Round</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Firstly, we must define fantasy success. For QBs, we will say being successful is posting at hitting a QB2 season at least once in their career.
+                    Admittedly, this is a low bar, but that standard means that player can be started at least one season in their career, thus having 
+                    some fantasy use. To clarify, a player will be in the "Best Season Tier" of 1 if they had one or more QB1 seasons, but they will not be double 
+                    counted in other tiers. So, a player with a "Best Season Tier" of 2 will not have finished as a QB1 in their career; however, they may have multiple 
+                    QB2 finishes.
+                </p>
+                <p class="blog-p-tag">
+                    So, breaking down the data by round and fantasy success, we see the following success rates for QBs:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 700px; height: 360px;" src="/Analysis/interactive-2.0/QB/draft-capital/success-by-round-table.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    The first round offers by far the best sample size, and success rates. About 55.56% of QBs drafted in round 1 hit a QB1
+                    season, and an additional 19.04% offer at least one QB2 season.
+                </p>
+                <p class="blog-p-tag">
+                    The success rate of second round QBs drastically declines, with only six of 18 players hitting a QB1 season, and an additional four 
+                    providing at least one QB2 season. This round essentially is a dart throw as to whether or not a usable fantasy season occurs. 
+                    Round three is worse, but still offers some hope. The rest of the draft really turns into a crapshoot.
+                </p>
+
+                <p class="blog-p-tag">
+                    A summarized version of the success and bust rates by round:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 400px; height: 245px;" src="/Analysis/interactive-2.0/QB/draft-capital/busts-by-round-table.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Most QBs are drafted in the first round, and that's were the gold tends to be.
+                </p>
+                
+
+                <p class="blog-p-tag">
+                    For those who are more visual learners, the following plots below show the data as bar graphs. The first highlights 
+                    Success Rate vs. Draft Round:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 500px;" src="/Analysis/interactive-2.0/QB/draft-capital/hit-rate-v-round.html"></iframe>
+                </div>
+
+                <p class="blog-p-tag">
+                    Alternatively, success rate against the best finish to a season a wide receiver has:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 500px;" src="/Analysis/interactive-2.0/QB/draft-capital/hit-rate-v-tier-by-round.html"></iframe>
+                </div>
+
+                <p class="blog-p-tag">
+                    Lastly, a bar plot of bust rate:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 500px;" src="/Analysis/interactive-2.0/QB/draft-capital/bust-rate-v-round.html"></iframe>
+                </div>
+
+                <p class="blog-p-tag">
+                    The takeaway is that, if drafting blindly, it's not really worth grabbing a QB in a rookie draft after round two. Furthermore, 
+                    it is historically safer to invest more significantly on round one QBs, as they post, by far, the highest success rate (of providing 
+                    at least one QB1 season).
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Fantasy Success By Position</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Now, I want to dive further into the success rate of round one. However, I also want to narrow success rate to having at least one QB1
+                    season, as drafting a first round QB in dynasty drafts usually requires strong capital - at least in super flex leagues. So, it isn't
+                    worthwhile to us if a QB doesn't offer us that kind of fantasy production.
+                </p>
+                <p class="blog-p-tag">
+                    We start by breaking down round one into six positional buckets: those drafted from 1-3, 4-5, 6-10, 11-15, 16-20, and 21-32:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 550px; height: 250px;" src="/Analysis/interactive-2.0/QB/draft-capital/round1.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Interestingly enough, the 4-5 range offers the best success rate, but with a sample size of 4 this might just be noise. QBs taken in 
+                    the top five picks hit a QB1 season quite frequently, especially compared to those outside of the top five. It appears risky to draft 
+                    a QB that was not taken as a top five pick. As a result, it makes me wonder if it is worth the price to draft other first round quarterbacks,
+                    and on a blind evaluation, I would say probably not.
+                </p>
+
+                <p class="blog-p-tag">
+                    The summarized version of this table, with bust rates:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 420px; height: 210px;" src="/Analysis/interactive-2.0/QB/draft-capital/summarized.html"></iframe>
+                </div>
+                
+                <p class="blog-p-tag">
+                    For those visual learners, more bar plots to represent the data, starting with Hit Rate Percentage vs. Best Fantasy Season:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 500px;" src="/Analysis/interactive-2.0/QB/draft-capital/hit-rate-v-tier.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Additionally, Hit Rate Percentage vs. Draft Position:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 500px;" src="/Analysis/interactive-2.0/QB/draft-capital/hit-rate-v-draft-pos.html"></iframe>
+                </div>
+
+                <p class="blog-p-tag">
+                    Now, in an attempt to get better sample sizes for our buckets, let's reorganize how our position ranges to 1-5, 6-10, and 11-32, as 
+                    each of these groups has a sample size of at least 10:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 550px; height: 200px;" src="/Analysis/interactive-2.0/QB/draft-capital/round1-better-samples.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    This more clearly shows the gap between the QBs drafted in the top five, versus the rest of the first round. From almost a 70% hit rate
+                    of QBs taken in the top five to an average of 45% for the rest of the first round, unless there are a lot of green flags about a prospect,
+                    it seems like a bad idea to take a shot on them in a dynasty rookie draft, assuming the player is going in round one, or the first half or 
+                    so of round two.
+                </p>
+
+                <p class="blog-p-tag">
+                    The summarized version with bust rates:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 420px; height: 140px;" src="/Analysis/interactive-2.0/QB/draft-capital/summarized-better-samples.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Again, unless there's a lot to love about a prospect, it doesn't seem worth drafting a QB in dynasty if they were drafted outside of the top 
+                    five in the NFL draft, maybe the top ten. Then again, if there's a lot to love about a QB prospect, it seems unlikely they fall outside of 
+                    the top ten.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Rookie Filters</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Now, while this isn't directly related to draft capital, I wanted to dive further into this
+                    <a href="https://www.reddit.com/r/DynastyFF/comments/1bk3x5i/with_2_stats_you_could_correctly_predict_95_of_qb/">Reddit post</a>.
+                    This post found that there is a high success rate, if a QB passes two thresholds in their rookie year: 1) a sack rate of under 8.7%
+                    and 2) an adjusted air yards gained per pass attempt value above 6.5.
+                </p>
+                <p class="blog-p-tag">
+                    I made two changes from the original post: who is included in the data set and what we consider success. I only include players drafted 
+                    in round one, and I define success as having at least one QB1 finish, i.e. finishing as QB12 overall or better.
+                </p>
+                <p class="blog-p-tag">
+                    Of the QBs in my data set taken since 1999, only 18 QBs satisfy both conditions above:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 650px; height: 520px;" src="/Analysis/interactive-2.0/QB/draft-capital/passing-qbs.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    I have highlighted Mac Jones, as he is the only player that passes both thresholds and has not posted a QB1 season.
+                    Mac Jones is the only failure on our success list. That statement comes with an asterisk, as it is still 
+                    possible, albeit unlikely, for Mac Jones to turn things around.
+                </p>
+                <p class="blog-p-tag">
+                    The only outlier I could find about him amongst this group of QBs, is that of the players 
+                    taken after 10th overall - Culpepper, Pennington, Cutler, Rodgers, Watson, Jackson, Jones, and Love -
+                    Jones is the only one to be announced the starter on opening day.
+                </p>
+                <p class="blog-p-tag">
+                    There might be something else in his college stats as well, but I am still in the process of obtaining college 
+                    data, so I have not been able to do any real digging there yet. Although this point I'm making here 
+                    is very nit-picky, and might just be a coincidence, rather than a real point of separation.
+                </p>
+                <p class="blog-p-tag">
+                    So, 17 of 18 QBs that passed both thresholds in their rookie year have gone on to produce a QB1 fantasy season. That is a hit 
+                    rate of 94.4%. That's a pretty good filter.
+                </p>
+
+                <p class="blog-p-tag">
+                    Now, if a QB fails either threshold, the situation is not catastrophic. This is the list of QBs with a QB1 finish who had a sack rate 
+                    at or over 8.7%:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 650px; height: 590px;" src="/Analysis/interactive-2.0/QB/draft-capital/fail-one-qbs.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    The QBs highlighted in yellow all finished as a QB1 at least once. So, by that measure of success, the bust rate here is 65% and the 
+                    success rate is 35%. Now, if are a little pickier and remove Fields, Bortles, and Alex Smith, the bust rate increases to 80%. Now,
+                    why would we remove these players? Alex Smith only had one QB1 finish in his long career. Justin Fields also only has one QB1 finish in 
+                    his young career, but based on how the trade market looked for him this offseason he looks like a backup now. Finally, while Bortles did 
+                    have two top ten finishes in his career, it only lasted five seasons.
+                </p>
+                <p class="blog-p-tag">
+                    While that is less encouraging, it does show hope for value retention. So, if a rookie QB does not meet this threshold, there still is a 
+                    decent chance that he could manage some hype for his value. That being said, it is not ideal for a rookie QB to have a sack rate at or 
+                    over 8.7%.
+                </p>
+
+                <p class="blog-p-tag">
+                    Now, if a QB passes the first threshold and fails the second, success rate appears to be murkier:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 650px; height: 840px;" src="/Analysis/interactive-2.0/QB/draft-capital/fail-two-qbs.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Again, the QBs highlighted in yellow had at least one QB1 finish. As things stand, the hit rate is 46.67%, which yields a bust rate 
+                    of 53.33%.
+                </p>
+                <p class="blog-p-tag">
+                    Now, there are five names which I can argue should not be included as successes: Vince Young, Mark Sanchez, Josh Freeman, Joe Flacco, 
+                    and Daniel Jones. All of these QBs have either had really short career, or they've only finished as a QB1 once - some are unfortunate enough to 
+                    accomplish both. Removing those names changes the success rate to 30% and the bust rate to 70%.
+                </p>
+                <p class="blog-p-tag">
+                    Technically, Tua would also be a bust by these 
+                    standards, but I believe he has shown enough in Miami to earn the benefit of the doubt when it comes to getting his second QB1 season.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Final Thoughts</h2>
+            <div>
+                <p class="blog-p-tag">
+                    I want to end on this interesting note. If we go back and take a look at our 
+                    successful QBs that did not hit both thresholds, under the noted restrictive lens, we end up with the following players:
+                </p>
+                <ul class="bullet-list">
+                    <li>Trevor Lawrence</li>
+                    <li>Tua Tagovailoa</li>
+                    <li>Josh Allen</li>
+                    <li>Carson Wentz</li>
+                    <li>Ryan Tannehill</li>
+                    <li>Andrew Luck</li>
+                    <li>Matthew Stafford</li>
+                    <li>Eli Manning</li>
+                    <li>Carson Palmer</li>
+                    <li>Donovan McNabb</li>
+                    <li>Mike Vick</li>
+                    <li>Ben Roethlisberger</li>
+                    <li>Jared Goff</li>
+                </ul>
+                <p class="blog-p-tag">
+                    The only QB above who was picked outside of the top ten is Big Ben. Josh Allen and Tannehill are the only other two outside of the top 
+                    five.
+                </p>
+                <p class="blog-p-tag">
+                    To me, this highlights how much of a crapshoot QB success is outside of the top ten, even top five picks.
+                    If a QB fails to hit both thresholds their rookie year and they are drafted outside of the top five picks in round one, 
+                    their chance of success is essentially 0%.
+                </p>
+                <p class="blog-p-tag">
+                    Now, the big question is how can we utilize college stats to accurately predict sack rate and adjusted yards gained in the NFL?
+                    The answer to that question will likely bridge the gap between college to NFL evaluation, and allow us to confidently draft QB
+                    prospects. 
+                </p>
+                <p class="blog-p-tag">
+                    That will have to be a piece for another time. I leave you with that question to ponder.
+                </p>
+                <p class="blog-p-tag">
+                    Thanks for reading!
+                </p>
+                <p class="blog-p-tag">
+                    Cheers, <br />
+                    Alex
+                </p>
+            </div>
+            
+
+            <h2 class="h2-blog">Glossary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Terms that might be useful to know:
+                </p>
+                <ul class="bullet-list">
+                    <li><b>Adjust yards gained per pass attempt:</b> calculated as (passing yards + 20 * passing TD - 45 * interceptions) / (passes attempted).</li>
+                    <li><b>Sack rate: </b> the percentage of times sacked when attempting to pass.</li>
+                </ul>
+            </div>
+
+
+            <h2 class="h2-blog">Appendix</h2>
+            <div>
+                <p class="blog-p-tag">
+                    This is the appendix.
+                </p>
+                <h3 class="h3-blog">Success Rate vs. Round Alt.</h3>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 500px;" src="/Analysis/interactive-2.0/WR/draft-capital/hit-rate-v-round-alternative.html"></iframe>
+                </div>
+
+                <h3 class="h3-blog">Success Rate vs. Tier Alt.</h3>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 500px;" src="/Analysis/interactive-2.0/WR/draft-capital/hit-rate-v-tier-by-round-alternative.html"></iframe>
+                </div>
+            </div>
+            </br>
+            </br>
+            </br>
+        </div>
+    </div>
+</body>
+<script>
+    function scrollToParagraph(paragraphId, headerOffset=100) {
+        let element = document.getElementById(paragraphId);
+        // let headerOffset = 100;  // Change this value according to your needs
+        let elementPosition = element.getBoundingClientRect().top;
+        let offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+        });
+    }
+</script>
+<script>
+    const iframeSources = {
+        slider1: [
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_yards.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_yards_per_game.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_yards_per_carry.html",
+        ],
+        slider2: [
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_tds.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_tds_per_game.html"
+        ],
+        slider3: [
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_carries.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_carries_per_game.html",
+        ],
+        slider4: [
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_epa.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_epa_per_game.html",
+            "/Analysis/interactive-2.0/QB/2023-review-pt3/scatter_rushing_epa_per_carry.html",
+        ],
+    };
+
+    function changeIframeSrc(sliderId, direction) {
+        const iframe = document.querySelector(`#${sliderId} .slider-iframe`);
+        const sources = iframeSources[sliderId];
+
+        // Extract the relative path from the iframe's full URL
+        const currentPath = new URL(iframe.src).pathname;
+
+        // Find the index of the current path in the sources array
+        let currentIndex = sources.findIndex(src => currentPath.endsWith(src));
+
+        if (currentIndex === -1) {
+            currentIndex = 0; // Default to the first source if the current src is not found
+        }
+
+        let nextIndex = (currentIndex + direction + sources.length) % sources.length; // Calculate the next index, looping around if necessary
+        iframe.src = sources[nextIndex]; // Set the new src
+    }
+</script>
+<script>
+    $("#common-header").load("/header.html");;
+</script>
