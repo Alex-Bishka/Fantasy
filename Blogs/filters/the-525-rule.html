@@ -1,0 +1,486 @@
+<head>
+    <title>The 525 Rule</title>
+    <link rel="stylesheet" href="/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        // google analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>The 525 Rule</h1>
+
+
+            <h2>TL;DR</h2>
+            <div>
+                <ul class="bullet-list">
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                </ul>
+            </div>
+
+
+            <h2 class="h2-blog">Overview</h2>
+            <div>
+                <p class="blog-p-tag">
+                    What is the 525 rule for wide receivers? Well, a dive into the dynasty subreddit and a quick search for "525 yards wide 
+                    receivers" shows a bunch of posts concerned with receivers hitting the 525 yard mark in their rookie year. The 
+                    threshold comes from this <a href="https://old.reddit.com/r/DynastyFF/comments/7y02x8/using_rookie_wr_numbers_to_model_sophomore_wr/">reddit post</a>
+                    that models a receivers sophomore year based on their rookie season.
+                </p>
+                <p class="blog-p-tag">
+                    Many questions come to mind. Has this changed at all since the model is based on data from 2002-2016? Does the extra game impact this rule at all?
+                    How does the data look like we adjust the threshold? What are the historical success rates for this threshold and other yard buckets?
+                </p>
+                <p class="blog-p-tag">
+                    Well, I hope to answer at least the latter two questions in this analysis. I will be looking at the historical data for how a career panned out based 
+                    on its rookie year, more specifically based on receiving yards in a player's rookie year. 
+                </p>
+                <p class="blog-p-tag">
+                    The historical data I use will be from 1999-2023, which gives us 775 samples to play with. Additionally, I will be measuring career success based on the minimum
+                    mode of a receiver's career tier finish.
+                    What does that mean? Well, a tier finish is in regard to whether a player finished as a WR1 (top 12 fantasy wide receiver), WR2 (next 12), WR3 (next 12), etc.
+                    So, the mode means the most frequent tier finish of a wide receiver's career. The minimum separates ties, so we would consider the lower value mode (which is 
+                    better wide receiver tier finish in this context) as the measure of success for a player's career.
+                </p>
+                <p class="blog-p-tag">
+                    As an example, Mike Evans has five career WR1 finishes and five career WR2 finishes. In this case, his mode is both WR1 (denoted as 1.0 in the data)
+                    and WR2 (denoted as 2.0 in the data). The minimum mode for Evans would be WR1, since 1.0 < 2.0, thus whatever yardage bucket Evans is in for his rookie year,
+                    he will be represented as a career WR1 in the data. 
+                </p>
+                <p class="blog-p-tag">
+                    I choose this as the representative metric for a career since it serves as a strong proxy for the prime 
+                    of a player's NFL career. Furthermore, it will usually provide us with more than one data point, which is more informative than best (one season wonder concerns) or 
+                    worst season (injury and/or old age concerns). Lastly, it is less punitive than using the average tier of a player's career, as there are many greats who, due to 
+                    injury or playing until old age, hurt their average fantasy finish.
+                </p>
+                <p class="blog-p-tag">
+                    One last point to note, the data is based on fantasy PPR finishes.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">The 525 Rule Currently</h2>
+            <div>
+                <p class="blog-p-tag">
+                    So, what does the 525 rule itself look like?
+                </p>
+                <p class="blog-p-tag">
+                    Well, the table below breaks down the rookie season of a wide receiver into two yardage
+                    categories: those that met the rule (525+) and those that did not (0-524). For each of these two categories, we then have the minimum
+                    mode tier - marked as Min Mode Tier - which spans from WR1 to WR19. The table provides the sample size of wide receivers for each bin: 
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 925px; height: 140px;" src="/Analysis/interactive-2.0/WR/the-525-rule/525-rule.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Now, while the first four, or five tiers are relatively close in number of samples, what we should note is the much higher rate of failure
+                    with receivers who did not meet the 525 threshold: there exists a high number of samples for wide receiver tiers six and onward for players
+                    failing to meet the threshold. 
+                </p>
+
+                <p class="blog-p-tag">
+                    This table below highlights that point by displaying the same information by percentage instead of sample size:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1050px; height: 140px;" src="/Analysis/interactive-2.0/WR/the-525-rule/525-rule-percentage.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Those who hit the the threshold were far more likely to be a consistently usable piece in fantasy football, as opposed to those who did not.
+                    For reference, 77.94% of receivers who broke the threshold were at least a WR4, compared to 11.64% for those who did not. If we say a career mostly spent 
+                    as a WR5 is still considered a success, then 88.97% of receivers who broke the threshold were at least a WR5, compared to 15.89% for those who did not.
+                </p>
+                <p class="blog-p-tag">
+                    I think this highlights the utility in the 525 rule - it does a good job of separating players that are unlikely to succeed from those that are. I do want 
+                    to note that just because a player does not hit 525 plus yards in their rookie season, does not mean they will fail. However, it would be unlikely for a player
+                    to be a useful fantasy asset if they fail to hit this threshold.
+                </p>
+                <p class="blog-p-tag">
+                    To better visualize the data, I've added a bubble chart below. It really shows the gap between success rates (i.e. WR4 or WR5, or better) between 0-524 yards and 
+                    525+ yards:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 600px;" src="/Analysis/interactive-2.0/WR/the-525-rule/525-rule-bubble.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Two things come to mind at this point. The first being that it appears to be a good idea to be out on players who fail to hit this threshold. If the NFL continues
+                    pace with its historical data, then you'll have much better hit rates of the receivers that hit 525 plus yards their rookie year. Secondly, it might be worthy
+                    to investigate the players who failed the threshold and still ended up as usable fantasy assets. Identifying a diamond in the mud would present a massive 
+                    advantage in any fantasy format.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">A 575 Rule</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Since changing an NFL season from 16 to 17 games, there have been many who have wondered if the 525 rule is still valid, or if it needs to be updated.
+                    Some of the Reddit posts that discuss the 525 rule will share this musing. While, I don't have an answer for it, I was curious to see what the data above
+                    looks like but with the threshold shifted from 525+ to 575+. 
+                </p>
+                <p class="blog-p-tag">
+                    I should emphasis the point that I did not filter the data from when the extra game was added to the NFL, as I believe that would really shrink our sample size,
+                    and a lot of those receivers are still young. Instead, I wondered if 575 might serve as a better metric, especially with some of the last few years potentially
+                    being skewed with the extra game added.
+                </p>
+                <p class="blog-p-tag">
+                    Like above, the table below shows the sample size for each category:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 925px; height: 140px;" src="/Analysis/interactive-2.0/WR/the-525-rule/575-rule.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Once again, we see that there still are many players who are successful fantasy assets who fail the threshold. However, 
+                    the percentages, by far, favor players who pass the threshold:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1050px; height: 140px;" src="/Analysis/interactive-2.0/WR/the-525-rule/575-rule-percentage.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    There is not a huge difference between 575 and 525 as the threshold, but I do personally prefer the 575 bar as it has a better emphasis on the WR1 and WR2 tier, 
+                    as well as the top four tiers, compared to using 525 as the bar.
+                </p>
+                <p class="blog-p-tag">
+                    For comparison, 82.21% of receivers who hit the threshold were at least a WR4, compared to 12.69% for those who did not. That's about a 5% point gain for players
+                    passing the bar, versus 1% point gain for players who did not when looking back at using 525 yards as the metric. The WR5 numbers are a little closer between the 
+                    two variations of the bar, with this case having 88.99% of receivers who hit the 575 threshold were at least a WR5, compared to 17.89% for those who did not.
+                </p>
+                <p class="blog-p-tag">
+                    The bubble chart below helps us visualize the percentages from the table above:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 600px;" src="/Analysis/interactive-2.0/WR/the-525-rule/575-rule-bubble.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    It is really similar to the bubble chart for the 525+ rule. Again, I prefer the 575+ version, but that goes into the point from the next section: more yards as a 
+                    rookie generally results in a better career. I think the real question becomes what is the lowest threshold where it becomes almost hopeless for a player to turn
+                    into a fantasy success? Again, this is a point that we will be addressed in the next section. For those curious to another threshold, I've added the tables and 
+                    bubble chart for 500 yards to the <a href="javascript:void(0);" onclick="scrollToParagraph('appendix-0', 10)">appendix</a>.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Career Success by Rookie Year</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Before continuing research on if the current threshold should change, and what the new value would be, I think it is useful to look
+                    at more data. Specifically, examining the sample size and success rates of wide receivers at a micro level. Instead of being above or below
+                    a certain line, what if we used buckets? 
+                </p>
+                <p class="blog-p-tag">
+                    The table below shows the samples for receivers in a similar fashion to the previous ones in this piece, with one key difference: we replace 
+                    the idea of a threshold with buckets. Now, we have data for players who had 0-99 yards as a rookie, 100-199, 200-299, etc. The result:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 925px; height: 315px;" src="/Analysis/interactive-2.0/WR/the-525-rule/bins-800.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Again, we see success at pretty much all levels, but the lower value yardage buckets also tend to have a lot of receivers that would be useless 
+                    in fantasy. The table below converts the sample table above in percentages, like the other percentage tables in the sections above:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 315px;" src="/Analysis/interactive-2.0/WR/the-525-rule/bins-800-percentage.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    The percentages here highlight how much of a barren wasteland the first three buckets are. Historically, the buckets 0-99 and 100-199 yards each 
+                    have a success rate of less than 10% for WR4 or better. Bucket 200-299 has a 16% chance of a WR4 or better. This does jump to 24% if we include the WR5
+                    tier as a success. However, to me, this answers the threshold question: a player with under 300 yards in their rookie season is very unlikely to turn 
+                    into a usable fantasy asset.
+                </p>
+                <p class="blog-p-tag">
+                    At 300-399 there still is some hope as we have a 34.62% chance of a WR4 or better. I have the same outlook for the 400-499 buckets as 29.79% of wide receivers
+                    were WR4s or better. Life gets a lot better once we hit the 500-599 bucket as 42.23% of receivers are WR4s or better. I want to note that for both 400-499 and
+                    500-599 the percentages for WR5 or better are 53.19% and 73.34%, respectively. These buckets are the first where the chances of having a WR5 or better break 50%,
+                    and this remains true for the rest of the buckets with more yardage.
+                </p>
+                <p class="blog-p-tag">
+                    In fact, the 600-699 bucket has 69.64% of the receivers as WR4s or better. I view 700 as a new threshold, as 44.44% of receivers are WR1 or WR2 and 92.59% of the 
+                    receivers are WR4 or better. The last bucket - 800+ - is where things really start to go insane: 68.62% or receivers are WR1s or WR2s, and 92.15% of receivers are
+                    WR4s or better.
+                </p>
+                <p class="blog-p-tag">
+                    The heatmap below helps stresses the point that more yardage as a rookie is a good thing:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 600px;" src="/Analysis/interactive-2.0/WR/the-525-rule/heat-map-800-bins-percentage.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    It's almost like stairs, where the top step is the upper left hand corner (high percentages for good wide receiver tiers) and the bottom of the stairs
+                    is almost the bottom right hand corner (still have percentage values but for bad receiver tiers). Continuing the stair metaphor, each step is a yardage bucket, 
+                    and we start with 800+ yards in a rookie season, and descend until 0-99 yards.
+                </p>
+                <p class="blog-p-tag">
+                    The heatmap below offers a more zoomed in version of wide receiver tiers we care about and the yardage bins that produce those tiers at some-to-high 
+                    percentages:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 700px; height: 600px;" src="/Analysis/interactive-2.0/WR/the-525-rule/heat-map-800-bins-percentage-zoomed.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    More yards as a rookie is a very positive sign. Additionally, failing to clear the 525 threshold is not a death sentence, but failing to hit 300 yards as a rookie 
+                    almost certainly is.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">The Elite</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Thus far, I think it's safe to say the 525 rule serves as a solid proxy for filtering out potential busts and predicting usable fantasy assets. 
+                    However, in a more nuanced discussion I would argue three main thresholds: 300 yards, 500 yards, and 700 yards. The first is important, as below that
+                    mark, history tells us a receiver's chances of being fantasy relevant are slim to none. 500 is the breaking point where we can start to rely getting an
+                    asset more reliably than a coin flip. 700 is where we start to see a higher likelihood of studs. 
+                </p>
+                <p class="blog-p-tag">
+                    Is there more to the story? What information can we get if we break up 800+ yards into another three buckets: 800-899, 900-999, and 1000+? Well, 
+                    the samples table below shows buckets from 500 to 1000+, via the 100 yard breaks:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 925px; height: 240px;" src="/Analysis/interactive-2.0/WR/the-525-rule/elites.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    It's a little hard to tell a difference from just that. Let us examine the percentage version of the table above:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1050px; height: 270px;" src="/Analysis/interactive-2.0/WR/the-525-rule/elites-percentages.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    This separation shows that while 800+ yards provides us with a strong chance of top tier talent, it does a poor job of showing how the talent is distributed. 
+                    800-899 tends to produce more WR3 careers. 900-999 tends to produce more WR2 careers. Finally, 1000+ is where studs are made: having 58.82% of the players fall
+                    under WR1 territory.
+                </p>
+                <p class="blog-p-tag">
+                    The bubble chart below strongly epitomizes this finding:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 600px;" src="/Analysis/interactive-2.0/WR/the-525-rule/500-1000-bubble.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    We can clearly see the gap - more like chasm - with WR1 careers based on rookies who had 1000+ yards versus those who did not. I encourage you to toggle with this
+                    bubble chart. To select just one group to view double click on the group in the legend, to deselect a group click on it once in the legend, and to reset the graph 
+                    double click on an un-selected group or solely selected group from the legend. Also, for those interested the 
+                    <a href="javascript:void(0);" onclick="scrollToParagraph('full-bubble-graph-0', 10)"></a>full version of the bubble chart</a>, with all the buckets
+                    is in the appendix.
+                </p>
+                <p class="blog-p-tag">
+                    The table below may also help to internalize the finding from above, as it removes the noise:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 425px; height: 260px;" src="/Analysis/interactive-2.0/WR/the-525-rule/elites-percentages-zoomed.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Perhaps there is a fourth threshold to consider for super stars: 1000 yards. 
+                </p>
+                <p class="blog-p-tag">
+                    Also, for those curious, this was the list of rookies who had over 1000 plus yards:
+                </p>
+                <div class="iframe-container">
+                    <iframe style="width: 450px; height: 470px;" src="/Analysis/interactive-2.0/WR/the-525-rule/over-1000-yards-rookie-year.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    Michael Clayton, the one highlighted in red, is the only one who failed to have a minimum mode as a WR1 or WR2. His was WR7. At this point, 
+                    I would feel pretty confident in Puka being a WR2 at worst, for the rest of his career. Also, only Jefferson and Chase join him for over 1400 yards 
+                    as a rookie. If you wanted to lower the threshold to 1300 yards, we also add Anquan Boldin and Odell to the list. That's strong company.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Final Thoughts</h2>
+            <div>
+                <p class="blog-p-tag">
+                    While the 525 threshold does what it is supposed to do, it's hard to say that is definitively the mark. I prefer evaluation with multiple thresholds
+                    instead:
+                </p>
+                <ul class="bullet-list">
+                    <li>
+                        <b>300 yards:</b> The bare minimum. If a receiver fails to hit this their rookie year, there is almost no hope they will be usable in fantasy.
+                        While the two buckets prior to 500 yards - 300-399 and 400-499 - each fail to offer a high hit rate itself, there's at least some hope a 
+                        player can turn it around here.
+                    </li>
+                    <li>
+                        <b>500 yards:</b> 500 is the threshold where we pass the breaking point of 50%. Players in the with 500-599 and 600-699 yard buckets turn into fantasy
+                        usable assets more than half the time.
+                    </li>
+                    <li>
+                        <b>700 yards:</b> 700-999 is where we start to see really high concentrations of WR1 and WR2 careers. While stardom is not guaranteed, the rates for each 
+                        bucket in this range are at least 44% for a player being a WR1 or WR2.
+                    </li>
+                    <li>
+                        <b>1000 yards:</b> Superstars. This range has 58.82% of its players in WR1 territory, and 35.29% in WR2. Only one player in the data set has failed to be 
+                        a WR1 or WR2 when they broke 1000 yards their rookie year.
+                    </li>
+                </ul>
+                <p class="blog-p-tag">
+                    One final point I want to mention about thresholds: they still do not necessarily define whether a player is successful based on where they were drafted 
+                    in dynasty. For example, Kelvin Benjamin broke 1000 yards his rookie season, but his career only lasted four years. Yes, two of those were WR2 seasons, so
+                    he is classified as a WR2 by our metrics, but I do not think people would be excited by his career, especially since he was considered a top ten or so pick
+                    in rookie drafts. Yes, there are extenuating circumstances to his story, but it does show that a simple threshold does not capture the full picture, especially
+                    in regards to expected return from where a player is drafted in fantasy.
+                </p>
+                <p class="blog-p-tag">
+                    Thanks for reading!
+                </p>
+                <p class="blog-p-tag">
+                    Cheers, <br />
+                    Alex
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Appendix</h2>
+            <div>
+                <h3>Full Bubble Graph</h3>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 600px;" src="/Analysis/interactive-2.0/WR/the-525-rule/0-1000-bubble.html"></iframe>
+                </div>
+
+                <h3>500 Threshold Samples</h3>
+                <div class="iframe-container">
+                    <iframe style="width: 925px; height: 140px;" src="/Analysis/interactive-2.0/WR/the-525-rule/500-rule.html"></iframe>
+                </div>
+
+                <h3>500 Threshold Percentages</h3>
+                <div class="iframe-container">
+                    <iframe style="width: 1050px; height: 140px;" src="/Analysis/interactive-2.0/WR/the-525-rule/500-rule-percentage.html"></iframe>
+                </div>
+                
+                <h3>500 Threshold Bubble Chart</h3>
+                <div class="iframe-container">
+                    <iframe style="width: 1200px; height: 600px;" src="/Analysis/interactive-2.0/WR/the-525-rule/500-rule-bubble.html"></iframe>
+                </div>
+            </div>
+            </br>
+            </br>
+            </br>
+        </div>
+    </div>
+</body>
+<script>
+    function scrollToParagraph(paragraphId, headerOffset=100) {
+        let element = document.getElementById(paragraphId);
+        // let headerOffset = 100;  // Change this value according to your needs
+        let elementPosition = element.getBoundingClientRect().top;
+        let offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+        });
+    }
+</script>
+<script>
+    $("#common-header").load("/header.html");;
+</script>
