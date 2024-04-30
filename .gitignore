@@ -11,3 +11,6 @@ nfldata/
 template.html
 Analysis/Notebooks/old/nfldataexploration/Rushing Stability/Plotly Rushing - Finding Optimal Metrics.ipynb
 Experimental/
+Analysis/Notebooks/ComputerVision/line_number_recognition/
+Analysis/Notebooks/ComputerVision/line_number_samples/
+Analysis/Notebooks/ComputerVision/pre_snap_images/
