@@ -22,7 +22,7 @@ def prep_df_for_scatter_plot(df):
     return df
 
 
-def create_scatter_plot(df, stat, start_index=-30, save_path=None,
+def create_scatter_plot(season, df, stat, start_index=-30, save_path=None,
                         three_tiers=False, four_tiers=False, custom_appendix=None):
     """
     Helper function to graph scatter plots for a stat against a player name. Works for season total and 
@@ -31,7 +31,7 @@ def create_scatter_plot(df, stat, start_index=-30, save_path=None,
     position = df["position"].iloc[0]
 
     # Adjusting titles for figure layout
-    title = f"2023 {position} {' '.join([s.capitalize() for s in stat.split('_')])}"
+    title = f"{season} {position} {' '.join([s.capitalize() for s in stat.split('_')])}"
     title = title.replace("Epa", "EPA")
     title = title.replace("Tds", "TDs")
     title = title.replace("Ppr", "PPR")
