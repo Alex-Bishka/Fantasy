@@ -176,7 +176,7 @@ def indent(num_indents):
     return "\t" * num_indents
 
 
-def html_breaking_down_clusters(keys):
+def html_breaking_down_clusters(keys, src):
     """"""
     print(f"{indent(STARTING_INDENT)}<div>")
     
@@ -184,7 +184,7 @@ def html_breaking_down_clusters(keys):
     print(f"{indent(STARTING_INDENT + 2)}TODO")
     print(f"{indent(STARTING_INDENT + 1)}</p>")
     print(f"{indent(STARTING_INDENT + 1)}<div class='iframe-container'>")
-    print(f"{indent(STARTING_INDENT + 2)}<iframe class='large-iframe' data-src='TODO'></iframe>")
+    print(f"{indent(STARTING_INDENT + 2)}<iframe style='width: 1420px;' class='large-iframe' data-src='{src}'></iframe>")
     print(f"{indent(STARTING_INDENT + 1)}</div>")
     
     print(f"{indent(STARTING_INDENT + 1)}<p class='blog-p-tag'>")
@@ -197,7 +197,7 @@ def html_breaking_down_clusters(keys):
     print(f"{indent(STARTING_INDENT + 1)}</ul>")
 
 
-def create_cluster_html_tiers(df: pd.DataFrame) -> None:
+def create_cluster_html_tiers(df: pd.DataFrame, src: str) -> None:
     cluster_dict = dict()
     for index, row in df.iterrows():
         if row.Cluster not in cluster_dict:
@@ -209,7 +209,7 @@ def create_cluster_html_tiers(df: pd.DataFrame) -> None:
     keys = list(sorted_cluster_dict.keys())
     
     
-    html_breaking_down_clusters(keys)
+    html_breaking_down_clusters(keys, src)
     print(f"{indent(STARTING_INDENT + 1)}<div style='display: flex; justify-content: space-evenly;''>")
     for key in keys:
         names = cluster_dict[key]
