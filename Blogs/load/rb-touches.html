@@ -1,0 +1,247 @@
+<head>
+    <title>The Age of RB by Committee</title>
+    <link rel="stylesheet" href="/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        // google analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>The Age of RB by Committee</h1>
+
+
+            <h2>TL;DR</h2>
+            <div>
+                <ul class="bullet-list">
+                    <li>Saquon had over 400 carries last year, only 1 of the 11 backs who've had such a season since 1999 have improved (fantasy wise) in the following season.</li>
+                    <li>Thus I'd argue Saquon shouldn't be redrafted in round 1, and is probably not worth his current dynasty price.</li>
+                    <li>In redraft, I'd prefer Gibbs and Bijan over Saquon. Henry and Jeanty deserve consideration too.</li>
+                </ul>
+            </div>
+
+
+            <h2 class="h2-blog">Overview</h2>
+            <div>
+                <p class="blog-p-tag">
+                    It's been a while since I've made one of these, but the offseason blues and a change of pace from my other projects got me exploring RB load and future production.
+                </p>
+                <p class="blog-p-tag">
+                    So, in this post, I create data tables that include running back seasons that meet a certain volume criteria (e.g. 350 carries, 400 carries, 350 touches, etc.).
+                    Each of the tables is sorted from the highest fantasy points difference between the previous and upcoming season. This means the higher up in the table, the more you improved,
+                    from a fantasy perspective, after that X criteria season.
+                </p>
+                <p class="blog-p-tag">
+                    For example, in the first table, Min 350 Carries. Shaun Alexander had a 350 carry season in 2004, where he was 27 years old. In 2005 (the upcoming season) he had 62 more fantasy points than
+                    2004, which would mean his fantasy_points_diff is 62.
+                </p>
+                <p class="blog-p-tag">
+                    <b>NOTE:</b> most backs that met the volume critera proceeded to underperform in their following season. I'll let you explore the tables, and more detailed versions (including differences across stats like rushing yards, receiving yards, touchdowns, etc.) can 
+                    be found in the appendix.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Load By Carries</h2>
+            <div>
+                <h3>Min 350 Carries</h3>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 450px;" src="/Analysis/interactive-2.0/RB/load/short_350.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    13 of the 45 rows above resulted in a positive increase in fantasy points. This equates to a 28.89% chance of an RB having a better upcoming season, if they just had a minimum of 350 carries. 
+                </p>
+                <h3>Min 400 Carries</h3>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 450px;" src="/Analysis/interactive-2.0/RB/load/short_400.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    1 of the 11 rows above resulted in a positive increase in fantasy points. This equates to a 9.09% chance of an RB having a better upcoming season, if they just had a minimum of 400 carries. 
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Load By Touches</h2>
+            <div>
+                <h3>Min 350 Touches</h3>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Analysis/interactive-2.0/RB/load/short_350_touches.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    38 of the 134 rows above resulted in a positive increase in fantasy points. This equates to a 28.36% chance of an RB having a better upcoming season, if they just had a minimum of 350 touches. 
+                </p>
+
+                <h3>Min 400 Touches</h3>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 650px;" src="/Analysis/interactive-2.0/RB/load/short_400_touches.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    13 of the 49 rows above resulted in a positive increase in fantasy points. This equates to a 26.53% chance of an RB having a better upcoming season, if they just had a minimum of 400 touches. 
+                </p>
+
+                <h3>Min 450 Touches</h3>
+                <div class="iframe-container">
+                    <iframe style="width: 1150px; height: 450px;" src="/Analysis/interactive-2.0/RB/load/short_450_touches.html"></iframe>
+                </div>
+                <p class="blog-p-tag">
+                    2 of the 9 rows above resulted in a positive increase in fantasy points. This equates to a 22.22% chance of an RB having a better upcoming season, if they just had a minimum of 450 touches. 
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Appendix</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Full versions of the tables above:
+                </p>
+                <h3>Full Tables for Carries</h3>
+                <div class="iframe-container">
+                    <iframe style="width: 1400px; height: 650px;" src="/Analysis/interactive-2.0/RB/load/full_350.html"></iframe>
+                </div>
+                <div class="iframe-container">
+                    <iframe style="width: 1400px; height: 650px;" src="/Analysis/interactive-2.0/RB/load/full_400.html"></iframe>
+                </div>
+                <h3>Full Tables for Touches</h3>
+                <div class="iframe-container">
+                    <iframe style="width: 1400px; height: 650px;" src="/Analysis/interactive-2.0/RB/load/full_350_touches.html"></iframe>
+                </div>
+                <div class="iframe-container">
+                    <iframe style="width: 1400px; height: 650px;" src="/Analysis/interactive-2.0/RB/load/full_400_touches.html"></iframe>
+                </div>
+                <div class="iframe-container">
+                    <iframe style="width: 1400px; height: 650px;" src="/Analysis/interactive-2.0/RB/load/full_450_touches.html"></iframe>
+                </div>
+            </div>
+            </br>
+            </br>
+            </br>
+        </div>
+    </div>
+</body>
+<script>
+    $("#common-header").load("/header.html");;
+</script>
+<script>
+    function scrollToParagraph(paragraphId, headerOffset=100) {
+        let element = document.getElementById(paragraphId);
+        // let headerOffset = 100;  // Change this value according to your needs
+        let elementPosition = element.getBoundingClientRect().top;
+        let offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+        });
+    }
+</script>
