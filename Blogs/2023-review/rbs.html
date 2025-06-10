@@ -1,0 +1,655 @@
+<head>
+    <title>2023 RB Review</title>
+    <link rel="stylesheet" href="/styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/script.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MM1J2J7R3Q"></script>
+    <script>
+        // google analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-MM1J2J7R3Q');
+    </script>
+
+    <script>
+        // lazy loading for graphs - needed for phone browser to work
+        document.addEventListener("DOMContentLoaded", function () {
+            let iframes = [].slice.call(document.querySelectorAll(".large-iframe"));
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            let iframe = entry.target;
+                            if (!iframe.getAttribute('data-loaded')) {
+                                iframe.src = iframe.dataset.src;  // Load the src if iframe is in view
+                                iframe.setAttribute('data-loaded', 'true');
+                            }
+                        } else {
+                            let iframe = entry.target;
+                            iframe.src = '';  // Unload the src if iframe is out of view
+                            iframe.removeAttribute('data-loaded');
+                        }
+                    });
+                }, { root: null, rootMargin: '0px', threshold: 0.00001 });  // Adjust threshold to manage when to unload/load
+
+                iframes.forEach(function (iframe) {
+                    observer.observe(iframe);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // auto generate ids for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const headingTextMap = new Map();
+
+            document.querySelectorAll('h1, h2, h3').forEach(heading => {
+                const baseId = heading.textContent.toLowerCase().replace(/\s+/g, '-');
+                const count = headingTextMap.get(baseId) || 0;  // or 0 if text content for that header doesn't exist in map yet
+                headingTextMap.set(baseId, count + 1);
+                heading.id = `${baseId}-${count}`;
+            });
+        });
+
+        // for table of contents creation
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.getElementById('table-of-contents');
+            const headings = document.querySelectorAll('h1, h2, h3');
+
+            headings.forEach((heading, index) => {
+                const link = document.createElement('a');
+                link.textContent = heading.textContent;
+                link.href = `#${heading.id}`;
+                toc.appendChild(link);
+
+                // Optional: Add some indentation based on heading level
+                link.style.paddingLeft = `${heading.tagName.slice(1) * 10}px`;
+            });
+
+            // finding the highest header and highlighting it until we move to the next one
+            function highlightClosestHeading() {
+                let closestHeading = null;
+                let closestDistance = Infinity;
+
+                headings.forEach(heading => {
+                    const rect = heading.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestHeading = heading;
+                    }
+                });
+
+                // Remove active class from all links
+                toc.querySelectorAll('a.active').forEach(link => link.classList.remove('active'));
+
+                // Add active class to the link corresponding to the closest heading
+                if (closestHeading) {
+                    const id = closestHeading.getAttribute('id');
+                    document.querySelector(`#table-of-contents a[href="#${id}"]`).classList.add('active');
+                }
+            }
+
+            // Call the function initially and on scroll
+            highlightClosestHeading();
+            window.addEventListener('scroll', highlightClosestHeading);
+        });
+    </script>
+</head>
+
+<body>
+    <div id="common-header"></div>
+    <div class="content-container">
+        <div>
+            <div id="toc-container">
+                <nav id="table-of-contents">
+                  <!-- ToC will be generated here -->
+                </nav>
+            </div>
+
+            <h1>2023 Running Back Review</h1>
+
+
+            <h2>TL;DR</h2>
+            <div>
+                <ul class="bullet-list">
+                    <li></li>
+                </ul>
+            </div>
+
+
+            <h2 class="h2-blog">Overview</h2>
+            <div>
+                <p class="blog-p-tag">
+                </p>
+                <p class="blog-p-tag">
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Basic Stats and Clustering</h2>
+            <div>
+                <h3>Simple Analysis</h3>
+               
+
+                <h3>Season Totals and Per Game PPR Clusters</h3>
+                <div>
+                    <p class='blog-p-tag'>
+                        season totals rushing
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe style='width: 1420px;' class='large-iframe' data-src='/Analysis/interactive-2.0/RB/2023-review/basic-cluster.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        TODO:
+                    </p>
+                    <ul class='bullet-list'>
+                        <li><b>Cluster 0 (Dark Blue):</b> TODO</li>
+                        <li><b>Cluster 1 (Red):</b> TODO</li>
+                        <li><b>Cluster 2 (Green):</b> TODO</li>
+                        <li><b>Cluster 3 (Purple):</b> TODO</li>
+                        <li><b>Cluster 4 (Orange):</b> TODO</li>
+                        <li><b>Cluster 5 (Teal):</b> TODO</li>
+                        <li><b>Cluster 6 (Pink):</b> TODO</li>
+                    </ul>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Dark Blue)</b>
+                            <ul class='bullet-list'>
+                                <li>Christian McCaffrey</li>
+                                <li>Raheem Mostert</li>
+                                <li>Kyren Williams</li>
+                                <li>David Montgomery</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 1 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Tyjae Spears</li>
+                                <li>Rhamondre Stevenson</li>
+                                <li>Aaron Jones</li>
+                                <li>Joshua Kelley</li>
+                                <li>Khalil Herbert</li>
+                                <li>Zach Charbonnet</li>
+                                <li>Ty Chandler</li>
+                                <li>D'Onta Foreman</li>
+                                <li>Zamir White</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 2 (Green)</b>
+                            <ul class='bullet-list'>
+                                <li>AJ Dillon</li>
+                                <li>Alvin Kamara</li>
+                                <li>Bijan Robinson</li>
+                                <li>Austin Ekeler</li>
+                                <li>Josh Jacobs</li>
+                                <li>Javonte Williams</li>
+                                <li>Ezekiel Elliott</li>
+                                <li>Tyler Allgeier</li>
+                                <li>Alexander Mattison</li>
+                                <li>Jerome Ford</li>
+                                <li>Kenneth Walker</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 3 (Purple)</b>
+                            <ul class='bullet-list'>
+                                <li>Joe Mixon</li>
+                                <li>Derrick Henry</li>
+                                <li>Rachaad White</li>
+                                <li>Saquon Barkley</li>
+                                <li>Tony Pollard</li>
+                                <li>Travis Etienne</li>
+                                <li>Gus Edwards</li>
+                                <li>Najee Harris</li>
+                                <li>Chuba Hubbard</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 4 (Orange)</b>
+                            <ul class='bullet-list'>
+                                <li>Miles Sanders</li>
+                                <li>Kareem Hunt</li>
+                                <li>Dameon Pierce</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 5 (Teal)</b>
+                            <ul class='bullet-list'>
+                                <li>De'Von Achane</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 6 (Pink)</b>
+                            <ul class='bullet-list'>
+                                <li>Jonathan Taylor</li>
+                                <li>Devin Singletary</li>
+                                <li>Zack Moss</li>
+                                <li>Breece Hall</li>
+                                <li>Jahmyr Gibbs</li>
+                                <li>James Cook</li>
+                                <li>Jaylen Warren</li>
+                                <li>Isiah Pacheco</li>
+                                <li>D'Andre Swift</li>
+                                <li>James Conner</li>
+                                <li>Brian Robinson</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="blog-p-tag">
+                            TODO
+                        </p>
+                    <ul class='bullet-list'>
+                        <li><b>Cluster 0 (Dark Blue):</b> TODO</li>
+                        <li><b>Cluster 1 (Red):</b> TODO</li>
+                        <li><b>Cluster 2 (Green):</b> TODO</li>
+                        <li><b>Cluster 3 (Purple):</b> TODO</li>
+                        <li><b>Cluster 4 (Orange):</b> TODO</li>
+                        <li><b>Cluster 5 (Teal):</b> TODO</li>
+                        <li><b>Cluster 6 (Pink):</b> TODO</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <p class='blog-p-tag'>
+                        per game basic
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe style='width: 1420px;' class='large-iframe' data-src='/Analysis/interactive-2.0/RB/2023-review/basic-cluster-rushing-per-game.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        TODO:
+                    </p>
+                    <ul class='bullet-list'>
+                        <li><b>Cluster 0 (Dark Blue):</b> TODO</li>
+                        <li><b>Cluster 1 (Red):</b> TODO</li>
+                        <li><b>Cluster 2 (Green):</b> TODO</li>
+                        <li><b>Cluster 3 (Purple):</b> TODO</li>
+                    </ul>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Dark Blue)</b>
+                            <ul class='bullet-list'>
+                                <li>Christian McCaffrey</li>
+                                <li>Raheem Mostert</li>
+                                <li>Kyren Williams</li>
+                                <li>Derrick Henry</li>
+                                <li>David Montgomery</li>
+                                <li>James Conner</li>
+                                <li>Jonathan Taylor</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 1 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Jerome Ford</li>
+                                <li>Aaron Jones</li>
+                                <li>Rhamondre Stevenson</li>
+                                <li>Josh Jacobs</li>
+                                <li>Javonte Williams</li>
+                                <li>Kenneth Walker</li>
+                                <li>D'Onta Foreman</li>
+                                <li>Dameon Pierce</li>
+                                <li>Alvin Kamara</li>
+                                <li>Khalil Herbert</li>
+                                <li>Austin Ekeler</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 2 (Green)</b>
+                            <ul class='bullet-list'>
+                                <li>Joe Mixon</li>
+                                <li>Isiah Pacheco</li>
+                                <li>Rachaad White</li>
+                                <li>Saquon Barkley</li>
+                                <li>Jahmyr Gibbs</li>
+                                <li>Bijan Robinson</li>
+                                <li>Travis Etienne</li>
+                                <li>Breece Hall</li>
+                                <li>De'Von Achane</li>
+                                <li>James Cook</li>
+                                <li>D'Andre Swift</li>
+                                <li>Tony Pollard</li>
+                                <li>Zack Moss</li>
+                                <li>Najee Harris</li>
+                                <li>Gus Edwards</li>
+                                <li>Chuba Hubbard</li>
+                                <li>Devin Singletary</li>
+                                <li>Brian Robinson</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 3 (Purple)</b>
+                            <ul class='bullet-list'>
+                                <li>Miles Sanders</li>
+                                <li>Zamir White</li>
+                                <li>Zach Charbonnet</li>
+                                <li>Ty Chandler</li>
+                                <li>AJ Dillon</li>
+                                <li>Alexander Mattison</li>
+                                <li>Tyler Allgeier</li>
+                                <li>Tyjae Spears</li>
+                                <li>Ezekiel Elliott</li>
+                                <li>Jaylen Warren</li>
+                                <li>Kareem Hunt</li>
+                                <li>Jamaal Williams</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="blog-p-tag">
+                            TODO
+                        </p>
+                    <ul class='bullet-list'>
+                        <li><b>Cluster 0 (Dark Blue):</b> TODO</li>
+                        <li><b>Cluster 1 (Red):</b> TODO</li>
+                        <li><b>Cluster 2 (Green):</b> TODO</li>
+                        <li><b>Cluster 3 (Purple):</b> TODO</li>
+                    </ul>
+                </div>
+
+            </div>
+
+
+            <h2 class="h2-blog">Advanced Stats</h2>
+            <div>
+                <h3>Efficiency Stats</h3>
+                <p class="blog-p-tag">
+                </p>
+                
+
+                <h3>Advanced Clustering on Season Totals and Per Game PPR Clusters</h3>
+                <div>
+                    <p class='blog-p-tag'>
+                        TODO
+                    </p>
+                    <div class='iframe-container'>
+                        <iframe style='width: 1420px;' class='large-iframe' data-src='/Analysis/interactive-2.0/RB/2023-review/advanced-cluster-rushing.html'></iframe>
+                    </div>
+                    <p class='blog-p-tag'>
+                        TODO:
+                    </p>
+                    <ul class='bullet-list'>
+                        <li><b>Cluster 0 (Dark Blue):</b> TODO</li>
+                        <li><b>Cluster 1 (Red):</b> TODO</li>
+                        <li><b>Cluster 2 (Green):</b> TODO</li>
+                        <li><b>Cluster 3 (Purple):</b> TODO</li>
+                        <li><b>Cluster 4 (Orange):</b> TODO</li>
+                    </ul>
+                    <div style='display: flex; justify-content: space-evenly;''>
+                        <div>
+                            <b>Cluster 0 (Dark Blue)</b>
+                            <ul class='bullet-list'>
+                                <li>Gus Edwards</li>
+                                <li>Derrick Henry</li>
+                                <li>David Montgomery</li>
+                                <li>James Conner</li>
+                                <li>Aaron Jones</li>
+                                <li>Kareem Hunt</li>
+                                <li>Khalil Herbert</li>
+                                <li>Christian McCaffrey</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 1 (Red)</b>
+                            <ul class='bullet-list'>
+                                <li>Brian Robinson</li>
+                                <li>Zach Charbonnet</li>
+                                <li>Jaylen Warren</li>
+                                <li>Najee Harris</li>
+                                <li>Isiah Pacheco</li>
+                                <li>Chuba Hubbard</li>
+                                <li>James Cook</li>
+                                <li>D'Andre Swift</li>
+                                <li>Zack Moss</li>
+                                <li>Ezekiel Elliott</li>
+                                <li>Zamir White</li>
+                                <li>Kyren Williams</li>
+                                <li>Joe Mixon</li>
+                                <li>Raheem Mostert</li>
+                                <li>D'Onta Foreman</li>
+                                <li>Ty Chandler</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 2 (Green)</b>
+                            <ul class='bullet-list'>
+                                <li>De'Von Achane</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 3 (Purple)</b>
+                            <ul class='bullet-list'>
+                                <li>Saquon Barkley</li>
+                                <li>Tony Pollard</li>
+                                <li>Rachaad White</li>
+                                <li>Alvin Kamara</li>
+                                <li>Miles Sanders</li>
+                                <li>AJ Dillon</li>
+                                <li>Joshua Kelley</li>
+                                <li>Austin Ekeler</li>
+                                <li>Josh Jacobs</li>
+                                <li>Rhamondre Stevenson</li>
+                                <li>Tyjae Spears</li>
+                                <li>Jonathan Taylor</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <b>Cluster 4 (Orange)</b>
+                            <ul class='bullet-list'>
+                                <li>Travis Etienne</li>
+                                <li>Alexander Mattison</li>
+                                <li>Tyler Allgeier</li>
+                                <li>Dameon Pierce</li>
+                                <li>Jahmyr Gibbs</li>
+                                <li>Devin Singletary</li>
+                                <li>Javonte Williams</li>
+                                <li>Breece Hall</li>
+                                <li>Jerome Ford</li>
+                                <li>Kenneth Walker</li>
+                                <li>Bijan Robinson</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="blog-p-tag">
+                            TODO
+                        </p>
+                    <ul class='bullet-list'>
+                        <li><b>Cluster 0 (Dark Blue):</b> TODO</li>
+                        <li><b>Cluster 1 (Red):</b> TODO</li>
+                        <li><b>Cluster 2 (Green):</b> TODO</li>
+                        <li><b>Cluster 3 (Purple):</b> TODO</li>
+                        <li><b>Cluster 4 (Orange):</b> TODO</li>
+                    </ul>
+                </div>
+
+            </div>
+
+
+            </br>
+            </br>
+            <h2>2024 Sneak Peak</h2>
+            <div>
+
+            </div>
+
+            <h2 class="h2-blog">Summary</h2>
+            <div>
+                <p class="blog-p-tag">
+                </p>
+                <p class="blog-p-tag">
+                    Thanks for reading!
+                </p>
+                <p class="blog-p-tag">
+                    Cheers, <br />
+                    Alex
+                </p>
+            </div>
+            
+
+            <h2 class="h2-blog">Glossary</h2>
+            <div>
+                <p class="blog-p-tag">
+                    Stat terms used in this article:
+                </p>
+                <ul class="bullet-list">
+                    <li><b>EPA:</b> For our usage, we refer to receiving EPA as EPA in this article, which is the total EPA on plays where this receiver was targeted. For more information on EPA, please refer to this <a href="https://www.nfeloapp.com/analysis/expected-points-added-epa-nfl/">article</a>.</li>
+                    <li><b>Air yards:</b> How many yards the football travels in the air, from the line of scrimmage, regardless of whether the pass was completed. For more info, please check out this <a href="https://www.ftnfantasy.com/air-yards?fppg=PPR&years=2023">article</a>.</li>
+                    <li><b>Target share:</b> Player's share of team receiving targets.</li>
+                    <li><b>WOPR:</b> <a href="https://www.nbcsports.com/fantasy/football/news/article-numbers-why-receiver-air-yards-matter">Weighted OPportunity Rating</a> - 1.5 x target_share + 0.7 x air_yards_share - a weighted average that contextualizes total fantasy usage.</li>
+                    <li><b>W8dom:</b> dominator rating, but weighted in favor of receiving yards over TDs. <a href="https://www.pff.com/news/fantasy-football-predicting-breakout-rookie-wide-receivers-using-pff-grades-and-dominator-rating">Dominator rating</a> is the percentage of team receiving production.</li>
+                    <li><b>RACR (receiving air yards conversion):</b> Receiving (yards) Air (yards) Conversion Ratio - the number of receiving yards per air yards targeted per game.</li>
+                </ul>
+                <p class="blog-p-tag">
+                    For other stat definitions, please check out this <a href="https://cran.r-project.org/web/packages/nflreadr/vignettes/dictionary_player_stats.html">data stat page</a>.
+                </p>
+            </div>
+
+
+            <h2 class="h2-blog">Appendix</h2>
+            <div>
+                <h3 class="h3-blog">Fantasy Points</h3>
+                <div class="iframe-container slider" id="slider1">
+                    <iframe class="slider-iframe" src="/Analysis/interactive-2.0/TE/2023-review/scatter_fantasy_points.html"></iframe>
+
+                    <div>
+                        <button class="graph-slider-prev" onclick="changeIframeSrc('slider1', -1)">&#10094;</button>
+                        <button class="graph-slider-next" onclick="changeIframeSrc('slider1', 1)">&#10095;</button>
+                    </div>
+                </div>
+
+                <h3 class="h3-blog">Yards After Catch</h3>
+                <div class="iframe-container slider" id="slider9">
+                    <iframe class="slider-iframe" src="/Analysis/interactive-2.0/TE/2023-review/scatter_receiving_yards_after_catch.html"></iframe>
+
+                    <div>
+                        <button class="graph-slider-prev" onclick="changeIframeSrc('slider9', -1)">&#10094;</button>
+                        <button class="graph-slider-next" onclick="changeIframeSrc('slider9', 1)">&#10095;</button>
+                    </div>
+                </div>
+
+                <h3 class="h3-blog">RACR</h3>
+                <div class="iframe-container slider" id="slider10">
+                    <iframe class="slider-iframe" src="/Analysis/interactive-2.0/TE/2023-review/scatter_receiving_air_yards_conversion.html"></iframe>
+
+                    <div>
+                        <button class="graph-slider-prev" onclick="changeIframeSrc('slider10', -1)">&#10094;</button>
+                        <button class="graph-slider-next" onclick="changeIframeSrc('slider10', 1)">&#10095;</button>
+                    </div>
+                </div>
+            </div>
+            </br>
+            </br>
+            </br>
+        </div>
+    </div>
+</body>
+<script>
+    function scrollToParagraph(paragraphId, headerOffset=100) {
+        let element = document.getElementById(paragraphId);
+        // let headerOffset = 100;  // Change this value according to your needs
+        let elementPosition = element.getBoundingClientRect().top;
+        let offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+        });
+    }
+</script>
+<script>
+    const iframeSources = {
+        slider1: [
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_fantasy_points_ppr-2024-preview_per_game.html",
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_fantasy_points_ppr-2024-preview.html",
+        ],
+        slider2: [
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_fantasy_points_ppr.html",
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_fantasy_points_ppr_per_game.html",
+        ],
+        slider3: [
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_fantasy_points_ppr_per_reception.html",
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_fantasy_points_ppr_per_target.html",
+        ],
+        slider4: [
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_receptions.html",
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_receptions_per_game.html",
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_targets.html",
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_targets_per_game.html",
+        ],
+        slider5: [
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_receiving_yards.html",
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_receiving_yards_per_game.html",
+        ],
+        slider6: [
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_receiving_tds.html",
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_receiving_tds_per_game.html",
+        ],
+        slider7: [
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_receiving_epa.html",
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_receiving_epa_per_game.html",
+        ],
+        slider8: [
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_receiving_air_yards.html",
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_receiving_air_yards_per_game.html",
+        ],
+        slider9: [
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_receiving_first_downs.html",
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_receiving_first_downs_per_game.html",
+        ],
+        slider10: [
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_receiving_air_yards_conversion.html",
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_receiving_air_yards_conversion_per_game.html",
+        ],
+        slider11: [
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_receiving_epa-2024-preview_per_game.html",
+            "/Analysis/interactive-2.0/TE/2023-review/scatter_receiving_epa-2024-preview.html",
+        ],
+    };
+
+    function changeIframeSrc(sliderId, direction) {
+        const iframe = document.querySelector(`#${sliderId} .slider-iframe`);
+        const sources = iframeSources[sliderId];
+
+        // Extract the relative path from the iframe's full URL
+        const currentPath = new URL(iframe.src).pathname;
+
+        // Find the index of the current path in the sources array
+        let currentIndex = sources.findIndex(src => currentPath.endsWith(src));
+
+        if (currentIndex === -1) {
+            currentIndex = 0; // Default to the first source if the current src is not found
+        }
+
+        let nextIndex = (currentIndex + direction + sources.length) % sources.length; // Calculate the next index, looping around if necessary
+        iframe.src = sources[nextIndex]; // Set the new src
+    }
+</script>
+<script>
+    $("#common-header").load("/header.html");;
+</script>
